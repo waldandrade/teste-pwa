@@ -5,6 +5,7 @@
     ]
   },
   "hosting": {
+    "site": "jlotos",
     "public": "dist",
     "ignore": [
       "firebase.json",
