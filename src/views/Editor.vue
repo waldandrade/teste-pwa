@@ -28,6 +28,7 @@ import 'codemirror/addon/lint/lint.js'
 import '@/lint/lotos-lint.js'
 
 import LotosLexer from '@/analisadores/LotosLexer.js'
+import LotosSyntatic from '@/analisadores/LotosSyntatic.js'
 
 export default {
   name: 'HelloWorld',
@@ -71,8 +72,11 @@ export default {
     onCmReady (cm) {
       var lotoslint = function (text, observer) {
         // eslint-disable-next-line no-unused-vars
-        var lex = new LotosLexer(text)
-        // console.log(lex)
+        if (text && text.length) {
+          var lex = new LotosLexer(text)
+          var syn = new LotosSyntatic(lex._tokens)
+          console.log(syn)
+        }
       }
 
       lotoslint.data = () => {

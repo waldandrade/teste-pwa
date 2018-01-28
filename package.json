@@ -16,6 +16,7 @@
     "register-service-worker": "^1.5.2",
     "roboto-fontface": "*",
     "tokenizer": "^1.1.2",
+    "tokenizr": "^1.5.2",
     "vue": "^2.5.22",
     "vue-codemirror": "^4.0.6",
     "vue-router": "^3.0.1",
