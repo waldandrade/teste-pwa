@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "codemirror": "^5.43.0",
+    "jshint": "^2.10.1",
     "material-design-icons-iconfont": "^3.0.3",
     "register-service-worker": "^1.5.2",
     "roboto-fontface": "*",
