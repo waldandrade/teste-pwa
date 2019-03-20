@@ -1,5 +1,5 @@
 {
-  "name": "pwa2",
+  "name": "JLOTOS",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "codemirror": "^5.43.0",
+    "firebase": "^5.9.0",
     "jshint": "^2.10.1",
     "material-design-icons-iconfont": "^3.0.3",
     "register-service-worker": "^1.5.2",
