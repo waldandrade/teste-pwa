@@ -27,7 +27,7 @@ import CodeMirror from 'codemirror'
       options.indent = 1
     } // JSHint default value is 4
     LOTOSLINT(text, options, options.globals)
-    var errors = LNTLINT.data().errors; var result = []
+    var errors = LOTOSLINT.data().errors; var result = []
     if (errors) parseErrors(errors, result)
     return result
   }

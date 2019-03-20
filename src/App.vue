@@ -2,6 +2,7 @@
   <v-app id="inspire">
     <v-navigation-drawer
       v-model="drawer"
+      :mini-variant.sync="mini"
       :clipped="$vuetify.breakpoint.lgAndUp"
       fixed
       app
@@ -103,6 +104,7 @@ export default {
   data: () => ({
     dialog: false,
     drawer: null,
+    mini: true,
     items: [
       { icon: 'contacts', text: 'Contacts' },
       { icon: 'history', text: 'Frequently contacted' },

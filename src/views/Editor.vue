@@ -1,9 +1,7 @@
 <template>
-  <v-layout column fill-height>
+  <v-layout align-space-around row fill-height>
     <v-flex>
-      <div>
-        <codemirror v-model="code" @ready="onCmReady" fill-height :options="cmOptions"></codemirror>
-      </div>
+        <codemirror v-model="code" @ready="onCmReady" fill-height  style="height: calc(100vh - 125px)" :options="cmOptions"></codemirror>
     </v-flex>
   </v-layout>
 </template>
@@ -44,7 +42,7 @@ lotoslint.data = () => {
   }
 }
 
-window.LNTLINT = lotoslint
+window.LOTOSLINT = lotoslint
 
 export default {
   name: 'HelloWorld',
@@ -60,7 +58,7 @@ export default {
       // codemirror options
       smartIndent: true,
       tabSize: 2,
-      mode: 'lnt',
+      mode: 'lotos',
       theme: 'blackboard',
       lineNumbers: true,
       line: true,

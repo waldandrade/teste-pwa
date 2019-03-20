@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Editor from './views/Editor.vue'
+import Workspace from './views/Workspace.vue'
 
 Vue.use(Router)
 
@@ -11,7 +11,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Editor
+      component: Workspace
     },
     {
       path: '/about',

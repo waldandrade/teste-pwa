@@ -3,7 +3,7 @@
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
   font-family: monospace;
-  height: 300px;
+  height: 100%;
   color: black;
   direction: ltr;
 }
@@ -124,7 +124,7 @@
 .cm-s-blackboard .cm-atom { color: #D8FA3C; }
 .cm-s-blackboard .cm-number { color: #D8FA3C; }
 .cm-s-blackboard .cm-def { color: #8DA6CE; }
-.cm-s-blackboard .cm-variable { color: #FF6400; }
+.cm-s-blackboard .cm-gate { color: #F16622; }
 .cm-s-blackboard .cm-operator { color: #FBDE2D; }
 .cm-s-blackboard .cm-comment { color: #AEAEAE; }
 .cm-s-blackboard .cm-string { color: #61CE3C; }
