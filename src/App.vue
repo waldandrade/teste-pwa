@@ -148,11 +148,9 @@ export default {
   },
   methods: {
     execute (action, data) {
-      console.log(data)
       this.$store.dispatch(action, data)
     },
     sendingEvent (file, xhr, formData) {
-      console.log('file', file)
       this.$store.dispatch('fileUpload', { file: file, project: 'geral' })
       // formData.append('paramName', 'some value or other')
     }

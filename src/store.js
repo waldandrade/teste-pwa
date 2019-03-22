@@ -9,6 +9,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    selectedFile: null,
     specifications: [],
     openedSpecifications: [],
     projects: [],
@@ -57,20 +58,25 @@ export default new Vuex.Store({
     },
     openSpecification (state, specification) {
       state.openedSpecifications.push(specification)
-      console.log(state.openedSpecifications)
+      state.selectedFile = state.openedSpecifications.length - 1
     },
     closeSpecification (state, index) {
       state.openedSpecifications.splice(index, 1)
+    },
+    setSelectedFile (state, selectFile) {
+      state.selectedFile = selectFile
     }
   },
   actions: {
+    selectFile ({ commit, state }, selectFile) {
+      commit('setSelectedFile', selectFile)
+    },
     fileUpload ({ commit, state }, payload) {
       return new Promise((resolve, reject) => {
         commit('setLoading', true)
         let storageRef = firebase.storage().ref()
         let fileRef = storageRef.child(`users/${state.user.id}/${payload.project}/${payload.file.name}`)
         fileRef.put(payload.file).then(snapshot => {
-          console.log(snapshot)
           snapshot.ref.getDownloadURL().then(downloadURL => {
             var reader = new FileReader()
             reader.readAsBinaryString(payload.file)
@@ -100,7 +106,6 @@ export default new Vuex.Store({
         snapshot.forEach((child) => {
           specifications.push(child.val())
         })
-        console.log('specifications', specifications)
         commit('setSpecifications', specifications)
       })
     },
@@ -110,8 +115,6 @@ export default new Vuex.Store({
     openSpecification ({ commit, state }, index) {
       var specification = state.specifications[index]
       var findSpecification = state.openedSpecifications.filter((spec, index) => {
-        console.log('compare spec', spec)
-        console.log('compare specification', specification)
         if (spec.abstractName === specification.abstractName) {
           return index
         }
@@ -119,13 +122,11 @@ export default new Vuex.Store({
 
       if (!findSpecification.length) {
         if (specification.code === undefined) {
-          console.log('specification needs code', specification)
           var storage = firebase.storage()
           storage.ref(specification.abstractName).getDownloadURL().then((url) => {
             var xhr = new XMLHttpRequest()
             xhr.onload = function (event) {
               var blob = xhr.response
-              console.log(blob)
               specification.code = blob
               commit('openSpecification', specification)
             }
@@ -259,6 +260,9 @@ export default new Vuex.Store({
     },
     explore (state) {
       return state.explore
+    },
+    selectedFile (state) {
+      return state.selectedFile
     }
   }
 })

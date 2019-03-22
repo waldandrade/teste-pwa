@@ -326,8 +326,13 @@ export default {
     }
   },
   watch: {
+    selectedFile (val) {
+      if (val !== null && val !== undefined && this.activeFile !== val) {
+        this.activeFile = val
+      }
+    },
     activeFile (val) {
-      console.log(val)
+      this.$store.dispatch('selectFile', val)
     },
     user (val) {
       if (val === null || val === undefined) {
@@ -340,6 +345,9 @@ export default {
     }
   },
   computed: {
+    selectedFile () {
+      return this.$store.getters.selectedFile
+    },
     specifications () {
       return this.$store.getters.specifications
     },

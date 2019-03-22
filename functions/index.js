@@ -16,8 +16,6 @@ exports.generateThumbnail = functions.storage.object().onFinalize((objectMetadat
   pathArray.splice(-1,1)
   var path = pathArray.join('/')
 
-  console.log('path', path)
-
   return admin.database().ref(path).push({name: filename, abstractName: objectMetadata.name, link: objectMetadata.selfLink}).then((snapshot) => {
     return true
   });

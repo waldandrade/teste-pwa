@@ -30,9 +30,9 @@ import '@/lint/lotos-lint.js'
 import LotosLexer from '@/analisadores/LotosLexer.js'
 
 var lotoslint = function (text, observer) {
+  // eslint-disable-next-line no-unused-vars
   var lex = new LotosLexer(text)
-
-  console.log(lex)
+  // console.log(lex)
 }
 
 lotoslint.data = () => {
