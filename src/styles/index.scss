@@ -7,3 +7,11 @@ html { overflow: auto; }
 .v-toolbar--clipped {
  z-index: 5
 }
+
+.jlotos-navigation {
+  z-index: 5;
+}
+
+.v-tabs__item--active {
+  background-color: #0C1021
+}

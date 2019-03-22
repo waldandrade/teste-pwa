@@ -1,11 +1,76 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant.sync="mini"
-      :clipped="$vuetify.breakpoint.lgAndUp"
+        v-model="plojectView"
+        clipped
+        fixed
+        app
+        right
+      >
+      <v-toolbar
+        color="primary"
+        dark
+        clipped-right
+      >
+        <v-spacer></v-spacer>
+        <v-btn icon large>
+          <v-avatar size="32px" tile>
+            <img
+              :src="require('@/assets/lotus.svg')"
+              alt="Vuetify"
+            >
+          </v-avatar>
+        </v-btn>
+      </v-toolbar>
+      <v-list>
+
+        <v-list-group
+          prepend-icon="account_circle"
+          value="true"
+        >
+          <template v-slot:activator>
+            <v-list-tile>
+              <v-list-tile-title>Projetos</v-list-tile-title>
+            </v-list-tile>
+          </template>
+          <v-list-group
+            no-action
+            sub-group
+            value="true"
+          >
+            <template v-slot:activator>
+              <v-list-tile>
+                <v-list-tile-title>Geral</v-list-tile-title>
+                <v-dialog width="300" lazy>
+                  <v-btn slot="activator" flat left icon color="pink">
+                    <v-icon>cloud_upload</v-icon>
+                  </v-btn>
+                  <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" v-on:vdropzone-sending="sendingEvent"></vue-dropzone>
+                </v-dialog>
+              </v-list-tile>
+            </template>
+
+            <v-list-tile
+              v-for="(specification, i) in specifications"
+              :key="i"
+              @click="execute('openSpecification', i)"
+            >
+              <v-list-tile-title v-text="specification.name"></v-list-tile-title>
+              <v-list-tile-action>
+                <v-icon v-text="'close'"></v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+          </v-list-group>
+        </v-list-group>
+      </v-list>
+     </v-navigation-drawer>
+    <v-navigation-drawer
+      value="true"
+      mini-variant
+      dark
       fixed
       app
+      class="jlotos-navigation"
     >
       <v-list dense>
         <template v-for="item in items">
@@ -24,35 +89,7 @@
               <a href="#!" class="body-2 black--text">EDIT</a>
             </v-flex>
           </v-layout>
-          <v-list-group
-            v-else-if="item.children"
-            :key="item.text"
-            v-model="item.model"
-            :prepend-icon="item.model ? item.icon : item['icon-alt']"
-            append-icon=""
-          >
-            <v-list-tile slot="activator">
-              <v-list-tile-content>
-                <v-list-tile-title>
-                  {{ item.text }}
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-            <v-list-tile
-              v-for="(child, i) in item.children"
-              :key="i"
-            >
-              <v-list-tile-action v-if="child.icon">
-                <v-icon>{{ child.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>
-                  {{ child.text }}
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list-group>
-          <v-list-tile v-else :key="item.text">
+          <v-list-tile @click="execute(item.action)" :key="item.text">
             <v-list-tile-action>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-tile-action>
@@ -65,79 +102,69 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar
-      :clipped-left="$vuetify.breakpoint.lgAndUp"
-      color="primary"
-      dark
-      app
-      fixed
-    >
-      <v-toolbar-title style="width: 300px" class="ml-0 pl-3">
-        <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-        <span class="hidden-sm-and-down">JLOTOS</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>apps</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon>notifications</v-icon>
-      </v-btn>
-      <v-btn icon large>
-        <v-avatar size="32px" tile>
-          <img
-            :src="require('@/assets/lotus.svg')"
-            alt="Vuetify"
-          >
-        </v-avatar>
-      </v-btn>
-    </v-toolbar>
-    <v-content>
+    <v-content >
+      <v-container pa-0 fluid fill-height>
       <router-view></router-view>
+      </v-container>
     </v-content>
   </v-app>
 </template>
 
 <script>
+import vue2Dropzone from 'vue2-dropzone'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+
 export default {
   name: 'App',
+  components: {
+    vueDropzone: vue2Dropzone
+  },
   data: () => ({
+    plojectView: true,
     dialog: false,
-    drawer: null,
     mini: true,
     items: [
-      { icon: 'contacts', text: 'Contacts' },
-      { icon: 'history', text: 'Frequently contacted' },
-      { icon: 'content_copy', text: 'Duplicates' },
-      {
-        icon: 'keyboard_arrow_up',
-        'icon-alt': 'keyboard_arrow_down',
-        text: 'Labels',
-        model: true,
-        children: [
-          { icon: 'add', text: 'Create label' }
-        ]
-      },
-      {
-        icon: 'keyboard_arrow_up',
-        'icon-alt': 'keyboard_arrow_down',
-        text: 'More',
-        model: false,
-        children: [
-          { text: 'Import' },
-          { text: 'Export' },
-          { text: 'Print' },
-          { text: 'Undo changes' },
-          { text: 'Other contacts' }
-        ]
-      },
-      { icon: 'settings', text: 'Settings' },
-      { icon: 'chat_bubble', text: 'Send feedback' },
-      { icon: 'help', text: 'Help' },
-      { icon: 'phonelink', text: 'App downloads' },
-      { icon: 'keyboard', text: 'Go to the old version' }
-    ]
+      { icon: 'contacts', text: 'Contacts', action: 'toggleExplore' },
+      { icon: 'history', text: 'Frequently contacted', action: 'toggleExplore' },
+      { icon: 'content_copy', text: 'Duplicates', action: 'toggleExplore' },
+      { icon: 'settings', text: 'Settings', action: 'toggleExplore' },
+      { icon: 'chat_bubble', text: 'Send feedback', action: 'toggleExplore' },
+      { icon: 'help', text: 'Help', action: 'toggleExplore' },
+      { icon: 'phonelink', text: 'App downloads', action: 'toggleExplore' },
+      { icon: 'keyboard', text: 'Go to the old version', action: 'toggleExplore' }
+    ],
+    dropzoneOptions: {
+      url: 'https://localhost:8080/post',
+      method: 'put',
+      thumbnailWidth: 150,
+      maxFilesize: 0.5,
+      dictDefaultMessage: "<i class='v-icon material-icons upload_icon'>cloud_upload</i>File upload"
+    }
   }),
+  watch: {
+    explore (val) {
+      this.plojectView = val
+    }
+  },
+  methods: {
+    execute (action, data) {
+      console.log(data)
+      this.$store.dispatch(action, data)
+    },
+    sendingEvent (file, xhr, formData) {
+      console.log('file', file)
+      this.$store.dispatch('fileUpload', { file: file, project: 'geral' })
+      // formData.append('paramName', 'some value or other')
+    }
+  },
+  computed: {
+    specifications () {
+      return this.$store.getters.specifications
+    },
+    explore () {
+      return this.$store.getters.explore
+    }
+  },
   props: {
     source: String
   }
@@ -161,5 +188,10 @@ export default {
       color: #42b983;
     }
   }
+}
+.upload_icon {
+  vertical-align: bottom;
+  padding-top: 10px;
+  margin-right: 10px;
 }
 </style>

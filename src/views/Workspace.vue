@@ -1,39 +1,43 @@
 <template>
   <v-layout align-space-around row fill-height>
-    <v-flex>
-      <v-layout align-center justify-center column fill-height v-if="!specifications.length">
-        <h1>Criar sua primeira especificação em LOTOS</h1>
-        <v-btn flat color="accent" @click="criarEspecificacao = true">Clique aqui para começar!</v-btn>
-      </v-layout>
-      <v-tabs
-        v-else
-        dark
-        color="cyan"
-        show-arrows
-        grow
-        height="60"
-      >
-        <v-tabs-slider color="yellow"></v-tabs-slider>
-
-        <v-tab
-          v-for="(specification, i) in specifications"
-          :key="i"
-          :href="'#tab-' + i"
+      <v-flex class="grow">
+        <v-layout align-center justify-center column fill-height v-if="!openedSpecifications.length">
+          <h1>Criar sua primeira especificação em LOTOS</h1>
+          <v-btn flat color="accent" @click="criarEspecificacao = true">Clique aqui para começar!</v-btn>
+        </v-layout>
+        <v-tabs
+          v-else
+          v-model="activeFile"
+          dark
+          color="grey"
+          show-arrows
+          left
+          height="40"
         >
-          {{ specification.nome }}
-        </v-tab>
+          <v-tabs-slider color="yellow"></v-tabs-slider>
 
-        <v-tabs-items>
-          <v-tab-item
-            v-for="(specification, i) in specifications"
+          <v-tab
+            v-for="(specification, i) in openedSpecifications"
             :key="i"
-            :value="'tab-' + i"
+            :href="specifications.abstractName"
           >
-            <editor></editor>
-          </v-tab-item>
-        </v-tabs-items>
-      </v-tabs>
-    </v-flex>
+            {{ specification.name }}
+            <v-btn icon left flat @click="close(i)">
+              <v-icon>close</v-icon>
+            </v-btn>
+          </v-tab>
+
+          <v-tabs-items>
+            <v-tab-item
+              v-for="(specification, i) in openedSpecifications"
+              :key="i"
+              :value="specifications.abstractName"
+            >
+              <editor :specification="specification"></editor>
+            </v-tab-item>
+          </v-tabs-items>
+        </v-tabs>
+      </v-flex>
     <v-dialog width="400" persistent v-model="loginUsuario">
       <v-form ref="form" lazy-validation autocomplete="off">
         <v-card>
@@ -245,8 +249,9 @@
               <v-layout column>
 
                 <v-text-field
-                  v-model="especificacao.nome"
+                  v-model="especificacao.name"
                   label="Nome da especificação"
+                  suffix=".lotos"
                   required
                 ></v-text-field>
 
@@ -282,6 +287,7 @@ export default {
   components: { Editor, AppAlert },
   data () {
     return {
+      activeFile: null,
       loginErro: false,
       errorMessage: '',
       login: {
@@ -308,7 +314,7 @@ export default {
       cadastroUsuario: false,
       criarEspecificacao: false,
       especificacao: {
-        nome: '',
+        name: '',
         code: ''
       },
       emailRules: [
@@ -320,18 +326,25 @@ export default {
     }
   },
   watch: {
+    activeFile (val) {
+      console.log(val)
+    },
     user (val) {
       if (val === null || val === undefined) {
         this.loginUsuario = true
       } else {
         this.loginUsuario = false
         this.cadastroUsuario = false
+        this.$store.dispatch('carregarDados')
       }
     }
   },
   computed: {
     specifications () {
       return this.$store.getters.specifications
+    },
+    openedSpecifications () {
+      return this.$store.getters.openedSpecifications
     },
     comparePassowords () {
       return this.cadastro.password !== this.cadastro.passwordRepeat ? 'Senhas não são idênticas!' : true
@@ -350,6 +363,9 @@ export default {
     }
   },
   methods: {
+    close (index) {
+      this.$store.dispatch('closeSpecification', index)
+    },
     salvarEspecificacao () {
       this.$store.dispatch('addSpecification', this.especificacao).then(() => {
         this.criarEspecificacao = false

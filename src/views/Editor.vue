@@ -1,7 +1,7 @@
 <template>
   <v-layout align-space-around row fill-height>
     <v-flex>
-        <codemirror v-model="code" @ready="onCmReady" fill-height  style="height: calc(100vh - 125px)" :options="cmOptions"></codemirror>
+        <codemirror v-model="specification.code" @ready="onCmReady" fill-height  style="height: calc(100vh - 40px)" :options="cmOptions"></codemirror>
     </v-flex>
   </v-layout>
 </template>
@@ -50,10 +50,10 @@ export default {
     codemirror
   },
   props: {
-    msg: String
+    msg: String,
+    specification: Object
   },
   data: () => ({
-    code: '',
     cmOptions: {
       // codemirror options
       smartIndent: true,

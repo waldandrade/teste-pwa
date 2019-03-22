@@ -3,13 +3,17 @@ import Vuex from 'vuex'
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/storage'
+import 'firebase/database'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
     specifications: [],
+    openedSpecifications: [],
+    projects: [],
     libs: [],
+    explore: true,
     user: {},
     pessoa: null,
     fotoPerfil: null,
@@ -44,17 +48,100 @@ export default new Vuex.Store({
     },
     clearError (state) {
       state.error = null
+    },
+    setSpecifications (state, payload) {
+      state.specifications = payload
+    },
+    setExplore (state, payload) {
+      state.explore = payload
+    },
+    openSpecification (state, specification) {
+      state.openedSpecifications.push(specification)
+      console.log(state.openedSpecifications)
+    },
+    closeSpecification (state, index) {
+      state.openedSpecifications.splice(index, 1)
     }
   },
   actions: {
+    fileUpload ({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        commit('setLoading', true)
+        let storageRef = firebase.storage().ref()
+        let fileRef = storageRef.child(`users/${state.user.id}/${payload.project}/${payload.file.name}`)
+        fileRef.put(payload.file).then(snapshot => {
+          console.log(snapshot)
+          snapshot.ref.getDownloadURL().then(downloadURL => {
+            var reader = new FileReader()
+            reader.readAsBinaryString(payload.file)
+            reader.onloadend = function () {
+              var specification = {
+                url: downloadURL,
+                name: snapshot.metadata.name,
+                code: reader.result,
+                abstractName: snapshot.metadata.fullPath,
+                selfLink: downloadURL
+              }
+              commit('addSpecification', specification)
+              resolve()
+            }
+          })
+        })
+      })
+    },
+    toggleExplore ({ commit, state }) {
+      commit('setExplore', !state.explore)
+    },
+    carregarDados ({ commit, state }) {
+      var userRef = firebase.database().ref(`users/${state.user.id}`)
+
+      userRef.once('value', (snapshot) => {
+        var specifications = []
+        snapshot.forEach((child) => {
+          specifications.push(child.val())
+        })
+        console.log('specifications', specifications)
+        commit('setSpecifications', specifications)
+      })
+    },
     addLib ({ commit }, lib) {
       commit('addLib', lib)
+    },
+    openSpecification ({ commit, state }, index) {
+      var specification = state.specifications[index]
+      var findSpecification = state.openedSpecifications.filter((spec, index) => {
+        console.log('compare spec', spec)
+        console.log('compare specification', specification)
+        if (spec.abstractName === specification.abstractName) {
+          return index
+        }
+      })
+
+      if (!findSpecification.length) {
+        if (specification.code === undefined) {
+          console.log('specification needs code', specification)
+          var storage = firebase.storage()
+          storage.ref(specification.abstractName).getDownloadURL().then((url) => {
+            var xhr = new XMLHttpRequest()
+            xhr.onload = function (event) {
+              var blob = xhr.response
+              console.log(blob)
+              specification.code = blob
+              commit('openSpecification', specification)
+            }
+            xhr.open('GET', url)
+            xhr.send()
+          })
+        } else {
+          commit('openSpecification', specification)
+        }
+      }
     },
     addSpecification ({ commit, state }, specification) {
       return new Promise((resolve, reject) => {
         commit('setLoading', true)
         let storageRef = firebase.storage().ref()
-        let fileRef = storageRef.child(`users/${state.user.id}/geral/${specification.nome}.lotos`)
+        let fileRef = storageRef.child(`users/${state.user.id}/geral/${specification.name}.lotos`)
         fileRef.putString(specification.code).then(snapshot => {
           snapshot.ref.getDownloadURL().then(downloadURL => {
             specification.url = downloadURL
@@ -63,6 +150,9 @@ export default new Vuex.Store({
           })
         })
       })
+    },
+    closeSpecification ({ commit }, index) {
+      commit('closeSpecification', index)
     },
     clearError ({ commit }) {
       commit('clearError')
@@ -161,8 +251,14 @@ export default new Vuex.Store({
     specifications (state) {
       return state.specifications
     },
+    openedSpecifications (state) {
+      return state.openedSpecifications
+    },
     libs (state) {
       return state.libs
+    },
+    explore (state) {
+      return state.explore
     }
   }
 })
