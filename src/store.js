@@ -114,13 +114,14 @@ export default new Vuex.Store({
     },
     openSpecification ({ commit, state }, index) {
       var specification = state.specifications[index]
-      var findSpecification = state.openedSpecifications.filter((spec, index) => {
-        if (spec.abstractName === specification.abstractName) {
-          return index
-        }
+
+      var indexFindSpecification = 0
+      var findSpecification = state.openedSpecifications.some((spec, index) => {
+        indexFindSpecification = index
+        return spec.abstractName === specification.abstractName
       })
 
-      if (!findSpecification.length) {
+      if (!findSpecification) {
         if (specification.code === undefined) {
           var storage = firebase.storage()
           storage.ref(specification.abstractName).getDownloadURL().then((url) => {
@@ -136,6 +137,8 @@ export default new Vuex.Store({
         } else {
           commit('openSpecification', specification)
         }
+      } else {
+        commit('setSelectedFile', indexFindSpecification)
       }
     },
     addSpecification ({ commit, state }, specification) {
