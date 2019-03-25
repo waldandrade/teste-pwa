@@ -50,12 +50,13 @@
                   >
                     <v-btn
                       v-for="link in links"
-                      :key="link"
+                      :key="link.title"
                       color="white"
+                      @click="onboarding = link.window"
                       flat
                       round
                     >
-                      {{ link }}
+                      {{ link.title }}
                     </v-btn>
                     <v-flex
                       color="transparent"
@@ -73,14 +74,90 @@
           </v-flex>
           <v-flex xs12 md6 lg6 pa-5>
             <v-layout align-space-around justify-center column fill-height>
-              <v-card style="width: auto" dark class="elevation-10">
-                <v-card-title>
-                  Especifique em LOTOS
-                </v-card-title>
-                <v-card-text>
-                  <codemirror v-model="code" fill-height :options="cmOptions"  @ready="onCmReady"   style="height: calc(100vh - 300px)"></codemirror>
-                </v-card-text>
-              </v-card>
+               <v-window v-model="onboarding">
+                <v-window-item>
+                  <v-card style="width: auto" dark class="elevation-10">
+                    <v-card-title>
+                      Especifique em LOTOS
+                    </v-card-title>
+                    <v-card-text>
+                      <codemirror v-model="code" fill-height :options="cmOptions"  @ready="onCmReady"   style="height: calc(100vh - 300px)"></codemirror>
+                    </v-card-text>
+                  </v-card>
+                </v-window-item>
+                <v-window-item>
+                  <v-card style="width: auto" dark class="elevation-10">
+                    <v-card-title>
+                      Especifique em LOTOS
+                    </v-card-title>
+                    <v-card-text>
+                      Testando
+                    </v-card-text>
+                  </v-card>
+                </v-window-item>
+                <v-window-item>
+                  <v-flex
+                    xs12
+                    sm6
+                    md8
+                    align-center
+                    justify-center
+                    layout
+                    text-xs-center
+                  >
+                    <v-avatar
+                      size="80"
+                      color="grey lighten-4"
+                    >
+                      <img src="https://vuetifyjs.com/apple-touch-icon-180x180.png" alt="avatar">
+                    </v-avatar>
+                  </v-flex>
+                </v-window-item>
+                <v-window-item>
+                  <v-card style="width: auto" dark class="elevation-10">
+                    <v-toolbar
+                      color="#eee"
+                      class="elevation-0 secondary--text" >
+                    <v-toolbar-title>Contato</v-toolbar-title>
+                      <v-spacer></v-spacer>
+                      <v-btn flat icon @click="sendEmail" color="info">
+                        <v-icon>send</v-icon>
+                      </v-btn>
+                    </v-toolbar>
+                    <v-form>
+                      <v-autocomplete
+                        v-model="mail.to"
+                        :items="['contato@jlotos.com.br']"
+                        chips
+                        label="Para"
+                        readonly
+                        full-width
+                        hide-details
+                        hide-no-data
+                        hide-selected
+                        single-line
+                      ></v-autocomplete>
+                      <v-divider></v-divider>
+                      <v-text-field
+                        label="Assunto"
+                        v-model="mail.assunto"
+                        single-line
+                        full-width
+                        hide-details
+                      ></v-text-field>
+                      <v-divider></v-divider>
+                      <v-textarea
+                        v-model="mail.message"
+                        label="Informe seus dados para contato"
+                        counter
+                        maxlength="120"
+                        full-width
+                        single-line
+                      ></v-textarea>
+                    </v-form>
+                  </v-card>
+                </v-window-item>
+               </v-window>
             </v-layout>
           </v-flex>
         </v-layout>
@@ -133,6 +210,12 @@ export default {
   },
   data () {
     return {
+      mail: {
+        message: '',
+        assunto: 'Seu nome: Tenho uma sugestão ou dúvida',
+        to: 'contato@jlotos.com.br'
+      },
+      onboarding: 0,
       code: 'specification BIT_ALT [A1, A2] := exit',
       cmOptions: {
         // codemirror options
@@ -152,10 +235,22 @@ export default {
         // more codemirror options, 更多 codemirror 的高级配置...
       },
       links: [
-        'Home',
-        'About Us',
-        'Team',
-        'Contact Us'
+        {
+          title: 'Home',
+          window: 0
+        },
+        {
+          title: 'About Us',
+          window: 1
+        },
+        {
+          title: 'Team',
+          window: 2
+        },
+        {
+          title: 'Contact us',
+          window: 3
+        }
       ]
     }
   },
@@ -163,6 +258,18 @@ export default {
     onCmReady (cm) {
       cm.on('keypress', () => {
         cm.showHint()
+      })
+    },
+    sendEmail () {
+      this.$store.dispatch('sendContactMail', this.mail).then(() => {
+        this.mail = {
+          message: '',
+          assunto: 'Seu nome: Tenho uma sugestão ou dúvida',
+          to: 'contato@jlotos.com.br'
+        }
+        alert('Email enviado com sucesso!')
+      }).catch((error) => {
+        alert(error)
       })
     }
   }

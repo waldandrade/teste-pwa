@@ -65,7 +65,7 @@
       </v-list>
      </v-navigation-drawer>
     <v-navigation-drawer
-      value="true"
+      v-model="mini"
       mini-variant
       dark
       fixed
@@ -108,7 +108,7 @@ export default {
   data: () => ({
     plojectView: false,
     dialog: false,
-    mini: true,
+    mini: false,
     items: [
       { icon: 'contacts', text: 'Contacts', action: 'toggleExplore' },
       { icon: 'history', text: 'Frequently contacted', action: 'toggleExplore' },
