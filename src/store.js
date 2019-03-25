@@ -14,7 +14,7 @@ export default new Vuex.Store({
     openedSpecifications: [],
     projects: [],
     libs: [],
-    explore: true,
+    explore: false,
     user: {},
     pessoa: null,
     fotoPerfil: null,

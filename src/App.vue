@@ -73,22 +73,7 @@
       class="jlotos-navigation"
     >
       <v-list dense>
-        <template v-for="item in items">
-          <v-layout
-            v-if="item.heading"
-            :key="item.heading"
-            row
-            align-center
-          >
-            <v-flex xs6>
-              <v-subheader v-if="item.heading">
-                {{ item.heading }}
-              </v-subheader>
-            </v-flex>
-            <v-flex xs6 class="text-xs-center">
-              <a href="#!" class="body-2 black--text">EDIT</a>
-            </v-flex>
-          </v-layout>
+        <template v-for="(item, index) in items">
           <v-list-tile @click="execute(item.action)" :key="item.text">
             <v-list-tile-action>
               <v-icon>{{ item.icon }}</v-icon>
@@ -99,6 +84,7 @@
               </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
+          <v-divider v-if="item.divider" :key="`divider-${index}`"></v-divider>
         </template>
       </v-list>
     </v-navigation-drawer>
@@ -120,7 +106,7 @@ export default {
     vueDropzone: vue2Dropzone
   },
   data: () => ({
-    plojectView: true,
+    plojectView: false,
     dialog: false,
     mini: true,
     items: [
@@ -131,7 +117,8 @@ export default {
       { icon: 'chat_bubble', text: 'Send feedback', action: 'toggleExplore' },
       { icon: 'help', text: 'Help', action: 'toggleExplore' },
       { icon: 'phonelink', text: 'App downloads', action: 'toggleExplore' },
-      { icon: 'keyboard', text: 'Go to the old version', action: 'toggleExplore' }
+      { divider: true, icon: 'keyboard', text: 'Go to the old version', action: 'toggleExplore' },
+      { icon: 'exit_to_app', text: 'Sair do App', action: 'exitToApp' }
     ],
     dropzoneOptions: {
       url: 'https://localhost:8080/post',
@@ -153,6 +140,9 @@ export default {
     sendingEvent (file, xhr, formData) {
       this.$store.dispatch('fileUpload', { file: file, project: 'geral' })
       // formData.append('paramName', 'some value or other')
+    },
+    exitToApp () {
+      this.$store.dispatch('exitToApp')
     }
   },
   computed: {
@@ -191,5 +181,9 @@ export default {
   vertical-align: bottom;
   padding-top: 10px;
   margin-right: 10px;
+}
+
+.v-navigation-drawer .v-divider {
+  display: flex !important
 }
 </style>

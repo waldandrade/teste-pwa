@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Workspace from './views/Workspace.vue'
+// import Workspace from './views/Workspace.vue'
+import Site from './views/Site.vue'
 
 Vue.use(Router)
 
@@ -11,7 +12,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Workspace
+      component: Site
     },
     {
       path: '/about',
