@@ -49,6 +49,7 @@
                     wrap
                   >
                     <v-btn
+                      :outline="link.window === onboarding"
                       v-for="link in links"
                       :key="link.title"
                       color="white"
@@ -72,7 +73,7 @@
                 </v-footer>
             </v-layout>
           </v-flex>
-          <v-flex xs12 md6 lg6 pa-5>
+          <v-flex xs12 md6 lg6 pa-5 @mouseover="hover = true" @mouseleave="hover = false">
             <v-layout align-space-around justify-center column fill-height>
                <v-window v-model="onboarding">
                 <v-window-item>
@@ -86,6 +87,26 @@
                   </v-card>
                 </v-window-item>
                 <v-window-item>
+                  <v-layout
+                    align-center
+                    justify-center
+                    column
+                  >
+                    <v-avatar
+                      size="80"
+                      color="grey lighten-4"
+                    >
+                      <img src="@/assets/me.jpeg" alt="avatar">
+                    </v-avatar>
+                    <h3 class="display-1 font-weight-light orange--text mb-2">Waldney Andrade</h3>
+                    <div dark class="white--text font-weight-light title mb-2">
+                      Baixarel em Ciência da Computação<br>
+                      Desenvolvedor FullStack<br>
+                      UI/UX Designer
+                    </div>
+                  </v-layout>
+                </v-window-item>
+                <v-window-item>
                   <v-card style="width: auto" dark class="elevation-10">
                     <v-card-title>
                       Especifique em LOTOS
@@ -94,24 +115,6 @@
                       Testando
                     </v-card-text>
                   </v-card>
-                </v-window-item>
-                <v-window-item>
-                  <v-flex
-                    xs12
-                    sm6
-                    md8
-                    align-center
-                    justify-center
-                    layout
-                    text-xs-center
-                  >
-                    <v-avatar
-                      size="80"
-                      color="grey lighten-4"
-                    >
-                      <img src="https://vuetifyjs.com/apple-touch-icon-180x180.png" alt="avatar">
-                    </v-avatar>
-                  </v-flex>
                 </v-window-item>
                 <v-window-item>
                   <v-card style="width: auto" dark class="elevation-10">
@@ -210,6 +213,8 @@ export default {
   },
   data () {
     return {
+      carrouselTimer: null,
+      hover: false,
       mail: {
         message: '',
         assunto: 'Seu nome: Tenho uma sugestão ou dúvida',
@@ -240,18 +245,27 @@ export default {
           window: 0
         },
         {
-          title: 'About Us',
+          title: 'About Me',
           window: 1
         },
         {
-          title: 'Team',
+          title: 'Objetive',
           window: 2
         },
         {
-          title: 'Contact us',
+          title: 'Contact me',
           window: 3
         }
       ]
+    }
+  },
+  watch: {
+    hover (val) {
+      if (val) {
+        clearInterval(this.carrouselTimer)
+      } else {
+        this.activateCarroursel()
+      }
     }
   },
   methods: {
@@ -271,7 +285,19 @@ export default {
       }).catch((error) => {
         alert(error)
       })
+    },
+    activateCarroursel () {
+      this.carrouselTimer = setInterval(() => {
+        let window = this.onboarding + 1
+        if (window > 3) {
+          window = window - 4
+        }
+        this.onboarding = window
+      }, 3000)
     }
+  },
+  mounted () {
+    this.activateCarroursel()
   }
 }
 </script>
