@@ -19,6 +19,7 @@ export default new Vuex.Store({
     pessoa: null,
     fotoPerfil: null,
     loading: false,
+    loadingGeneral: null,
     error: null,
     headers: null,
     mini: false
@@ -41,6 +42,9 @@ export default new Vuex.Store({
     },
     setLoading (state, payload) {
       state.loading = payload
+    },
+    setLoadingGeneral (state, payload) {
+      state.loadingGeneral = payload
     },
     setError (state, payload) {
       state.error = payload
@@ -122,6 +126,9 @@ export default new Vuex.Store({
     openSpecification ({ commit, state }, index) {
       var specification = state.specifications[index]
 
+      commit('setExplore', false)
+      commit('setLoadingGeneral', 'Aguarde ...')
+
       var indexFindSpecification = 0
       var findSpecification = state.openedSpecifications.some((spec, index) => {
         indexFindSpecification = index
@@ -136,6 +143,7 @@ export default new Vuex.Store({
             xhr.onload = function (event) {
               var blob = xhr.response
               specification.code = blob
+              commit('setLoadingGeneral', null)
               commit('openSpecification', specification)
             }
             xhr.open('GET', url)
@@ -255,6 +263,9 @@ export default new Vuex.Store({
     },
     loading (state) {
       return state.loading
+    },
+    loadingGeneral (state) {
+      return state.loadingGeneral
     },
     error (state) {
       return state.error

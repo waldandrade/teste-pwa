@@ -183,6 +183,10 @@ export default {
   display: flex !important
 }
 
+.v-navigation-drawer.jlotos-navigation {
+  background-color: #0C1021
+}
+
 .v-navigation-drawer.jlotos-navigation > .v-list .v-list__tile {
   padding: 0;
 }

@@ -7,6 +7,7 @@
         </v-layout>
         <v-tabs
           v-else
+          hide-slider
           v-model="activeFile"
           dark
           color="grey"
@@ -275,6 +276,26 @@
         </v-card>
       </v-form>
     </v-dialog>
+    <v-dialog
+      v-model="loadingGeneral.visible"
+      hide-overlay
+      persistent
+      width="300"
+    >
+      <v-card
+        color="primary"
+        dark
+      >
+        <v-card-text>
+          {{ loadingGeneral.text }}
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 
@@ -345,6 +366,13 @@ export default {
     }
   },
   computed: {
+    loadingGeneral () {
+      var loading = this.$store.getters.loadingGeneral
+      return {
+        visible: !!loading,
+        text: loading
+      }
+    },
     selectedFile () {
       return this.$store.getters.selectedFile
     },
@@ -395,7 +423,9 @@ export default {
   },
   mounted () {
     this.$store.dispatch('toggleMini', true)
-    this.$store.dispatch('toggleExplore', true)
+    if (!this.$vuetify.breakpoint.mdAndDown) {
+      this.$store.dispatch('toggleExplore', true)
+    }
   }
 }
 </script>
