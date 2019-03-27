@@ -392,6 +392,10 @@ export default {
         this.$store.dispatch('signUserIn', { email: this.login.email, password: this.login.password })
       }
     }
+  },
+  mounted () {
+    this.$store.dispatch('toggleMini', true)
+    this.$store.dispatch('toggleExplore', true)
   }
 }
 </script>

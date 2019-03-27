@@ -1,8 +1,10 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer
-        v-model="plojectView"
+        :value="explore"
         clipped
+        stateless
+        disable-resize-watcher
         fixed
         app
         right
@@ -65,24 +67,22 @@
       </v-list>
      </v-navigation-drawer>
     <v-navigation-drawer
-      v-model="mini"
+      :value="mini"
       mini-variant
       dark
+      mini-variant-width="45"
+      disable-resize-watcher
+      stateless
       fixed
       app
       class="jlotos-navigation"
     >
       <v-list dense>
         <template v-for="(item, index) in items">
-          <v-list-tile @click="execute(item.action)" :key="item.text">
+          <v-list-tile @click="execute(item.action, !explore)" :key="item.text">
             <v-list-tile-action>
-              <v-icon>{{ item.icon }}</v-icon>
+              <v-icon small>{{ item.icon }}</v-icon>
             </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
-                {{ item.text }}
-              </v-list-tile-title>
-            </v-list-tile-content>
           </v-list-tile>
           <v-divider v-if="item.divider" :key="`divider-${index}`"></v-divider>
         </template>
@@ -106,9 +106,7 @@ export default {
     vueDropzone: vue2Dropzone
   },
   data: () => ({
-    plojectView: false,
     dialog: false,
-    mini: false,
     items: [
       { icon: 'contacts', text: 'Contacts', action: 'toggleExplore' },
       { icon: 'history', text: 'Frequently contacted', action: 'toggleExplore' },
@@ -128,11 +126,6 @@ export default {
       dictDefaultMessage: "<i class='v-icon material-icons upload_icon'>cloud_upload</i>File upload"
     }
   }),
-  watch: {
-    explore (val) {
-      this.plojectView = val
-    }
-  },
   methods: {
     execute (action, data) {
       this.$store.dispatch(action, data)
@@ -146,6 +139,9 @@ export default {
     }
   },
   computed: {
+    mini () {
+      return this.$store.getters.mini
+    },
     specifications () {
       return this.$store.getters.specifications
     },
@@ -185,5 +181,9 @@ export default {
 
 .v-navigation-drawer .v-divider {
   display: flex !important
+}
+
+.v-navigation-drawer.jlotos-navigation > .v-list .v-list__tile {
+  padding: 0;
 }
 </style>

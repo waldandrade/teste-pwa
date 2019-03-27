@@ -20,7 +20,8 @@ export default new Vuex.Store({
     fotoPerfil: null,
     loading: false,
     error: null,
-    headers: null
+    headers: null,
+    mini: false
   },
   mutations: {
     addLib (state, lib) {
@@ -65,9 +66,15 @@ export default new Vuex.Store({
     },
     setSelectedFile (state, selectFile) {
       state.selectedFile = selectFile
+    },
+    setMini (state, mini) {
+      state.mini = mini
     }
   },
   actions: {
+    toggleMini ({ commit }, mini) {
+      commit('setMini', mini)
+    },
     selectFile ({ commit, state }, selectFile) {
       commit('setSelectedFile', selectFile)
     },
@@ -95,8 +102,8 @@ export default new Vuex.Store({
         })
       })
     },
-    toggleExplore ({ commit, state }) {
-      commit('setExplore', !state.explore)
+    toggleExplore ({ commit, state }, explore) {
+      commit('setExplore', explore)
     },
     carregarDados ({ commit, state }) {
       var userRef = firebase.database().ref(`users/${state.user.id}`)
@@ -266,6 +273,9 @@ export default new Vuex.Store({
     },
     selectedFile (state) {
       return state.selectedFile
+    },
+    mini (state) {
+      return state.mini
     }
   }
 })

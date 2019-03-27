@@ -33,7 +33,7 @@
                   <h3 class="mt-3 display-1 accent--text">Construa soluções com validação de comportamentos</h3>
                   <div>
                     <v-layout row class="pt-4">
-                      <v-btn large color="#FF6400" dark round>Entrar no editor</v-btn>
+                      <v-btn @click="() => {$router.push('editor')}" large color="#FF6400" dark round>Entrar no editor</v-btn>
                       <v-btn large color="secondary" round>Cadastre-se</v-btn>
                     </v-layout>
                   </div>
@@ -100,21 +100,31 @@
                     </v-avatar>
                     <h3 class="display-1 font-weight-light orange--text mb-2">Waldney Andrade</h3>
                     <div dark class="white--text font-weight-light title mb-2">
-                      Baixarel em Ciência da Computação<br>
+                      Bacharel em Ciência da Computação<br>
                       Desenvolvedor FullStack<br>
                       UI/UX Designer
                     </div>
                   </v-layout>
                 </v-window-item>
                 <v-window-item>
-                  <v-card style="width: auto" dark class="elevation-10">
-                    <v-card-title>
-                      Especifique em LOTOS
-                    </v-card-title>
-                    <v-card-text>
-                      Testando
-                    </v-card-text>
-                  </v-card>
+                  <v-layout
+                    align-center
+                    justify-center
+                    column
+                  >
+                    <h3 class="display-1 font-weight-light orange--text mb-2">Soluções verificadas</h3>
+                    <div dark class="white--text font-weight-light title mb-2">
+                      Existe uma demanda crescente de softwares validados<br>
+                      com alta confiabilidade e tolerância a falha<br>
+                      em ambientes com processos concorrentes
+                    </div>
+                    <h3 class="display-1 font-weight-light orange--text mb-2">Colaboração</h3>
+                    <div dark class="white--text font-weight-light title mb-2">
+                      Vamos criar uma comunidade que cria e compartilha<br>
+                      descrições formais, o que provocará uma evolução<br>
+                      significativa da qualidade de software
+                    </div>
+                  </v-layout>
                 </v-window-item>
                 <v-window-item>
                   <v-card style="width: auto" dark class="elevation-10">
@@ -293,7 +303,7 @@ export default {
           window = window - 4
         }
         this.onboarding = window
-      }, 3000)
+      }, 5000)
     }
   },
   mounted () {
