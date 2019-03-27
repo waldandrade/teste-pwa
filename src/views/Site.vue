@@ -12,27 +12,34 @@
                 color="transparent"
                 dark
                 scroll-off-screen
-                extended
                 scroll-target="#scrolling-techniques"
               >
-                <div slot="extension" class="ml-2">
+                <div>
                   <v-layout justify-space-around>
-                    <v-avatar size="65px" tile>
+                    <v-avatar :size="$vuetify.breakpoint.mdAndDown?'30px':'65px'" tile>
                       <img
                         :src="require('@/assets/lotus.svg')"
                         alt="Vuetify"
                       >
                     </v-avatar>
-                    <h1 class="display-3 secondary--text">JLOTOS</h1>
+                    <h4 v-if="$vuetify.breakpoint.mdAndDown" class="headline secondary--text">JLOTOS</h4>
+                    <h1 v-else class="display-3 secondary--text">JLOTOS</h1>
                   </v-layout>
                 </div>
               </v-toolbar>
               <v-flex>
                 <v-layout align-start justify-center column fill-height>
-                  <h1 class="display-2 white--text">Uma ferramenta completa para especificação formal</h1>
-                  <h3 class="mt-3 display-1 accent--text">Construa soluções com validação de comportamentos</h3>
+                  <h4 v-if="$vuetify.breakpoint.mdAndDown" class="display-1 white--text">Uma ferramenta completa para especificação formal</h4>
+                  <h1 v-else class="display-2 white--text">Uma ferramenta completa para especificação formal</h1>
+
+                  <h4 v-if="$vuetify.breakpoint.mdAndDown" class="mt-3 headline accent--text">Construa soluções com validação de comportamentos</h4>
+                  <h3 v-else class="mt-3 display-1 accent--text">Construa soluções com validação de comportamentos</h3>
                   <div>
-                    <v-layout row class="pt-4">
+                    <v-layout v-if="$vuetify.breakpoint.mdAndDown" row class="pt-4">
+                      <v-btn @click="() => {$router.push('editor')}" small color="#FF6400" dark round>Entrar no editor</v-btn>
+                      <v-btn small color="secondary" round>Cadastre-se</v-btn>
+                    </v-layout>
+                    <v-layout v-else row class="pt-4">
                       <v-btn @click="() => {$router.push('editor')}" large color="#FF6400" dark round>Entrar no editor</v-btn>
                       <v-btn large color="secondary" round>Cadastre-se</v-btn>
                     </v-layout>
@@ -42,6 +49,7 @@
               <v-footer
                   height="auto"
                   color="transparent"
+                  v-if="!$vuetify.breakpoint.mdAndDown"
                 >
                   <v-layout
                     justify-center
@@ -73,7 +81,7 @@
                 </v-footer>
             </v-layout>
           </v-flex>
-          <v-flex xs12 md6 lg6 pa-5 @mouseover="hover = true" @mouseleave="hover = false">
+          <v-flex v-if="!$vuetify.breakpoint.mdAndDown" xs12 md6 lg6 pa-5 @mouseover="hover = true" @mouseleave="hover = false">
             <v-layout align-space-around justify-center column fill-height>
                <v-window v-model="onboarding">
                 <v-window-item>
