@@ -356,7 +356,7 @@ export default {
       this.$store.dispatch('selectFile', val)
     },
     user (val) {
-      if (val === null || val === undefined) {
+      if (val === null || val === undefined || val.id === undefined) {
         this.loginUsuario = true
       } else {
         this.loginUsuario = false
