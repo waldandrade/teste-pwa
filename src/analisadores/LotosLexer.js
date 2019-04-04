@@ -31,7 +31,7 @@ function LotosLexer (source) {
   this.context = []
   this.templateStarts = []
 
-  // console.log(lines)
+  console.log(lines)
 }
 
 LotosLexer.prototype = {

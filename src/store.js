@@ -143,6 +143,7 @@ export default new Vuex.Store({
             xhr.onload = function (event) {
               var blob = xhr.response
               specification.code = blob
+              console.log('entrou')
               commit('setLoadingGeneral', null)
               commit('openSpecification', specification)
             }

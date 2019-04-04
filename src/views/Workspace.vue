@@ -279,7 +279,6 @@
     <v-dialog
       v-model="loadingGeneral.visible"
       hide-overlay
-      persistent
       width="300"
     >
       <v-card

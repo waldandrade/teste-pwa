@@ -103,5 +103,5 @@ import CodeMirror from 'codemirror'
     }
   })
 
-  CodeMirror.defineMIME('text/x-lotos', 'lotos')
+  CodeMirror.defineMIME('text/plain', 'lotos')
 })
