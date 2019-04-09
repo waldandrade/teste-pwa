@@ -425,6 +425,14 @@ export default {
     if (!this.$vuetify.breakpoint.mdAndDown) {
       this.$store.dispatch('toggleExplore', true)
     }
+
+    if (this.user === null || this.user === undefined || this.user.id === undefined) {
+      this.loginUsuario = true
+    } else {
+      this.loginUsuario = false
+      this.cadastroUsuario = false
+      this.$store.dispatch('carregarDados')
+    }
   }
 }
 </script>

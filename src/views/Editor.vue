@@ -72,7 +72,13 @@ export default {
       // more codemirror options, 更多 codemirror 的高级配置...
     }
   }),
-  mounted () {
+  created () {
+    this.$store.registerModule(this.specification.abstractName.split('/').join('%27'), {
+      namespaced: true,
+      state: {
+        specification: this.specification
+      }
+    })
   },
   methods: {
     onCmReady (cm) {
