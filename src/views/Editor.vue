@@ -1,7 +1,7 @@
 <template>
   <v-layout align-space-around row fill-height>
     <v-flex>
-        <codemirror v-model="specification.code" @ready="onCmReady" fill-height  style="height: calc(100vh - 40px)" :options="cmOptions"></codemirror>
+      <codemirror v-model="spec.code" @ready="onCmReady" fill-height :class="{'dirty': isDirty}" style="height: calc(100vh - 40px)" :options="cmOptions"></codemirror>
     </v-flex>
   </v-layout>
 </template>
@@ -53,38 +53,50 @@ export default {
     msg: String,
     specification: Object
   },
-  data: () => ({
-    cmOptions: {
-      // codemirror options
-      smartIndent: true,
-      tabSize: 2,
-      mode: 'lotos',
-      theme: 'blackboard',
-      lineNumbers: true,
-      line: true,
-      autofocus: true,
-      hintOptions: {
-        completeSingle: false
-      },
-      electricChars: true,
-      gutters: ['CodeMirror-lint-markers'],
-      lint: true
-      // more codemirror options, 更多 codemirror 的高级配置...
-    }
-  }),
-  created () {
-    this.$store.registerModule(this.specification.abstractName.split('/').join('%27'), {
-      namespaced: true,
-      state: {
-        specification: this.specification
+  data () {
+    return {
+      spec: { ...this.specification },
+      cmOptions: {
+        // codemirror options
+        smartIndent: true,
+        tabSize: 2,
+        mode: 'lotos',
+        theme: 'blackboard',
+        lineNumbers: true,
+        matchBrackets: true,
+        line: true,
+        autofocus: true,
+        hintOptions: {
+          completeSingle: false
+        },
+        electricChars: true,
+        extraKeys: {
+          'Ctrl-S': (instance) => {
+            console.log('teste')
+            this.saveText(instance.getValue())
+          }
+        },
+        gutters: ['CodeMirror-lint-markers'],
+        lint: true
+        // more codemirror options, 更多 codemirror 的高级配置...
       }
-    })
+    }
   },
   methods: {
     onCmReady (cm) {
-      cm.on('keypress', () => {
+      cm.on('keypress', (event) => {
+        console.log('keypress')
         cm.showHint()
       })
+    },
+    saveText (code) {
+      this.$store.dispatch('save', this.spec)
+      console.log(code)
+    }
+  },
+  computed: {
+    isDirty () {
+      return this.spec.code !== this.specification.code
     }
   }
 }
@@ -92,5 +104,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+  .dirty {
+    border-top: 1px solid red
+  }
 
 </style>

@@ -65,6 +65,15 @@ export default new Vuex.Store({
       state.openedSpecifications.push(specification)
       state.selectedFile = state.openedSpecifications.length - 1
     },
+    updateSpecification (state, specification) {
+      state.openedSpecifications = state.openedSpecifications.map((oldSpec) => {
+        if (oldSpec.abstractName === specification.abstractName) {
+          return specification
+        } else {
+          return oldSpec
+        }
+      })
+    },
     closeSpecification (state, index) {
       state.openedSpecifications.splice(index, 1)
     },
@@ -143,6 +152,7 @@ export default new Vuex.Store({
             xhr.onload = function (event) {
               var blob = xhr.response
               specification.code = blob
+              specification.isDirty = false
               console.log('entrou')
               commit('setLoadingGeneral', null)
               commit('openSpecification', specification)
@@ -168,6 +178,16 @@ export default new Vuex.Store({
             commit('addSpecification', specification)
             resolve()
           })
+        })
+      })
+    },
+    save ({ commit, state }, specification) {
+      return new Promise((resolve, reject) => {
+        commit('setLoading', true)
+        var storage = firebase.storage()
+        storage.ref(specification.abstractName).putString(specification.code).then(snapshot => {
+          commit('updateSpecification', specification)
+          resolve()
         })
       })
     },

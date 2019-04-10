@@ -11,12 +11,16 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 exports.generateThumbnail = functions.storage.object().onFinalize((objectMetadata) => {
-  var pathArray = objectMetadata.name.split('/')
-  var filename = pathArray.pop()
-  pathArray.splice(-1,1)
-  var path = pathArray.join('/')
+  if (objectMetadata.componentCount) {
+    var pathArray = objectMetadata.name.split('/')
+    var filename = pathArray.pop()
+    pathArray.splice(-1,1)
+    var path = pathArray.join('/')
 
-  return admin.database().ref(path).push({name: filename, abstractName: objectMetadata.name, link: objectMetadata.selfLink}).then((snapshot) => {
+    return admin.database().ref(path).push({name: filename, abstractName: objectMetadata.name, link: objectMetadata.selfLink}).then((snapshot) => {
+      return true
+    });
+  } else {
     return true
-  });
+  }
 });
