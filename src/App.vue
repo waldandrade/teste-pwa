@@ -58,9 +58,6 @@
               @click="execute('openSpecification', i)"
             >
               <v-list-tile-title v-text="specification.name"></v-list-tile-title>
-              <v-list-tile-action>
-                <v-icon v-text="'close'"></v-icon>
-              </v-list-tile-action>
             </v-list-tile>
           </v-list-group>
         </v-list-group>
