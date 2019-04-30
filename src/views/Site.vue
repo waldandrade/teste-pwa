@@ -208,14 +208,7 @@ import 'codemirror/addon/selection/active-line.js'
 import 'codemirror/addon/lint/lint.js'
 import '@/lint/lotos-lint.js'
 
-import LotosLexer from '@/analisadores/LotosLexer.js'
-
-var lotoslint = function (text, observer) {
-  // eslint-disable-next-line no-unused-vars
-  var lex = new LotosLexer(text)
-  // console.log(lex)
-}
-
+var lotoslint = function (text, observer) {}
 lotoslint.data = () => {
   return {
     functions: [],

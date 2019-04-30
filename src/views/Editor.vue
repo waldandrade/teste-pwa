@@ -29,21 +29,6 @@ import '@/lint/lotos-lint.js'
 
 import LotosLexer from '@/analisadores/LotosLexer.js'
 
-var lotoslint = function (text, observer) {
-  // eslint-disable-next-line no-unused-vars
-  var lex = new LotosLexer(text)
-  // console.log(lex)
-}
-
-lotoslint.data = () => {
-  return {
-    functions: [],
-    options: {}
-  }
-}
-
-window.LOTOSLINT = lotoslint
-
 export default {
   name: 'HelloWorld',
   components: {
@@ -84,8 +69,23 @@ export default {
   },
   methods: {
     onCmReady (cm) {
+      var lotoslint = function (text, observer) {
+        // eslint-disable-next-line no-unused-vars
+        var lex = new LotosLexer(text)
+        // console.log(lex)
+      }
+
+      lotoslint.data = () => {
+        return {
+          functions: [],
+          errors: [], // é nesta estrutura que ficará os errors que serão apresentados no editor
+          options: {}
+        }
+      }
+
+      window.LOTOSLINT = lotoslint
+
       cm.on('keypress', (event) => {
-        console.log('keypress')
         cm.showHint()
       })
     },

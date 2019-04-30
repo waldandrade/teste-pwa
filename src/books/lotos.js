@@ -73,25 +73,20 @@ function LotosBook () {
   // N�o sei se vai dar certo
   // N�o trata o NL -> Next Line .. isso no caso � quando a nova linha gera o come�o de um novo par�grafo
 
-  this.COMMENT = '(\\(\\*(?:.|[\\n\\r])*?\\*\\))|(\\(\\*(?:.|[\\n\\r])*)'
+  this.COMMENT = /^\(\*(?:.|[\r\n])*?\*\)|\(\*(?:.|[\r\n])*\*\)$/
 
   // ---------------------------------------------------------------
   this.SEPARATOR = '(' + this.COMMENT + ')' + '|' + this.BLANK_CHARACTER
 
-  this.IDENTIFIER = '[' + this.LETTER + '](_?[' + this.NORMAL_CHARACTER + '])*'
+  this.IDENTIFIER = new RegExp('[' + this.LETTER + '](_?[' + this.NORMAL_CHARACTER + '])*', 'i')
 
-  this.RV_SYMBOL = '\\?' + '|' + '\\!'
+  this.RV_SYMBOL = /\\?|\\!/
 
-  this.RESERVED_WORD = 'accept' + '|' + 'actualizedby' + '|' + 'any' + '|' + 'behaviour' + '|' + 'choice' + '|' + 'endlib' + '|' + 'endproc' + '|' + 'endspec' + '|' +
-  'endtype' + '|' + 'eqns' + '|' + 'exit' + '|' + 'for' + '|' + 'forall' + '|' + 'formaleqns' + '|' + 'formalopns' + '|' + 'formalsorts' + '|' + 'hide' + '|' + 'i' + '|' + 'in' + '|' +
-  'is' + '|' + 'let' + '|' + 'library' + '|' + 'noexit' + '|' + 'of' + '|' + 'ofsort' + '|' + 'opnnames' + '|' + 'opns' + '|' + 'par' + '|' + 'process' + '|' + 'renamedby' + '|' + 'sortnames' + '|' + 'sorts' + '|' +
-  'specification' + '|' + 'stop' + '|' + 'type' + '|' + 'using' + '|' + 'where' + '|' + 'with' + '|' + '\\='
+  this.RESERVED_WORD = /^accept|actualizedby|any|behaviour|choice|endlib|endproc|endspec|endtype|eqns|exit|for|forall|formaleqns|formalopns|formalsorts|hide|i|in|is|let|library|noexit|of|ofsort|opnnames|opns|par|process|renamedby|sortnames|sorts|specification|stop|type|using|where|with$/
 
-  this.RESERVED_LEXICAL_TOKENS = '\\>\\>' + '|' + '\\|\\|\\|' + '|' + '\\]\\|' + '|' + '\\|\\[' + '|' + '\\[\\]' + '|' + '\\[\\>' + '|' + '\\(' + '|' + '\\)' + '|' + '\\{' + '|' + '\\}' + '|' + '\\,' + '|' + '\\.' + '|' + '\\;' +
-  '|' + '\\?' + '|' + '\\!' + '|' + '\\=\\>' + '|' + '\\-\\>' + '|' + '\\:\\=' + '|' + '\\:' + '|' + '\\[' + '|' + '\\]' + '|' + '\\|'
+  this.RESERVED_LEXICAL_TOKENS = /^>>|\|\|\||\]\||\|\[|\[\]|\[>|\(|\)|\{|\}|,|\.|;|\?|!|=>|->|:=|:|\[|\]|\|$/
 
-  this.SPECIAL_CHARACTER = '\\#' + '|' + '\\%' + '|' + '\\&' + '|' + '\\*' + '|' + '\\+' + '|' + '\\-' + '|' + '\\.' + '|' + '\\/' + '|' + '\\<' +
-  '|' + '\\>' + '|' + '\\@' + '|' + '\\\\' + '|' + '\\^' + '|' + '\\~' + '|' + '\\{' + '|' + '\\}' + '|' + '\\='
+  this.SPECIAL_CHARACTER = /#|%|&|\*|\+|-|\.|<|>|@|\\|\^|~|\{|\}|=/
 
   this.EQUATION_OPNS = '([' + this.NORMAL_CHARACTER + ']' + '|' + '[' + this.SPECIAL_CHARACTER + '])+'
 
@@ -118,3 +113,5 @@ function LotosBook () {
 
 // Depois deverei implementar para, antes de qualquer coisa, colocar todos os coment�rios em uma lista de coment�rios
 // ... e no c�digo devo substituir todo o coment�rio por (*#*)
+
+export default LotosBook
