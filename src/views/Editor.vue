@@ -75,7 +75,7 @@ export default {
         if (text && text.length) {
           var lex = new LotosLexer(text)
           var syn = new LotosSyntatic(lex._tokens)
-          console.log(syn)
+          console.log(syn.raiz)
         }
       }
 
