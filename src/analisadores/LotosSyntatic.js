@@ -16,7 +16,7 @@ const RESERVED_LEXICAL_TOKEN = 'reserved_lexical_token'
 const ID = 'id'
 
 function SyntaticExpection (message, token) {
-  this.message = message
+  this.reason = message
   this.name = 'SyntaticExpection'
   this.column = token.column
   this.line = token.line
@@ -47,7 +47,7 @@ function LotosSyntatic (lexer) {
 
     nextToken()
     if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
-      errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${lexer.peek().value} of type ${lexer.peek().value}`, lexer.peek()))
+      errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
       return specification
     }
 
@@ -393,7 +393,7 @@ function LotosSyntatic (lexer) {
 
     nextToken()
     if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, '[')) {
-      errors.push(new SyntaticExpection(`Need a "[" token, and the given token ${actualToken.value} of type ${actualToken.type}`, lexer.peek()))
+      errors.push(new SyntaticExpection(`Need a "[" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
       return false
     }
 

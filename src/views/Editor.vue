@@ -30,6 +30,48 @@ import '@/lint/lotos-lint.js'
 import LotosLexer from '@/analisadores/LotosLexer.js'
 import LotosSyntatic from '@/analisadores/LotosSyntatic.js'
 
+var LOTOSHINT = (function () {
+  'use strict'
+
+  var itself = function (text, observer) {
+    // eslint-disable-next-line no-unused-vars
+    let syn = null
+
+    LOTOSHINT.errors = []
+
+    if (text && text.length) {
+      var lex = new LotosLexer(text)
+      syn = new LotosSyntatic(lex._tokens)
+      console.log(syn.raiz)
+      console.log(syn)
+
+      LOTOSHINT.errors = syn._errors || []
+    }
+
+    return LOTOSHINT.errors.length === 0
+  }
+
+  itself.data = function () {
+    var data = {
+      functions: [],
+      errors: [],
+      options: {}
+    }
+
+    if (itself.errors.length) {
+      data.errors = itself.errors
+
+      console.log(data.errors)
+    }
+
+    return data
+  }
+
+  itself.lotoslint = itself
+
+  return itself
+}())
+
 export default {
   name: 'HelloWorld',
   components: {
@@ -70,24 +112,26 @@ export default {
   },
   methods: {
     onCmReady (cm) {
-      var lotoslint = function (text, observer) {
-        // eslint-disable-next-line no-unused-vars
-        if (text && text.length) {
-          var lex = new LotosLexer(text)
-          var syn = new LotosSyntatic(lex._tokens)
-          console.log(syn.raiz)
-        }
-      }
+      // var lotoslint = function (text, observer) {
+      //   // eslint-disable-next-line no-unused-vars
+      //   let syn = null
 
-      lotoslint.data = () => {
-        return {
-          functions: [],
-          errors: [], // é nesta estrutura que ficará os errors que serão apresentados no editor
-          options: {}
-        }
-      }
+      //   if (text && text.length) {
+      //     var lex = new LotosLexer(text)
+      //     syn = new LotosSyntatic(lex._tokens)
+      //     console.log(syn.raiz)
+      //   }
 
-      window.LOTOSLINT = lotoslint
+      //   this.prototype.data = () => {
+      //     return {
+      //       functions: [],
+      //       errors: syn.errors, // é nesta estrutura que ficará os errors que serão apresentados no editor
+      //       options: {}
+      //     }
+      //   }
+      // }
+
+      window.LOTOSLINT = LOTOSHINT
 
       cm.on('keypress', (event) => {
         cm.showHint()
