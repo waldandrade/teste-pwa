@@ -15,6 +15,8 @@ const RESERVED_SORT = 'RESERVED_SORT'
 const RESERVED_LEXICAL_TOKEN = 'reserved_lexical_token'
 const ID = 'id'
 
+const SPECIAL_CHARACTER = 'SPECIAL_CHARACTER'
+
 function SyntaticExpection (message, token) {
   this.reason = message
   this.name = 'SyntaticExpection'
@@ -55,32 +57,227 @@ function LotosSyntatic (lexer) {
 
     definitionOfTypes(specification)
 
+    if (!actualToken.isA(RESERVED_WORD, 'endspec')) {
+      errors.push(new SyntaticExpection(`Need a "endspec" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+      return specification
+    }
+
     return specification
   }
 
-  function libraryList () {
-    let libraries = []
+  // Method used to create a list of identifiers
+  // libraryList
+  // freeVariableList
+  function identifierList () {
+    let identifiers = []
 
     while (true) {
       nextToken()
       if (!actualToken.isA(ID)) {
-        if (libraries.length) {
-          errors.push(new SyntaticExpection(`Need a "id" token to libraries, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        if (identifiers.length) {
+          errors.push(new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
         }
         break
       }
-      libraries.push(actualToken)
+      identifiers.push(actualToken)
       nextToken()
       if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ',')) {
         break
       }
     }
 
-    return libraries
+    return identifiers
   }
 
   function chargeLibraries (scope, libraries) {
     console.log('deve carregar as libraries')
+  }
+
+  function evaluateExpressionList () {
+    let expressions = []
+
+    while (true) {
+      let expression = evaluateExpression()
+
+      if (!expression) {
+        errors.push(new SyntaticExpection(`We can not evaluate the expression starting with the token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        break
+      }
+
+      expressions.push(expression)
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ',')) {
+        break
+      }
+    }
+
+    return expressions
+  }
+
+  function evaluateExpression (level) {
+    nextToken()
+
+    let expression = {
+      firstTerm: null,
+      operator: null,
+      secondTerm: null,
+      level: level
+    }
+
+    level++
+
+    if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+      expression.firstTerm = evaluateExpression(level)
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
+        errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      nextToken()
+    } else {
+      if (!actualToken.isA(ID) && !actualToken.isA(NUMBER)) {
+        return false
+      }
+
+      expression.firstTerm = actualToken
+
+      nextToken()
+
+      if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+        expression.firstTermArguments = evaluateExpressionList()
+
+        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
+          errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+          return false
+        }
+
+        nextToken()
+      }
+    }
+
+    // TODO: lembrar de validar as operações no sort apropriado, na análise semântica
+    if (actualToken.isA(ID) || actualToken.isA(NUMBER)) {
+      expression.operator = actualToken
+      nextToken()
+
+      if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+        expression.secondTerm = evaluateExpression(level)
+
+        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
+          errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+          return false
+        }
+
+        nextToken()
+      } else {
+        if (!actualToken.isA(ID) && !actualToken.isA(NUMBER)) {
+          errors.push(new SyntaticExpection(`Expected a identifier or a number for the first term of the expression, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+          return false
+        }
+
+        expression.secondTerm = actualToken
+
+        nextToken()
+
+        if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+          expression.firstTermArguments = evaluateExpressionList()
+
+          if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
+            errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+            return false
+          }
+
+          nextToken()
+        }
+      }
+    }
+
+    return expression
+  }
+
+  function equationsExpressionList () {
+    let equationExpressions = []
+
+    while (true) {
+      var equationExpression = {
+        domain: {},
+        image: {}
+      }
+
+      // Definindo as expressões que formam a equação, no nível maior '0'
+      equationExpression.domain = evaluateExpression(0)
+
+      if (!equationExpression.domain) {
+        break
+      }
+
+      if (!actualToken.isA(SPECIAL_CHARACTER, '=')) {
+        errors.push(new SyntaticExpection(`Expected '=' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      equationExpression.image = evaluateExpression(0)
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ';')) {
+        errors.push(new SyntaticExpection(`Expected ';' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      equationExpressions.push(equationExpression)
+    }
+
+    return equationExpressions
+  }
+
+  /*
+   * Lembrar de escrever uma justificativa para a checagem de tipos (inclusive a existência deles) ter ficado na análise semântica
+   */
+  function equationList (equations, typeDefinition) {
+    while (true) {
+      let equation = {}
+      if (!actualToken.isA(RESERVED_WORD, 'forall')) {
+        return false
+      }
+
+      equation.freeVariables = identifierList()
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
+        errors.push(new SyntaticExpection(`Expected ':' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      nextToken()
+
+      if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
+        errors.push(new SyntaticExpection(`Sorts definition needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      equation.sort = actualToken.value
+
+      nextToken()
+
+      if (!actualToken.isA(RESERVED_WORD, 'ofsort')) {
+        errors.push(new SyntaticExpection(`Expected 'ofsort' to indicate what sort will be overloaded with these equations, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      nextToken()
+
+      if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
+        errors.push(new SyntaticExpection(`Sorts definition needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      equation.equationExpressions = equationsExpressionList()
+
+      if (!equation.equationExpressions) {
+        return false
+      }
+
+      equations.unshift(equation)
+    }
   }
 
   function operationList (operations, typeDefinition) {
@@ -178,9 +375,6 @@ function LotosSyntatic (lexer) {
   }
 
   function typeDefinitionFunctions (scope, typeDefinition) {
-    console.log(actualToken)
-    console.log(typeDefinition)
-
     if (actualToken.isA(RESERVED_WORD, 'formalsorts')) {
       nextToken()
       let formalSort = {}
@@ -221,6 +415,12 @@ function LotosSyntatic (lexer) {
       }
       typeDefinition.sorts.unshift(sort)
 
+      if (!scope.sorts) {
+        scope.sorts = []
+      }
+      sort.type = typeDefinition
+      scope.sorts.unshift(sort)
+
       nextToken()
 
       if (actualToken.isA(RESERVED_WORD, 'opns')) {
@@ -229,6 +429,16 @@ function LotosSyntatic (lexer) {
         }
 
         operationList(scope.operationList, typeDefinition)
+      }
+
+      if (actualToken.isA(RESERVED_WORD, 'eqns')) {
+        if (!scope.equationList) {
+          scope.equationList = []
+        }
+
+        // chamarei o nextToken aqui, para ajuste na recursividade no método
+        nextToken()
+        equationList(scope.equationList, typeDefinition)
       }
 
       return true
@@ -247,7 +457,7 @@ function LotosSyntatic (lexer) {
         return false
       }
 
-      scope.libraryTokens = libraryList()
+      scope.libraryTokens = identifierList()
 
       if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, 'endlib')) {
         errors.push(new SyntaticExpection(`Need a "endlib" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
@@ -257,11 +467,7 @@ function LotosSyntatic (lexer) {
       if (scope.libraryTokens && scope.libraryTokens.length) {
         chargeLibraries(scope, scope.libraryTokens)
       }
-
-      return true
-    }
-
-    if (actualToken.isA(RESERVED_WORD, 'type')) {
+    } else if (actualToken.isA(RESERVED_WORD, 'type')) {
       if (!scope.types) {
         scope.types = []
       }
@@ -296,9 +502,13 @@ function LotosSyntatic (lexer) {
 
       scope.types.unshift(typeDefinition)
 
-      return true
+      if (!actualToken.isA(RESERVED_WORD, 'endtype')) {
+        errors.push(new SyntaticExpection(`Expected 'endtype' ending the type definition block, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+    } else {
+      return false
     }
-
     if (!definitionOfTypes(scope)) {
       return false
     }
