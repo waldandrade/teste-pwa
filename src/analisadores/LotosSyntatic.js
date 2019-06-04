@@ -157,7 +157,7 @@ function LotosSyntatic (lexer) {
     }
 
     // TODO: lembrar de validar as operações no sort apropriado, na análise semântica
-    if (actualToken.isA(ID) || actualToken.isA(NUMBER)) {
+    if (actualToken.isA(ID) || actualToken.isA(NUMBER) || actualToken.isA(SPECIAL_CHARACTER)) {
       expression.operator = actualToken
       nextToken()
 
@@ -212,7 +212,7 @@ function LotosSyntatic (lexer) {
         break
       }
 
-      if (!actualToken.isA(SPECIAL_CHARACTER, '=')) {
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, '=')) {
         errors.push(new SyntaticExpection(`Expected '=' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
         return false
       }
@@ -258,25 +258,26 @@ function LotosSyntatic (lexer) {
 
       nextToken()
 
-      if (!actualToken.isA(RESERVED_WORD, 'ofsort')) {
-        errors.push(new SyntaticExpection(`Expected 'ofsort' to indicate what sort will be overloaded with these equations, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
+      while (true) {
+        if (!actualToken.isA(RESERVED_WORD, 'ofsort')) {
+          return false
+        }
+
+        nextToken()
+
+        if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
+          errors.push(new SyntaticExpection(`Sorts definition needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+          return false
+        }
+
+        equation.equationExpressions = equationsExpressionList()
+
+        if (!equation.equationExpressions) {
+          return false
+        }
+
+        equations.unshift(equation)
       }
-
-      nextToken()
-
-      if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
-        errors.push(new SyntaticExpection(`Sorts definition needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
-      }
-
-      equation.equationExpressions = equationsExpressionList()
-
-      if (!equation.equationExpressions) {
-        return false
-      }
-
-      equations.unshift(equation)
     }
   }
 
@@ -285,6 +286,8 @@ function LotosSyntatic (lexer) {
       operandList: [],
       domain: []
     }
+
+    console.log(actualToken)
 
     while (true) {
       nextToken()
@@ -390,15 +393,14 @@ function LotosSyntatic (lexer) {
       typeDefinition.formalSorts.unshift(formalSort)
 
       nextToken()
+    }
 
-      if (actualToken.isA(RESERVED_WORD, 'formalopns')) {
-        if (!scope.operationList) {
-          scope.formalOperationList = []
-        }
-
-        operationList(scope.formalOperationList, typeDefinition)
+    if (actualToken.isA(RESERVED_WORD, 'formalopns')) {
+      if (!scope.operationList) {
+        scope.formalOperationList = []
       }
-      return true
+
+      operationList(scope.formalOperationList, typeDefinition)
     }
 
     if (actualToken.isA(RESERVED_WORD, 'sorts')) {
@@ -422,27 +424,27 @@ function LotosSyntatic (lexer) {
       scope.sorts.unshift(sort)
 
       nextToken()
-
-      if (actualToken.isA(RESERVED_WORD, 'opns')) {
-        if (!scope.operationList) {
-          scope.operationList = []
-        }
-
-        operationList(scope.operationList, typeDefinition)
-      }
-
-      if (actualToken.isA(RESERVED_WORD, 'eqns')) {
-        if (!scope.equationList) {
-          scope.equationList = []
-        }
-
-        // chamarei o nextToken aqui, para ajuste na recursividade no método
-        nextToken()
-        equationList(scope.equationList, typeDefinition)
-      }
-
-      return true
     }
+
+    if (actualToken.isA(RESERVED_WORD, 'opns')) {
+      if (!scope.operationList) {
+        scope.operationList = []
+      }
+
+      operationList(scope.operationList, typeDefinition)
+    }
+
+    if (actualToken.isA(RESERVED_WORD, 'eqns')) {
+      if (!scope.equationList) {
+        scope.equationList = []
+      }
+
+      // chamarei o nextToken aqui, para ajuste na recursividade no método
+      nextToken()
+      equationList(scope.equationList, typeDefinition)
+    }
+
+    return true
   }
 
   /**
@@ -489,10 +491,24 @@ function LotosSyntatic (lexer) {
         return false
       }
 
-      nextToken()
+      // Is a extended sort
+      while (true) {
+        nextToken()
+        if (!actualToken.isA('id') && !actualToken.isA(RESERVED_SORT)) {
+          break
+        }
 
-      if (actualToken.isA('id')) {
-        // Is a extended sort
+        if (!typeDefinition.extendedSorts) {
+          typeDefinition.extendedSorts = []
+        }
+
+        typeDefinition.extendedSorts.push(actualToken)
+
+        nextToken()
+
+        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ',')) {
+          break
+        }
       }
 
       // Carrega os sorts nas definições de tipo
