@@ -2,6 +2,7 @@
 
 import Specification from './structure/Specification'
 import Process from './structure/Process'
+import Behaviour from './structure/Behaviour'
 
 const DATA = 'EXIT_WITH_DATA_PARSING'
 const EXIT = 'EXIT_WITHOUT_DATA_PARSING'
@@ -13,9 +14,18 @@ const NUMBER = 'NUMBER'
 const RESERVED_WORD = 'RESERVED_WORD'
 const RESERVED_SORT = 'RESERVED_SORT'
 const RESERVED_LEXICAL_TOKEN = 'reserved_lexical_token'
+const BEHAVIOUR_OPERATION = 'BEHAVIOUR_OPERATION'
 const ID = 'id'
 
 const SPECIAL_CHARACTER = 'SPECIAL_CHARACTER'
+
+const OP_PARENTHESIS = 'OP_PARENTHESIS'
+const OP_PROCESS_INSTANTIATION = 'OP_PROCESS_INSTANTIATION'
+const OP_OPERATION = 'OP_OPERATION'
+const OP_PALALLELISM = 'OP_PALALLELISM'
+const OP_ACTION_PREFIX = 'OP_ACTION_PREFIX'
+const OP_HIDING_EVENT = 'OP_HIDING_EVENT'
+const OP_EXIT = 'OP_EXIT'
 
 function SyntaticExpection (message, token) {
   this.reason = message
@@ -33,15 +43,251 @@ function LotosSyntatic (lexer) {
     actualToken = lexer.token()
   }
 
-  function process (token) {
+  function parameterList () {
+    let parameterList = []
+    while (true) {
+      nextToken()
+      let parameter = {
+        imagem: null,
+        dominio: null
+      }
+      if (!actualToken.isA(ID)) {
+        break
+      }
+      parameter.imagem = actualToken
+      nextToken()
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
+        errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+        return null
+      }
+      nextToken()
+      if (!actualToken.isA(ID)) {
+        errors.push(new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        break
+      }
+      parameter.dominio = actualToken
+      parameterList.push(parameter)
+
+      nextToken()
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ',')) {
+        break
+      }
+    }
+
+    return parameterList
+  }
+
+  function createProcess (token) {
     let process = new Process()
 
-    specification.token = token
+    process.token = token
+    decl(process)
+    nextToken()
+
+    if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+      process.parameters = parameterList()
+      console.log('TESTANDO', process.parameters)
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
+        errors.push(new SyntaticExpection(`Need a ")" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+        return process
+      }
+      nextToken()
+    }
+
+    if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
+      errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+      return process
+    }
+    functionType(process)
+    nextToken()
+
+    if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':=')) {
+      errors.push(new SyntaticExpection(`Need a ":=" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+      return process
+    }
+    nextToken()
+
+    process.bahaviour = behaviour(new Behaviour())
+
+    if (actualToken.isA(RESERVED_WORD, 'where')) {
+      nextToken()
+      process.processList = []
+      while (true) {
+        if (!actualToken.isA(RESERVED_WORD, 'process')) {
+          break
+        }
+        let processDeclaration = createProcess()
+        if (!processDeclaration) {
+          break
+        }
+        process.processList.push(processDeclaration)
+      }
+    }
+
+    if (!actualToken.isA(RESERVED_WORD, 'endproc')) {
+      errors.push(new SyntaticExpection(`Need a "endproc" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+      return process
+    }
+
+    nextToken()
 
     return process
   }
 
-  function specification (token) {
+  function valueList () {
+    let values = []
+
+    while (true) {
+      // Definindo as expressões que formam a equação, no nível maior '0'
+      let value = evaluateExpression(0)
+
+      if (!value) {
+        break
+      }
+
+      if (actualToken.isA(RESERVED_WORD, 'of')) {
+        nextToken()
+
+        if (!actualToken.isA(ID)) {
+          errors.push(new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+          break
+        }
+        nextToken()
+      }
+
+      values.push(value)
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ',')) {
+        break
+      }
+    }
+
+    return values
+  }
+
+  function behaviour (expression) {
+    if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+      nextToken()
+      expression.operand = OP_PARENTHESIS
+
+      expression.rightBehaviour = behaviour(new Behaviour())
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
+        errors.push(new SyntaticExpection(`Need a ")" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return null
+      }
+
+      nextToken()
+    } else if (actualToken.isA(ID) || actualToken.isA(RESERVED_WORD, 'i')) {
+      expression.identifier = actualToken
+      nextToken()
+      if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '[')) {
+        expression.operand = OP_PROCESS_INSTANTIATION
+        expression.parsingGates = identifierList()
+
+        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ']')) {
+          errors.push(new SyntaticExpection(`Need a "]" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+          return null
+        }
+        nextToken()
+
+        if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+          // Não precisa chamar nextToken foi já é executada em evaluateExpression
+
+          expression.values = valueList()
+
+          if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
+            errors.push(new SyntaticExpection(`Need a ")" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+            return null
+          }
+
+          nextToken()
+        }
+      } else {
+        if (expression.identifier.isA(RESERVED_WORD, 'i')) {
+          expression.operand = OP_HIDING_EVENT
+        } else {
+          expression.operand = OP_ACTION_PREFIX
+        }
+        if (actualToken.isA(BEHAVIOUR_OPERATION, '!') || actualToken.isA(BEHAVIOUR_OPERATION, '?')) {
+          let parameterList = []
+          while (true) {
+            if (actualToken.isA(BEHAVIOUR_OPERATION, '!')) {
+              // Definindo as expressões que formam a equação, no nível maior '0'
+              let value = evaluateExpression(0)
+
+              if (!value) {
+                break
+              }
+
+              parameterList.push(value)
+            } else if (actualToken.isA(BEHAVIOUR_OPERATION, '?')) {
+              nextToken()
+              let parameter = {
+                imagem: null,
+                dominio: null
+              }
+              if (!actualToken.isA(ID)) {
+                break
+              }
+              parameter.imagem = actualToken
+              nextToken()
+              if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
+                errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+                return null
+              }
+              nextToken()
+              if (!actualToken.isA(ID)) {
+                errors.push(new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+                break
+              }
+              parameter.dominio = actualToken
+              parameterList.push(parameter)
+
+              nextToken()
+            }
+            if (!actualToken.isA(BEHAVIOUR_OPERATION, '!') && !actualToken.isA(BEHAVIOUR_OPERATION, '?')) {
+              break
+            }
+          }
+          expression.parameters = parameterList
+        }
+
+        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ';')) {
+          errors.push(new SyntaticExpection(`Need a ";" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+          return null
+        }
+
+        nextToken()
+        expression.rightBehaviour = behaviour(new Behaviour())
+      }
+    }
+
+    if (actualToken.isA(BEHAVIOUR_OPERATION)) {
+      let operationalExpression = new Behaviour()
+      if (actualToken.isA(BEHAVIOUR_OPERATION, '|[') || actualToken.isA(BEHAVIOUR_OPERATION, '|||') || actualToken.isA(BEHAVIOUR_OPERATION, '||')) {
+        operationalExpression.operator = OP_PALALLELISM
+        if (actualToken.isA(BEHAVIOUR_OPERATION, '|[')) {
+          operationalExpression.parsingGates = identifierList()
+          if (!actualToken.isA(BEHAVIOUR_OPERATION, ']|')) {
+            errors.push(new SyntaticExpection(`Need a "]|" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+            return null
+          }
+        }
+      } else {
+        operationalExpression.operator = OP_OPERATION
+      }
+      operationalExpression.leftBehaviour = expression
+      nextToken()
+      operationalExpression.rightBehaviour = behaviour(new Behaviour())
+      return operationalExpression
+    } else {
+      return expression
+    }
+  }
+
+  function createSpecification (token) {
     let specification = new Specification()
     specification.token = token
 
@@ -57,10 +303,50 @@ function LotosSyntatic (lexer) {
 
     definitionOfTypes(specification)
 
+    if (!actualToken.isA(RESERVED_WORD, 'behaviour')) {
+      errors.push(new SyntaticExpection(`Need a "behaviour" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+      return specification
+    }
+
+    nextToken()
+
+    if (actualToken.isA(RESERVED_WORD, 'hide')) {
+      specification.hidingGates = identifierList()
+
+      if (!actualToken.isA(RESERVED_WORD, 'in')) {
+        errors.push(new SyntaticExpection(`Need a "in" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+        return specification
+      }
+
+      nextToken()
+    }
+
+    specification.bahaviour = behaviour(new Behaviour())
+
+    if (!actualToken.isA(RESERVED_WORD, 'where')) {
+      errors.push(new SyntaticExpection(`Need a "where" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+      return specification
+    }
+
+    nextToken()
+
+    specification.processList = []
+    while (true) {
+      if (!actualToken.isA(RESERVED_WORD, 'process')) {
+        break
+      }
+      let processDeclaration = createProcess()
+      if (!processDeclaration) {
+        break
+      }
+      specification.processList.push(processDeclaration)
+    }
+
     if (!actualToken.isA(RESERVED_WORD, 'endspec')) {
       errors.push(new SyntaticExpection(`Need a "endspec" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
       return specification
     }
+    nextToken()
 
     return specification
   }
@@ -157,7 +443,7 @@ function LotosSyntatic (lexer) {
     }
 
     // TODO: lembrar de validar as operações no sort apropriado, na análise semântica
-    if (actualToken.isA(ID) || actualToken.isA(NUMBER) || actualToken.isA(SPECIAL_CHARACTER)) {
+    if (actualToken.isA(ID) || actualToken.isA(NUMBER) || (actualToken.isA(SPECIAL_CHARACTER) && actualToken.value !== '=')) {
       expression.operator = actualToken
       nextToken()
 
@@ -172,7 +458,7 @@ function LotosSyntatic (lexer) {
         nextToken()
       } else {
         if (!actualToken.isA(ID) && !actualToken.isA(NUMBER)) {
-          errors.push(new SyntaticExpection(`Expected a identifier or a number for the first term of the expression, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+          errors.push(new SyntaticExpection(`Expected a identifier or a number for the second term of the expression, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
           return false
         }
 
@@ -201,6 +487,7 @@ function LotosSyntatic (lexer) {
 
     while (true) {
       var equationExpression = {
+        conditionalList: [],
         domain: {},
         image: {}
       }
@@ -212,9 +499,36 @@ function LotosSyntatic (lexer) {
         break
       }
 
-      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, '=')) {
-        errors.push(new SyntaticExpection(`Expected '=' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
+      if (!actualToken.isA(SPECIAL_CHARACTER, '=')) {
+        equationExpression.conditionalList.unshift(equationExpression.domain)
+        equationExpression.domain = {}
+
+        while (true) {
+          if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ',')) {
+            break
+          }
+
+          let condition = evaluateExpression(0)
+
+          if (!condition) {
+            return false
+          }
+
+          equationExpression.conditionalList.unshift(condition)
+        }
+
+        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, '=>')) {
+          errors.push(new SyntaticExpection(`Expected '=>' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+          return false
+        }
+
+        // Definindo as expressões que formam a equação, no nível maior '0'
+        equationExpression.domain = evaluateExpression(0)
+
+        if (!equationExpression.domain) {
+          errors.push(new SyntaticExpection(`Can't find a expression.`, actualToken))
+          return false
+        }
       }
 
       equationExpression.image = evaluateExpression(0)
@@ -228,6 +542,108 @@ function LotosSyntatic (lexer) {
     }
 
     return equationExpressions
+  }
+
+  function renameOperationsList (renamedOperations, typeDefinition) {
+    while (true) {
+      let renamedOperation = {
+        operand: {},
+        source: {}
+      }
+
+      if (actualToken.isA(BINARY_OPERATION)) {
+        renamedOperation.operand = {
+          value: actualToken.value.substring(1, -1),
+          type: BINARY_OPERATION
+        }
+      } else if (actualToken.isA(NUMBER)) {
+        renamedOperation.operand = {
+          value: actualToken.value,
+          type: PREFIX_OPERATION
+        }
+      } else if (actualToken.isA(ID)) {
+        renamedOperation.operand = {
+          value: actualToken.value,
+          type: PREFIX_OPERATION
+        }
+      } else {
+        if (!renamedOperations.length) {
+          errors.push(new SyntaticExpection(`Expected a word, a value or a binary term '_*_', and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        }
+        break
+      }
+
+      nextToken()
+
+      if (!actualToken.isA(RESERVED_WORD, 'for')) {
+        errors.push(new SyntaticExpection(`Expected 'for' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      nextToken()
+
+      if (actualToken.isA(BINARY_OPERATION)) {
+        renamedOperation.source = {
+          value: actualToken.value.substring(1, -1),
+          type: BINARY_OPERATION
+        }
+      } else if (actualToken.isA(NUMBER)) {
+        renamedOperation.source = {
+          value: actualToken.value,
+          type: PREFIX_OPERATION
+        }
+      } else if (actualToken.isA(ID)) {
+        renamedOperation.source = {
+          value: actualToken.value,
+          type: PREFIX_OPERATION
+        }
+      } else {
+        errors.push(new SyntaticExpection(`Expected a word, a value or a binary term '_*_', and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        break
+      }
+
+      nextToken()
+
+      renamedOperations.unshift(renamedOperation)
+    }
+  }
+
+  function renameSortsList (renamedSorts, typeDefinition) {
+    while (true) {
+      let renamedSort = {
+        sort: {},
+        source: {}
+      }
+
+      if (!actualToken.isA(ID)) {
+        if (!renamedSorts.length) {
+          errors.push(new SyntaticExpection(`Renamed sort needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+          return false
+        } else {
+          break
+        }
+      }
+
+      renamedSort.sort = actualToken
+
+      nextToken()
+
+      if (!actualToken.isA(RESERVED_WORD, 'for')) {
+        errors.push(new SyntaticExpection(`Expected 'for' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      nextToken()
+
+      if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
+        errors.push(new SyntaticExpection(`Sorts definition source needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      nextToken()
+
+      renamedSorts.unshift(renamedSort)
+    }
   }
 
   /*
@@ -286,8 +702,6 @@ function LotosSyntatic (lexer) {
       operandList: [],
       domain: []
     }
-
-    console.log(actualToken)
 
     while (true) {
       nextToken()
@@ -447,6 +861,28 @@ function LotosSyntatic (lexer) {
     return true
   }
 
+  function typeRenamingFunctions (scope, typeDefinition) {
+    if (actualToken.isA(RESERVED_WORD, 'sortnames')) {
+      if (!scope.renamedSorts) {
+        scope.renamedSorts = []
+      }
+
+      nextToken()
+      renameSortsList(scope.renamedSorts, typeDefinition)
+    }
+
+    if (actualToken.isA(RESERVED_WORD, 'opnnames')) {
+      if (!scope.renamedOperations) {
+        scope.renamedOperations = []
+      }
+
+      nextToken()
+      renameOperationsList(scope.renamedOperations, typeDefinition)
+    }
+
+    return true
+  }
+
   /**
    * Definições de tipo, importação de bibliotecas, etc
    */
@@ -511,9 +947,17 @@ function LotosSyntatic (lexer) {
         }
       }
 
-      // Carrega os sorts nas definições de tipo
-      if (!typeDefinitionFunctions(scope, typeDefinition)) {
-        errors.push(new SyntaticExpection('There was a error in type declaration.', actualToken))
+      if (actualToken.isA(RESERVED_WORD, 'renamedby') && typeDefinition.extendedSorts && typeDefinition.extendedSorts.length === 1) {
+        nextToken()
+
+        if (!typeRenamingFunctions(scope, typeDefinition)) {
+          errors.push(new SyntaticExpection('There was a error in type declaration.', actualToken))
+        }
+      } else {
+        // Carrega os sorts nas definições de tipo
+        if (!typeDefinitionFunctions(scope, typeDefinition)) {
+          errors.push(new SyntaticExpection('There was a error in type declaration.', actualToken))
+        }
       }
 
       scope.types.unshift(typeDefinition)
@@ -599,11 +1043,11 @@ function LotosSyntatic (lexer) {
 
   function scopeCheck (token) {
     if (token.isA(RESERVED_WORD, 'specification')) {
-      return specification(token)
+      return createSpecification(token)
     }
 
     if (token.isA(RESERVED_WORD, 'process')) {
-      return process(token)
+      return createProcess(token)
     }
 
     return null
