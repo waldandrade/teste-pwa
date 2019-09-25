@@ -87,7 +87,6 @@ function LotosSyntatic (lexer) {
 
     if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
       process.parameters = parameterList()
-      console.log('TESTANDO', process.parameters)
       if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
         errors.push(new SyntaticExpection(`Need a ")" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
         return process
@@ -553,18 +552,21 @@ function LotosSyntatic (lexer) {
 
       if (actualToken.isA(BINARY_OPERATION)) {
         renamedOperation.operand = {
-          value: actualToken.value.substring(1, -1),
-          type: BINARY_OPERATION
+          value: actualToken.value.substring(1, actualToken.value.length - 1),
+          type: BINARY_OPERATION,
+          token: actualToken
         }
       } else if (actualToken.isA(NUMBER)) {
         renamedOperation.operand = {
           value: actualToken.value,
-          type: PREFIX_OPERATION
+          type: PREFIX_OPERATION,
+          token: actualToken
         }
       } else if (actualToken.isA(ID)) {
         renamedOperation.operand = {
           value: actualToken.value,
-          type: PREFIX_OPERATION
+          type: PREFIX_OPERATION,
+          token: actualToken
         }
       } else {
         if (!renamedOperations.length) {
@@ -584,18 +586,21 @@ function LotosSyntatic (lexer) {
 
       if (actualToken.isA(BINARY_OPERATION)) {
         renamedOperation.source = {
-          value: actualToken.value.substring(1, -1),
-          type: BINARY_OPERATION
+          value: actualToken.value.substring(1, actualToken.value.length - 1),
+          type: BINARY_OPERATION,
+          token: actualToken
         }
       } else if (actualToken.isA(NUMBER)) {
         renamedOperation.source = {
           value: actualToken.value,
-          type: PREFIX_OPERATION
+          type: PREFIX_OPERATION,
+          token: actualToken
         }
       } else if (actualToken.isA(ID)) {
         renamedOperation.source = {
           value: actualToken.value,
-          type: PREFIX_OPERATION
+          type: PREFIX_OPERATION,
+          token: actualToken
         }
       } else {
         errors.push(new SyntaticExpection(`Expected a word, a value or a binary term '_*_', and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
@@ -670,7 +675,12 @@ function LotosSyntatic (lexer) {
         return false
       }
 
-      equation.sort = actualToken.value
+      equation.sort = actualToken
+
+      if (!typeDefinition.eqns) {
+        typeDefinition.eqns = []
+      }
+      typeDefinition.eqns.push(equation)
 
       nextToken()
 
@@ -686,9 +696,18 @@ function LotosSyntatic (lexer) {
           return false
         }
 
-        equation.equationExpressions = equationsExpressionList()
+        if (!equation.equationGroups) {
+          equation.equationGroups = []
+        }
 
-        if (!equation.equationExpressions) {
+        let equationExpressionGroup = {
+          ofsort: actualToken,
+          equationExpressions: equationsExpressionList()
+        }
+
+        equation.equationGroups.push(equationExpressionGroup)
+
+        if (!equation.equationGroups) {
           return false
         }
 
@@ -699,27 +718,32 @@ function LotosSyntatic (lexer) {
 
   function operationList (operations, typeDefinition) {
     let operationToken = {
-      operandList: [],
+      operand: null,
       domain: []
     }
+
+    let operandList = []
 
     while (true) {
       nextToken()
       let operand = null
       if (actualToken.isA(BINARY_OPERATION)) {
         operand = {
-          value: actualToken.value.substring(1, -1),
-          type: BINARY_OPERATION
+          value: actualToken.value.substring(1, actualToken.value.length - 1),
+          type: BINARY_OPERATION,
+          token: actualToken
         }
       } else if (actualToken.isA(NUMBER)) {
         operand = {
           value: actualToken.value,
-          type: PREFIX_OPERATION
+          type: PREFIX_OPERATION,
+          token: actualToken
         }
       } else if (actualToken.isA(ID)) {
         operand = {
           value: actualToken.value,
-          type: PREFIX_OPERATION
+          type: PREFIX_OPERATION,
+          token: actualToken
         }
       } else {
         if (!operations.length) {
@@ -728,7 +752,7 @@ function LotosSyntatic (lexer) {
         break
       }
 
-      operationToken.operandList.unshift(operand)
+      operandList.push(operand)
       operationToken.typeDefinition = typeDefinition
 
       nextToken()
@@ -738,7 +762,7 @@ function LotosSyntatic (lexer) {
       }
     }
 
-    if (!operationToken.operandList.length) {
+    if (!operandList.length) {
       return false
     }
 
@@ -785,10 +809,20 @@ function LotosSyntatic (lexer) {
     }
 
     operationToken.codomain = actualToken
+    if (!typeDefinition.opns) {
+      typeDefinition.opns = []
+    }
 
-    operations.unshift(operationToken)
+    operandList.forEach(op => {
+      let operation = { ...operationToken, operand: op }
+      typeDefinition.opns.push(operation)
+      operations.unshift(operation)
+      // console.log(operation.operand, operation)
+    })
 
     operationList(operations, typeDefinition)
+
+    return operations
   }
 
   function typeDefinitionFunctions (scope, typeDefinition) {
@@ -826,10 +860,7 @@ function LotosSyntatic (lexer) {
       }
       sort.id = actualToken
 
-      if (!typeDefinition.sorts) {
-        typeDefinition.sorts = []
-      }
-      typeDefinition.sorts.unshift(sort)
+      typeDefinition.sorts = sort
 
       if (!scope.sorts) {
         scope.sorts = []
@@ -934,11 +965,11 @@ function LotosSyntatic (lexer) {
           break
         }
 
-        if (!typeDefinition.extendedSorts) {
-          typeDefinition.extendedSorts = []
+        if (!typeDefinition.extendedTypes) {
+          typeDefinition.extendedTypes = []
         }
 
-        typeDefinition.extendedSorts.push(actualToken)
+        typeDefinition.extendedTypes.push(actualToken)
 
         nextToken()
 
@@ -947,7 +978,7 @@ function LotosSyntatic (lexer) {
         }
       }
 
-      if (actualToken.isA(RESERVED_WORD, 'renamedby') && typeDefinition.extendedSorts && typeDefinition.extendedSorts.length === 1) {
+      if (actualToken.isA(RESERVED_WORD, 'renamedby') && typeDefinition.extendedTypes && typeDefinition.extendedTypes.length === 1) {
         nextToken()
 
         if (!typeRenamingFunctions(scope, typeDefinition)) {

@@ -29,6 +29,7 @@ import '@/lint/lotos-lint.js'
 
 import LotosLexer from '@/analisadores/LotosLexer.js'
 import LotosSyntatic from '@/analisadores/LotosSyntatic.js'
+import LotosSemantic from '@/analisadores/LotosSemantic.js'
 
 var LOTOSHINT = (function () {
   'use strict'
@@ -41,11 +42,18 @@ var LOTOSHINT = (function () {
 
     if (text && text.length) {
       var lex = new LotosLexer(text)
-      syn = new LotosSyntatic(lex._tokens)
-      console.log(syn.raiz)
-      console.log(syn)
 
-      LOTOSHINT.errors = syn._errors || []
+      if (lex._errors.length) {
+        LOTOSHINT.errors = lex._errors || []
+      } else {
+        syn = new LotosSyntatic(lex._tokens)
+        if (syn._errors.length) {
+          LOTOSHINT.errors = syn._errors || []
+        } else {
+          var semantic = new LotosSemantic(syn.raiz)
+          LOTOSHINT.errors = semantic._errors || []
+        }
+      }
     }
 
     return LOTOSHINT.errors.length === 0

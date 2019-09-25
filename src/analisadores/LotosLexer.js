@@ -59,8 +59,10 @@ lexer.rule(CHAR, (ctx, match) => {
 function LotosLexer (source) {
   // console.log(source)
   lexer.input(source)
+  var errors = []
 
   return {
+    _errors: errors,
     _tokens: lexer
   }
 }

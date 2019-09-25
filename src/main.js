@@ -21,7 +21,8 @@ new Vue({
       databaseURL: 'https://optiarts-58885.firebaseio.com',
       projectId: 'optiarts-58885',
       storageBucket: 'optiarts-58885.appspot.com',
-      messagingSenderId: '980912405037'
+      messagingSenderId: '980912405037',
+      appId: '1:980912405037:web:975de856144c14194496a4'
     })
   },
   render: h => h(App),

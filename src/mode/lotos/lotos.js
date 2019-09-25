@@ -45,7 +45,7 @@ import CodeMirror from 'codemirror'
         state.tokenize = tokenComment
         return tokenComment(stream, state)
       }
-      if (/[\[\]{}\(\),\:\.]/.test(ch)) {
+      if (/=\[\[\]{}\(\),\:\.]/.test(ch)) {
         return null
       }
       if (/\d/.test(ch)) {
