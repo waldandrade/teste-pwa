@@ -108,7 +108,6 @@ export default {
         electricChars: true,
         extraKeys: {
           'Ctrl-S': (instance) => {
-            console.log('teste')
             this.saveText(instance.getValue())
           }
         },
