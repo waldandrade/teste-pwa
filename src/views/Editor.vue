@@ -51,6 +51,7 @@ var LOTOSHINT = (function () {
           LOTOSHINT.errors = syn._errors || []
         } else {
           var semantic = new LotosSemantic(syn.raiz)
+          semantic.start()
           LOTOSHINT.errors = semantic._errors || []
         }
       }
@@ -68,8 +69,6 @@ var LOTOSHINT = (function () {
 
     if (itself.errors.length) {
       data.errors = itself.errors
-
-      console.log(data.errors)
     }
 
     return data
@@ -146,7 +145,6 @@ export default {
     },
     saveText (code) {
       this.$store.dispatch('save', this.spec)
-      console.log(code)
     }
   },
   computed: {

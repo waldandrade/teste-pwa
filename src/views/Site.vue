@@ -22,8 +22,8 @@
                         alt="Vuetify"
                       >
                     </v-avatar>
-                    <h4 v-if="$vuetify.breakpoint.mdAndDown" class="headline secondary--text">JLOTOS</h4>
-                    <h1 v-else class="display-3 secondary--text">JLOTOS</h1>
+                    <h4 v-if="$vuetify.breakpoint.mdAndDown" class="headline secondary--text">FormalCode</h4>
+                    <h1 v-else class="display-3 secondary--text">FormalCode</h1>
                   </v-layout>
                 </div>
               </v-toolbar>

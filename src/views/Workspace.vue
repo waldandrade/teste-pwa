@@ -71,7 +71,7 @@
                   </v-avatar> -->
                 </v-fade-transition>
                 <v-flex xs12 class="pb-3">
-                  <h3 class="display-1 font-weight-light grey--text mb-2">Entre no JLotos</h3>
+                  <h3 class="display-1 font-weight-light grey--text mb-2">Entre no FormalCode</h3>
                 </v-flex>
               </v-layout>
               <v-layout column>
@@ -158,7 +158,7 @@
                   </v-avatar> -->
                 </v-fade-transition>
                 <v-flex xs12 class="pb-3">
-                  <h3 class="display-1 font-weight-light grey--text mb-2">Cadastre-se no JLotos</h3>
+                  <h3 class="display-1 font-weight-light grey--text mb-2">Cadastre-se no FormalCode</h3>
                 </v-flex>
               </v-layout>
               <v-layout column>
