@@ -183,12 +183,9 @@ function LotosSemantic (syntaticTree) {
     })
   }
 
-  function equationTermExists (term, args, variables, opns) {
+  function equationTermExists (term, opFirstTerm, opSecondTerm, args, variables, opns) {
     let variable = termInVariables(term, variables)
     let operation = termInOpns(term, opns)
-    if (term.value === 'not') {
-      console.log(term)
-    }
     if (!variable && !operation) {
       // console.log('variables', variables)
       errors.push(new SemanticExpection(`Unknown term "${term.value}"`, term))
@@ -198,19 +195,38 @@ function LotosSemantic (syntaticTree) {
         errors.push(new SemanticExpection(`Operation "${term.value}", expect ${operation.domain.length} arguments and got ${args.length}.`, term))
       }
       args.forEach(arg => {
-        equationTermExists(arg.firstTerm, arg.firstTermArguments, variables, opns)
+        equationTermExists(arg.firstTerm, null, null, null, variables, opns)
       })
+    }
+    if (operation && opFirstTerm) {
+      equationTermExists(opFirstTerm, null, null, null, variables, opns)
+    }
+    if (operation && opSecondTerm) {
+      equationTermExists(opSecondTerm, null, null, null, variables, opns)
     }
   }
 
   function checkEquationTermsExists (equationGroup, variables, opns) {
     equationGroup.equationExpressions.forEach(equation => {
-      equationTermExists(equation.domain.firstTerm, equation.domain.firstTermArguments, variables, opns)
+      if (equation.domain.operator) {
+        equationTermExists(equation.domain.operator, equation.domain.firstTerm, equation.domain.secondTerm, null, variables, opns)
+      } else {
+        equationTermExists(equation.domain.firstTerm, null, null, equation.domain.firstTermArguments, variables, opns)
+      }
+      if (equation.image.operator) {
+        /**
+         * Verificar quando a expressão é um parenteses e pegar o conteudo interno.
+         * Pensar na possibilidade de gerar um código intermediário a ser executado para a simulação
+         * Verificar o que vem nos termos quando se trata de um expressâo como termo de uma expressão
+         */
+        if (equation.image.operator.value === 'or') {
+          console.log('or')
+        }
+        equationTermExists(equation.image.operator, equation.image.firstTerm, equation.image.secondTerm, null, variables, opns)
+      } else {
+        equationTermExists(equation.image.firstTerm, null, null, equation.image.firstTermArguments, variables, opns)
+      }
     })
-  }
-
-  function checkComputedEquationValid (equationGroup, variables) {
-
   }
 
   function startSemanticAnalysis () {
@@ -230,7 +246,6 @@ function LotosSemantic (syntaticTree) {
         if (type.eqns && type.eqns.equationGroups) {
           type.eqns.equationGroups.forEach(equationGroup => {
             checkEquationTermsExists(equationGroup, type.eqns.variables, type.opns)
-            checkComputedEquationValid(equationGroup)
           })
         }
       })
