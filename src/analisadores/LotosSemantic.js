@@ -140,15 +140,15 @@ function LotosSemantic (syntaticTree) {
             }
           } else {
             operation = type.opns.find(op => {
-              return op.operand.value === equation.domain.firstTerm.value
+              return op.operand.value === equation.domain.firstTerm.token.value
             })
             if (!operation) {
-              errors.push(new SemanticExpection(`Operation not found "${equation.domain.firstTerm.value}"`, equation.domain.firstTerm))
+              errors.push(new SemanticExpection(`Operation not found "${equation.domain.firstTerm.token.value}"`, equation.domain.firstTerm.token))
             }
             if (operation) {
               if (operation.codomain.value !== equationGroup.ofsort.value) {
                 // console.log(operation)
-                errors.push(new SemanticExpection(`Operator results in a sort "${operation.codomain.value}" and must result in "${equationGroup.ofsort.value}"`, equation.domain.firstTerm))
+                errors.push(new SemanticExpection(`Operator results in a sort "${operation.codomain.value}" and must result in "${equationGroup.ofsort.value}"`, equation.domain.firstTerm.token))
               }
             }
           }
@@ -183,49 +183,55 @@ function LotosSemantic (syntaticTree) {
     })
   }
 
-  function equationTermExists (term, opFirstTerm, opSecondTerm, args, variables, opns) {
-    let variable = termInVariables(term, variables)
-    let operation = termInOpns(term, opns)
-    if (!variable && !operation) {
-      // console.log('variables', variables)
-      errors.push(new SemanticExpection(`Unknown term "${term.value}"`, term))
-    }
-    if (operation && args && args.length) {
-      if (operation.domain.length !== args.length) {
-        errors.push(new SemanticExpection(`Operation "${term.value}", expect ${operation.domain.length} arguments and got ${args.length}.`, term))
+  function equationTermExists (token, operator, firstTerm, secondTerm, variables, opns) {
+    if (token) {
+      let variable = termInVariables(token, variables)
+      let operation = termInOpns(token, opns)
+
+      if (!variable && !operation) {
+        // console.log('variables', variables)
+        errors.push(new SemanticExpection(`Unknown term "${token.value}"`, token))
       }
-      args.forEach(arg => {
-        equationTermExists(arg.firstTerm, null, null, null, variables, opns)
-      })
-    }
-    if (operation && opFirstTerm) {
-      equationTermExists(opFirstTerm, null, null, null, variables, opns)
-    }
-    if (operation && opSecondTerm) {
-      equationTermExists(opSecondTerm, null, null, null, variables, opns)
+    } else if (operator) {
+      let operation = termInOpns(operator, opns)
+
+      if (!operation) {
+        // console.log('variables', variables)
+        errors.push(new SemanticExpection(`Unknown term "${operator.value}"`, operator))
+      }
+
+      if (operation && firstTerm) {
+        equationTermExists(null, null, firstTerm, null, variables, opns)
+      }
+      if (operation && secondTerm) {
+        equationTermExists(null, null, secondTerm, null, variables, opns)
+      }
+    } else if (firstTerm.token) {
+      let variable = termInVariables(firstTerm.token, variables)
+      let operation = termInOpns(firstTerm.token, opns)
+
+      if (!variable && !operation) {
+        // console.log('variables', variables)
+        errors.push(new SemanticExpection(`Unknown term "${firstTerm.token.value}"`, firstTerm.token))
+      }
+
+      if (operation && firstTerm.arguments && firstTerm.arguments.length) {
+        if (operation.domain.length !== firstTerm.arguments.length) {
+          errors.push(new SemanticExpection(`Operation "${firstTerm.token.value}", expect ${operation.domain.length} arguments and got ${firstTerm.arguments.length}.`, firstTerm.token))
+        }
+        firstTerm.arguments.forEach(arg => {
+          equationTermExists(null, arg.operator, arg.firstTerm, arg.secondTerm, variables, opns)
+        })
+      }
+    } else {
+      equationTermExists(null, firstTerm.operator, firstTerm.firstTerm, firstTerm.secondTerm, variables, opns)
     }
   }
 
   function checkEquationTermsExists (equationGroup, variables, opns) {
     equationGroup.equationExpressions.forEach(equation => {
-      if (equation.domain.operator) {
-        equationTermExists(equation.domain.operator, equation.domain.firstTerm, equation.domain.secondTerm, null, variables, opns)
-      } else {
-        equationTermExists(equation.domain.firstTerm, null, null, equation.domain.firstTermArguments, variables, opns)
-      }
-      if (equation.image.operator) {
-        /**
-         * Verificar quando a expressão é um parenteses e pegar o conteudo interno.
-         * Pensar na possibilidade de gerar um código intermediário a ser executado para a simulação
-         * Verificar o que vem nos termos quando se trata de um expressâo como termo de uma expressão
-         */
-        if (equation.image.operator.value === 'or') {
-          console.log('or')
-        }
-        equationTermExists(equation.image.operator, equation.image.firstTerm, equation.image.secondTerm, null, variables, opns)
-      } else {
-        equationTermExists(equation.image.firstTerm, null, null, equation.image.firstTermArguments, variables, opns)
-      }
+      equationTermExists(null, equation.domain.operator, equation.domain.firstTerm, equation.domain.secondTerm, variables, opns)
+      equationTermExists(null, equation.image.operator, equation.image.firstTerm, equation.image.secondTerm, variables, opns)
     })
   }
 

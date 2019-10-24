@@ -425,12 +425,14 @@ function LotosSyntatic (lexer) {
         return false
       }
 
-      expression.firstTerm = actualToken
+      expression.firstTerm = {
+        token: actualToken
+      }
 
       nextToken()
 
       if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
-        expression.firstTermArguments = evaluateExpressionList()
+        expression.firstTerm.arguments = evaluateExpressionList()
 
         if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
           errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
@@ -461,12 +463,14 @@ function LotosSyntatic (lexer) {
           return false
         }
 
-        expression.secondTerm = actualToken
+        expression.secondTerm = {
+          token: actualToken
+        }
 
         nextToken()
 
         if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
-          expression.firstTermArguments = evaluateExpressionList()
+          expression.secondTerm.arguments = evaluateExpressionList()
 
           if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
             errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
