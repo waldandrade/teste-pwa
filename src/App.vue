@@ -1,71 +1,7 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer
-        :value="explore"
-        clipped
-        stateless
-        disable-resize-watcher
-        fixed
-        app
-        right
-      >
-      <v-toolbar
-        color="primary"
-        dark
-        clipped-right
-      >
-        <v-spacer></v-spacer>
-        <v-btn icon large>
-          <v-avatar size="32px" tile>
-            <img
-              :src="require('@/assets/lotus.svg')"
-              alt="Vuetify"
-            >
-          </v-avatar>
-        </v-btn>
-      </v-toolbar>
-      <v-list>
-
-        <v-list-group
-          prepend-icon="account_circle"
-          value="true"
-        >
-          <template v-slot:activator>
-            <v-list-tile>
-              <v-list-tile-title>Projetos</v-list-tile-title>
-            </v-list-tile>
-          </template>
-          <v-list-group
-            no-action
-            sub-group
-            value="true"
-          >
-            <template v-slot:activator>
-              <v-list-tile>
-                <v-list-tile-title>Geral</v-list-tile-title>
-                <v-dialog width="300" lazy>
-                  <v-btn slot="activator" flat left icon color="pink">
-                    <v-icon>cloud_upload</v-icon>
-                  </v-btn>
-                  <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" v-on:vdropzone-sending="sendingEvent"></vue-dropzone>
-                </v-dialog>
-              </v-list-tile>
-            </template>
-
-            <v-list-tile
-              v-for="(specification, i) in specifications"
-              :key="i"
-              @click="execute('openSpecification', i)"
-            >
-              <v-list-tile-title v-text="specification.name"></v-list-tile-title>
-            </v-list-tile>
-          </v-list-group>
-        </v-list-group>
-      </v-list>
-     </v-navigation-drawer>
-    <v-navigation-drawer
       :value="mini"
-      mini-variant
       dark
       mini-variant-width="45"
       disable-resize-watcher
@@ -75,13 +11,69 @@
       class="jlotos-navigation"
     >
       <v-list dense>
+
+        <v-toolbar
+          color="transparent"
+          dark
+          clipped-left
+        >
+          <v-toolbar-title class="white--text">Formal Code</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon large>
+            <v-avatar size="32px" tile>
+              <img
+                :src="require('@/assets/lotus.svg')"
+                alt="Vuetify"
+              >
+            </v-avatar>
+          </v-btn>
+        </v-toolbar>
+        <v-list>
+          <v-list-group
+            value="true"
+          >
+            <template v-slot:activator>
+              <v-list-tile>
+                <v-list-tile-title>Projetos</v-list-tile-title>
+              </v-list-tile>
+            </template>
+            <v-list-group
+              no-action
+              sub-group
+              value="true"
+            >
+              <template v-slot:activator>
+                <v-list-tile exact>
+                  <v-list-tile-title>Geral</v-list-tile-title>
+                  <v-dialog width="300" lazy>
+                    <v-btn slot="activator" flat icon color="pink">
+                      <v-icon>cloud_upload</v-icon>
+                    </v-btn>
+                    <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" v-on:vdropzone-sending="sendingEvent"></vue-dropzone>
+                  </v-dialog>
+                </v-list-tile>
+              </template>
+
+              <template v-for="(specification, i) in specifications">
+                <v-list-tile
+                  :key="i"
+                  @click="execute('openSpecification', i)"
+                >
+                  <v-list-tile-title v-text="specification.name"></v-list-tile-title>
+                </v-list-tile>
+              </template>
+            </v-list-group>
+          </v-list-group>
+        </v-list>
         <template v-for="(item, index) in items">
-          <v-list-tile @click="execute(item.action, !explore)" :key="item.text">
+          <v-list-tile @click="execute(item.action)" :key="item.text">
+            <v-list-tile-title>
+              {{item.text}}
+            </v-list-tile-title>
             <v-list-tile-action>
               <v-icon small>{{ item.icon }}</v-icon>
             </v-list-tile-action>
           </v-list-tile>
-          <v-divider v-if="item.divider" :key="`divider-${index}`"></v-divider>
         </template>
       </v-list>
     </v-navigation-drawer>
@@ -105,14 +97,6 @@ export default {
   data: () => ({
     dialog: false,
     items: [
-      { icon: 'contacts', text: 'Contacts', action: 'toggleExplore' },
-      { icon: 'history', text: 'Frequently contacted', action: 'toggleExplore' },
-      { icon: 'content_copy', text: 'Duplicates', action: 'toggleExplore' },
-      { icon: 'settings', text: 'Settings', action: 'toggleExplore' },
-      { icon: 'chat_bubble', text: 'Send feedback', action: 'toggleExplore' },
-      { icon: 'help', text: 'Help', action: 'toggleExplore' },
-      { icon: 'phonelink', text: 'App downloads', action: 'toggleExplore' },
-      { divider: true, icon: 'keyboard', text: 'Go to the old version', action: 'toggleExplore' },
       { icon: 'exit_to_app', text: 'Sair do App', action: 'exitToApp' }
     ],
     dropzoneOptions: {
@@ -184,7 +168,15 @@ export default {
   background-color: #0C1021
 }
 
-.v-navigation-drawer.jlotos-navigation > .v-list .v-list__tile {
-  padding: 0;
+.v-navigation-drawer.jlotos-navigation .v-list__group__header .v-list__group__header__prepend-icon{
+  width: 50px;
+  min-width: 50px;
+  margin-right: 0;
+  padding: 0 16px;
 }
+
+.v-navigation-drawer.jlotos-navigation  .v-list__group__items--no-action .v-list__tile {
+  padding-left: 50px;
+}
+
 </style>

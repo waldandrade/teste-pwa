@@ -12,7 +12,6 @@ export default new Vuex.Store({
     selectedFile: null,
     specifications: [],
     openedSpecifications: [],
-    projects: [],
     libs: [],
     explore: false,
     user: {},
@@ -76,6 +75,9 @@ export default new Vuex.Store({
     },
     closeSpecification (state, index) {
       state.openedSpecifications.splice(index, 1)
+    },
+    closeAllSpecification (state) {
+      state.openedSpecifications = []
     },
     setSelectedFile (state, selectFile) {
       state.selectedFile = selectFile
@@ -237,6 +239,16 @@ export default new Vuex.Store({
             console.log(error)
           }
         )
+    },
+    exitToApp ({ commit }) {
+      firebase.auth().signOut()
+      commit('setLoading', true)
+      commit('setUser', null)
+      commit('setAuthHeader', null)
+      commit('setSelectedFile', null)
+      commit('setSpecifications', [])
+      commit('closeAllSpecification', [])
+      // commit('libs', [])
     },
     userChanged ({ commit }, payload) {
       const user = payload
