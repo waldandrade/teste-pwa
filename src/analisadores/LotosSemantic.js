@@ -134,7 +134,6 @@ function LotosSemantic (syntaticTree) {
             }
             if (operation) {
               if (operation.codomain.value !== equationGroup.ofsort.value) {
-                // console.log(operation)
                 errors.push(new SemanticExpection(`Operator results in a sort "${operation.codomain.value}" and must result in "${equationGroup.ofsort.value}"`, equation.domain.operator))
               }
             }
@@ -147,7 +146,6 @@ function LotosSemantic (syntaticTree) {
             }
             if (operation) {
               if (operation.codomain.value !== equationGroup.ofsort.value) {
-                // console.log(operation)
                 errors.push(new SemanticExpection(`Operator results in a sort "${operation.codomain.value}" and must result in "${equationGroup.ofsort.value}"`, equation.domain.firstTerm.token))
               }
             }
@@ -189,14 +187,12 @@ function LotosSemantic (syntaticTree) {
       let operation = termInOpns(token, opns)
 
       if (!variable && !operation) {
-        // console.log('variables', variables)
         errors.push(new SemanticExpection(`Unknown term "${token.value}"`, token))
       }
     } else if (operator) {
       let operation = termInOpns(operator, opns)
 
       if (!operation) {
-        // console.log('variables', variables)
         errors.push(new SemanticExpection(`Unknown term "${operator.value}"`, operator))
       }
 
@@ -211,7 +207,6 @@ function LotosSemantic (syntaticTree) {
       let operation = termInOpns(firstTerm.token, opns)
 
       if (!variable && !operation) {
-        // console.log('variables', variables)
         errors.push(new SemanticExpection(`Unknown term "${firstTerm.token.value}"`, firstTerm.token))
       }
 
