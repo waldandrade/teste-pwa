@@ -37,11 +37,9 @@
                   <div>
                     <v-layout v-if="$vuetify.breakpoint.mdAndDown" row class="pt-4">
                       <v-btn @click="() => {$router.push('editor')}" small color="#FF6400" dark round>Entrar no editor</v-btn>
-                      <v-btn small color="secondary" round>Cadastre-se</v-btn>
                     </v-layout>
                     <v-layout v-else row class="pt-4">
                       <v-btn @click="() => {$router.push('editor')}" large color="#FF6400" dark round>Entrar no editor</v-btn>
-                      <v-btn large color="secondary" round>Cadastre-se</v-btn>
                     </v-layout>
                   </div>
                 </v-layout>
