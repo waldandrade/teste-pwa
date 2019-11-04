@@ -1,6 +1,8 @@
 'use strict'
 
 const BINARY_OPERATION = 'BINARY_OPERATION'
+const OP_PROCESS_INSTANTIATION = 'OP_PROCESS_INSTANTIATION'
+const OP_ACTION_PREFIX = 'OP_ACTION_PREFIX'
 
 function SemanticExpection (message, token) {
   this.reason = message
@@ -230,6 +232,75 @@ function LotosSemantic (syntaticTree) {
     })
   }
 
+  function checkBehaviours (behaviour, processList, visibleGates, hidingGates, operand, functionality) {
+    // console.log('------ START --------')
+    console.log('BEHAVIOUR - ', processList)
+    // console.log('OPERATOR -', behaviour.operand)
+    // console.log('GATES', gates)
+    // console.log('------ END --------')
+    // console.log('')
+
+    if (behaviour.identifier) {
+      var found = null
+      var helper = 'Term'
+      if (behaviour.operand === OP_PROCESS_INSTANTIATION) {
+        helper = 'Process'
+        found = processList.find(process => {
+          return process.title.value === behaviour.identifier.value
+        })
+
+        behaviour.parsingGates.forEach(pGate => {
+          var searchGate = visibleGates.find(gate => {
+            return gate.value === pGate.value
+          })
+
+          if (!searchGate && hidingGates.length) {
+            searchGate = hidingGates.find(gate => {
+              return gate.value === pGate.value
+            })
+          }
+
+          if (!searchGate) {
+            errors.push(new SemanticExpection(`Unknown Parsing Action Gate "${pGate.value}"`, pGate))
+          }
+        })
+
+        if (found) {
+          if (found.visibleGateList && found.visibleGateList.length && behaviour.parsingGates.length !== found.visibleGateList.length) {
+            errors.push(new SemanticExpection(`Process "${behaviour.identifier.value}", expect ${found.visibleGateList.length} Action Gates and got ${behaviour.parsingGates.length}.`, behaviour.identifier))
+          }
+        }
+      } else if (behaviour.operand === OP_ACTION_PREFIX) {
+        helper = 'Action Gate'
+        found = visibleGates.find(gate => {
+          return gate.value === behaviour.identifier.value
+        })
+
+        if (!found && hidingGates.length) {
+          found = hidingGates.find(gate => {
+            return gate.value === behaviour.identifier.value
+          })
+        }
+      }
+
+      if (!found) {
+        errors.push(new SemanticExpection(`Unknown ${helper} "${behaviour.identifier.value}"`, behaviour.identifier))
+      }
+    }
+
+    if (behaviour.leftBehaviour) {
+      checkBehaviours(behaviour.leftBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality)
+    }
+    if (behaviour.rightBehaviour) {
+      checkBehaviours(behaviour.rightBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality)
+    }
+  }
+
+  function checkSpecification (syntaticTree) {
+    console.log(syntaticTree)
+    checkBehaviours(syntaticTree.bahaviour, syntaticTree.processList || [], syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [], null, syntaticTree.functionality)
+  }
+
   function startSemanticAnalysis () {
     if (syntaticTree.types) {
       duplicatedTypes(syntaticTree.types)
@@ -251,6 +322,7 @@ function LotosSemantic (syntaticTree) {
         }
       })
     }
+    checkSpecification(syntaticTree)
   }
 
   return {

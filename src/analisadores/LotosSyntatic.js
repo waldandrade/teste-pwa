@@ -18,8 +18,6 @@ const BEHAVIOUR_OPERATION = 'BEHAVIOUR_OPERATION'
 const ID = 'id'
 
 const SPECIAL_CHARACTER = 'SPECIAL_CHARACTER'
-
-const OP_PARENTHESIS = 'OP_PARENTHESIS'
 const OP_PROCESS_INSTANTIATION = 'OP_PROCESS_INSTANTIATION'
 const OP_OPERATION = 'OP_OPERATION'
 const OP_PALALLELISM = 'OP_PALALLELISM'
@@ -168,9 +166,7 @@ function LotosSyntatic (lexer) {
   function behaviour (expression) {
     if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
       nextToken()
-      expression.operand = OP_PARENTHESIS
-
-      expression.rightBehaviour = behaviour(new Behaviour())
+      expression = behaviour(new Behaviour())
 
       if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
         errors.push(new SyntaticExpection(`Need a ")" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
@@ -266,7 +262,7 @@ function LotosSyntatic (lexer) {
     if (actualToken.isA(BEHAVIOUR_OPERATION)) {
       let operationalExpression = new Behaviour()
       if (actualToken.isA(BEHAVIOUR_OPERATION, '|[') || actualToken.isA(BEHAVIOUR_OPERATION, '|||') || actualToken.isA(BEHAVIOUR_OPERATION, '||')) {
-        operationalExpression.operator = OP_PALALLELISM
+        operationalExpression.operand = OP_PALALLELISM
         if (actualToken.isA(BEHAVIOUR_OPERATION, '|[')) {
           operationalExpression.parsingGates = identifierList()
           if (!actualToken.isA(BEHAVIOUR_OPERATION, ']|')) {
