@@ -232,9 +232,8 @@ function LotosSemantic (syntaticTree) {
     })
   }
 
-  function checkBehaviours (behaviour, processList, visibleGates, hidingGates, operand, functionality) {
+  function checkBehaviours (behaviour, processList, visibleGates, hidingGates, operand, functionality, sorts, renamedSorts) {
     // console.log('------ START --------')
-    console.log('BEHAVIOUR - ', processList)
     // console.log('OPERATOR -', behaviour.operand)
     // console.log('GATES', gates)
     // console.log('------ END --------')
@@ -244,6 +243,7 @@ function LotosSemantic (syntaticTree) {
       var found = null
       var helper = 'Term'
       if (behaviour.operand === OP_PROCESS_INSTANTIATION) {
+        console.log('BEHAVIOUR - ', behaviour)
         helper = 'Process'
         found = processList.find(process => {
           return process.title.value === behaviour.identifier.value
@@ -270,6 +270,17 @@ function LotosSemantic (syntaticTree) {
             errors.push(new SemanticExpection(`Process "${behaviour.identifier.value}", expect ${found.visibleGateList.length} Action Gates and got ${behaviour.parsingGates.length}.`, behaviour.identifier))
           }
         }
+
+        if (behaviour.values && behaviour.values.length) {
+          // behaviour.values.forEach(value => {
+          //   var found = type.sortList.find(sort => {
+          //     return sort.id.value === opns.codomain.value
+          //   })
+          //   if (!found) {
+          //     errors.push(new SemanticExpection(`Sort not found "${opns.codomain.value}"`, opns.codomain))
+          //   }
+          // })
+        }
       } else if (behaviour.operand === OP_ACTION_PREFIX) {
         helper = 'Action Gate'
         found = visibleGates.find(gate => {
@@ -289,16 +300,16 @@ function LotosSemantic (syntaticTree) {
     }
 
     if (behaviour.leftBehaviour) {
-      checkBehaviours(behaviour.leftBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality)
+      checkBehaviours(behaviour.leftBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality, sorts, renamedSorts)
     }
     if (behaviour.rightBehaviour) {
-      checkBehaviours(behaviour.rightBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality)
+      checkBehaviours(behaviour.rightBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality, sorts, renamedSorts)
     }
   }
 
   function checkSpecification (syntaticTree) {
     console.log(syntaticTree)
-    checkBehaviours(syntaticTree.bahaviour, syntaticTree.processList || [], syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [], null, syntaticTree.functionality)
+    checkBehaviours(syntaticTree.bahaviour, syntaticTree.processList || [], syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [], null, syntaticTree.functionality, syntaticTree.sorts, syntaticTree.renamedSorts)
   }
 
   function startSemanticAnalysis () {

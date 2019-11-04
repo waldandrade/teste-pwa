@@ -65,7 +65,7 @@
             </v-list-group>
           </v-list-group>
         </v-list>
-        <template v-for="(item, index) in items">
+        <template v-for="item in items">
           <v-list-tile @click="execute(item.action)" :key="item.text">
             <v-list-tile-title>
               {{item.text}}

@@ -137,12 +137,15 @@ function LotosSyntatic (lexer) {
 
     while (true) {
       // Definindo as expressões que formam a equação, no nível maior '0'
-      let value = evaluateExpression(0)
+      let value = {
+        data: evaluateExpression(0)
+      }
 
       if (!value) {
         break
       }
 
+      /* Atualmente está passando uma expressão */
       if (actualToken.isA(RESERVED_WORD, 'of')) {
         nextToken()
 
@@ -150,6 +153,9 @@ function LotosSyntatic (lexer) {
           errors.push(new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
           break
         }
+
+        value.type = actualToken
+
         nextToken()
       }
 
@@ -610,45 +616,46 @@ function LotosSyntatic (lexer) {
       nextToken()
 
       renamedOperations.unshift(renamedOperation)
+      if (!typeDefinition.opns) {
+        typeDefinition.opns = []
+      }
+
+      typeDefinition.opns.push(renamedOperation)
     }
   }
 
-  function renameSortsList (renamedSorts, typeDefinition) {
-    while (true) {
-      let renamedSort = {
-        sort: {},
-        source: {}
-      }
-
-      if (!actualToken.isA(ID)) {
-        if (!renamedSorts.length) {
-          errors.push(new SyntaticExpection(`Renamed sort needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-          return false
-        } else {
-          break
-        }
-      }
-
-      renamedSort.sort = actualToken
-
-      nextToken()
-
-      if (!actualToken.isA(RESERVED_WORD, 'for')) {
-        errors.push(new SyntaticExpection(`Expected 'for' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
-      }
-
-      nextToken()
-
-      if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
-        errors.push(new SyntaticExpection(`Sorts definition source needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
-      }
-
-      nextToken()
-
-      renamedSorts.unshift(renamedSort)
+  function renameSortsList (sorts, typeDefinition) {
+    let renamedSort = {
+      id: {}
     }
+
+    if (!actualToken.isA(ID)) {
+      errors.push(new SyntaticExpection(`Renamed sort needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+      return false
+    }
+
+    renamedSort.id = actualToken
+
+    nextToken()
+
+    if (!actualToken.isA(RESERVED_WORD, 'for')) {
+      errors.push(new SyntaticExpection(`Expected 'for' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+      return false
+    }
+
+    nextToken()
+
+    if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
+      errors.push(new SyntaticExpection(`Sorts definition source needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+      return false
+    }
+
+    renamedSort.renames = actualToken
+
+    nextToken()
+
+    sorts.unshift(renamedSort)
+    typeDefinition.sort = renamedSort
   }
 
   /*
@@ -900,21 +907,21 @@ function LotosSyntatic (lexer) {
 
   function typeRenamingFunctions (scope, typeDefinition) {
     if (actualToken.isA(RESERVED_WORD, 'sortnames')) {
-      if (!scope.renamedSorts) {
-        scope.renamedSorts = []
+      if (!scope.sorts) {
+        scope.sorts = []
       }
 
       nextToken()
-      renameSortsList(scope.renamedSorts, typeDefinition)
+      renameSortsList(scope.sorts, typeDefinition)
     }
 
     if (actualToken.isA(RESERVED_WORD, 'opnnames')) {
-      if (!scope.renamedOperations) {
-        scope.renamedOperations = []
+      if (!scope.operationList) {
+        scope.operationList = []
       }
 
       nextToken()
-      renameOperationsList(scope.renamedOperations, typeDefinition)
+      renameOperationsList(scope.operationList, typeDefinition)
     }
 
     return true
