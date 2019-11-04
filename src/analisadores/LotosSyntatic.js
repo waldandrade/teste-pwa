@@ -149,12 +149,12 @@ function LotosSyntatic (lexer) {
       if (actualToken.isA(RESERVED_WORD, 'of')) {
         nextToken()
 
-        if (!actualToken.isA(ID)) {
+        if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
           errors.push(new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
           break
         }
 
-        value.type = actualToken
+        value.sort = actualToken
 
         nextToken()
       }
