@@ -177,6 +177,26 @@ function LotosSemantic (syntaticTree) {
     })
   }
 
+  function valueExists (value, type) {
+    if (type && type.opns && type.opns.length) {
+      var found = type.opns.find(opns => {
+        return opns.operand.value === value
+      })
+      if (found) {
+        return found
+      }
+    }
+    if (type && type.extendedTypes && type.extendedTypes.length) {
+      type.extendedTypes.forEach(element => {
+        var extendedType = syntaticTree.types.find(otherTypes => {
+          return otherTypes.title.value === element.value
+        })
+        return valueExists(value, extendedType)
+      })
+    }
+    return null
+  }
+
   function termInOpns (term, opns) {
     return opns.find(oper => {
       return oper.operand.value === term.value
@@ -290,6 +310,15 @@ function LotosSemantic (syntaticTree) {
             if (valueFound && found.parameters && found.parameters[index]) {
               if (value.sort.value !== found.parameters[index].dominio.value) {
                 errors.push(new SemanticExpection(`Process "${behaviour.identifier.value}" expects a sort "${found.parameters[index].dominio.value}" at "${index + 1}" position, and got "${value.sort.value}"`, value.sort))
+              }
+            }
+
+            console.log(value)
+
+            if (valueFound) {
+              var valueToken = value.data.operator || value.data.firstTerm.token
+              if (!valueExists(valueToken.value, valueFound.type)) {
+                errors.push(new SemanticExpection(`The value "${valueToken.value}" dont exists in sort "${value.sort.value}"`, value.sort))
               }
             }
           })
