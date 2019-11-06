@@ -203,15 +203,8 @@ function LotosSemantic (syntaticTree) {
     })
   }
 
-  function equationTermExists (token, operator, firstTerm, secondTerm, variables, opns) {
-    if (token) {
-      let variable = termInVariables(token, variables)
-      let operation = termInOpns(token, opns)
-
-      if (!variable && !operation) {
-        errors.push(new SemanticExpection(`Unknown term "${token.value}"`, token))
-      }
-    } else if (operator) {
+  function equationTermExists (operator, firstTerm, secondTerm, variables, opns) {
+    if (operator) {
       let operation = termInOpns(operator, opns)
 
       if (!operation) {
@@ -219,10 +212,10 @@ function LotosSemantic (syntaticTree) {
       }
 
       if (operation && firstTerm) {
-        equationTermExists(null, null, firstTerm, null, variables, opns)
+        equationTermExists(null, firstTerm, null, variables, opns)
       }
       if (operation && secondTerm) {
-        equationTermExists(null, null, secondTerm, null, variables, opns)
+        equationTermExists(null, secondTerm, null, variables, opns)
       }
     } else if (firstTerm.token) {
       let variable = termInVariables(firstTerm.token, variables)
@@ -237,33 +230,107 @@ function LotosSemantic (syntaticTree) {
           errors.push(new SemanticExpection(`Operation "${firstTerm.token.value}", expect ${operation.domain.length} arguments and got ${firstTerm.arguments.length}.`, firstTerm.token))
         }
         firstTerm.arguments.forEach(arg => {
-          equationTermExists(null, arg.operator, arg.firstTerm, arg.secondTerm, variables, opns)
+          equationTermExists(arg.operator, arg.firstTerm, arg.secondTerm, variables, opns)
         })
       }
     } else {
-      equationTermExists(null, firstTerm.operator, firstTerm.firstTerm, firstTerm.secondTerm, variables, opns)
+      equationTermExists(firstTerm.operator, firstTerm.firstTerm, firstTerm.secondTerm, variables, opns)
     }
   }
 
   function checkEquationTermsExists (equationGroup, variables, opns) {
     equationGroup.equationExpressions.forEach(equation => {
-      equationTermExists(null, equation.domain.operator, equation.domain.firstTerm, equation.domain.secondTerm, variables, opns)
-      equationTermExists(null, equation.image.operator, equation.image.firstTerm, equation.image.secondTerm, variables, opns)
+      equationTermExists(equation.domain.operator, equation.domain.firstTerm, equation.domain.secondTerm, variables, opns)
+      equationTermExists(equation.image.operator, equation.image.firstTerm, equation.image.secondTerm, variables, opns)
     })
   }
 
-  function checkBehaviours (behaviour, processList, visibleGates, hidingGates, operand, functionality, sorts) {
-    // console.log('------ START --------')
-    // console.log('OPERATOR -', behaviour.operand)
-    // console.log('GATES', gates)
-    // console.log('------ END --------')
-    // console.log('')
+  function extractSortsFromOperator (operator, firstTerm, opnsList) {
+    return opnsList.filter(opns => {
+      return opns.operand.value === (operator ? operator.value : firstTerm.token.value)
+    })
+  }
 
+  function checkTermValue (term, operatorDad, domain, position, expressionErrors) {
+    let termSort = syntaticTree.sorts.find(sort =>
+      sort.id.value === domain[position].value
+    )
+    var termToken = term.operator || term.token
+    let foundTerm = syntaticTree.operationList.find(opnsArg => {
+      return opnsArg.operand.value === termToken.value && opnsArg.codomain.value === termSort.id.value
+    })
+    if (!foundTerm) {
+      expressionErrors.push(new SemanticExpection(`Value ${termToken.value} was not accepted by operation "${operatorDad.value}", that expect a ${termSort.id.value} at position ${position + 1}.`, termToken))
+      return false
+    } else if (term.operator) {
+      return evaluateExpression(term.operator, term.firstTerm, term.secondTerm, foundTerm.domain, termSort.type, expressionErrors)
+    } else if (term.arguments) {
+      if (term.arguments.length !== foundTerm.domain.length) {
+        errors.push(new SemanticExpection(`Operation "${term.token.value}", expect ${foundTerm.domain.length} arguments and got ${term.arguments.length}.`, term.token))
+      }
+      let errorInArgs = false
+      term.arguments.forEach((arg, index) => {
+        var argToken = arg.operator || arg.firstTerm.token
+        let foundArg = syntaticTree.operationList.find(opnsArg => {
+          return opnsArg.operand.value === argToken.value && opnsArg.codomain.value === foundTerm.domain[index].value
+        })
+        if (!foundArg) {
+          errors.push(new SemanticExpection(`Argument ${argToken.value} not found with the sort "${foundTerm.domain[index].value}".`, argToken))
+          errorInArgs = true
+        } else {
+          let argCheck = evaluateExpression(arg.operator, arg.firstTerm, arg.secondTerm, foundArg.domain, termSort.type, expressionErrors)
+          if (!argCheck) {
+            errorInArgs = true
+          }
+        }
+      })
+      return !errorInArgs
+    }
+  }
+
+  function evaluateExpression (operator, firstTerm, secondTerm, domain, typeDefinition, expressionErrors) {
+    let hasError = false
+    if (operator) {
+      var foundFirstTerm = checkTermValue(firstTerm, operator, domain, 0, expressionErrors)
+      if (!foundFirstTerm) hasError = true
+
+      var foundSecondTerm = checkTermValue(secondTerm, operator, domain, 1, expressionErrors)
+      if (!foundSecondTerm) hasError = true
+    } else {
+      let argLengh = firstTerm.arguments ? firstTerm.arguments.length : 0
+      if (argLengh !== domain.length) {
+        expressionErrors.push(new SemanticExpection(`Operation "${firstTerm.token.value}", expect ${domain.length} arguments and got ${argLengh}.`, firstTerm.token))
+        return false
+      }
+      if (argLengh > 0) {
+        firstTerm.arguments.forEach((arg, index) => {
+          let argSort = syntaticTree.sorts.find(sort =>
+            sort.id.value === domain[index].value
+          )
+          var argToken = arg.operator || arg.firstTerm.token
+          let foundArg = argSort.type.opns.find(opnsArg => {
+            return opnsArg.operand.value === argToken.value
+          })
+          if (!foundArg) {
+            expressionErrors.push(new SemanticExpection(`Value ${argToken.value} was not accepted by operation "${firstTerm.token.value}", that expect a ${argSort.id.value} type argument at ${index + 1} position.`, argToken))
+            hasError = true
+            return
+          }
+          var argValue = evaluateExpression(arg.operator, arg.firstTerm, arg.secondTerm, foundArg.domain, argSort.type, expressionErrors)
+          if (!argValue) {
+            hasError = true
+          }
+        })
+      }
+    }
+    return !hasError
+  }
+
+  function checkBehaviours (behaviour, processList, visibleGates, hidingGates, operand, functionality, sorts) {
     if (behaviour.identifier) {
       var found = null
       var helper = 'Term'
       if (behaviour.operand === OP_PROCESS_INSTANTIATION) {
-        // console.log('BEHAVIOUR - ', behaviour)
         helper = 'Process'
         found = processList.find(process => {
           return process.title.value === behaviour.identifier.value
@@ -313,8 +380,6 @@ function LotosSemantic (syntaticTree) {
               }
             }
 
-            console.log(value)
-
             if (valueFound) {
               var valueToken = value.data.operator || value.data.firstTerm.token
               if (!valueExists(valueToken.value, valueFound.type)) {
@@ -334,6 +399,39 @@ function LotosSemantic (syntaticTree) {
             return gate.value === behaviour.identifier.value
           })
         }
+
+        if (behaviour.parameters && behaviour.parameters.length > 0) {
+          behaviour.parameters.forEach(parameter => {
+            // equationTermExists(parameter.operator, parameter.firstTerm, parameter.secondTerm, null, syntaticTree.operationList)
+            var opnsReferences = extractSortsFromOperator(parameter.operator, parameter.firstTerm, syntaticTree.operationList)
+            /**
+             * Encontro as referências de operação possível
+             */
+            if (!opnsReferences || !opnsReferences.length) {
+              var parameterToken = parameter.operator || parameter.firstTerm.token
+              errors.push(new SemanticExpection(`The value "${parameterToken.value}" was not recognized in any sort`, parameterToken))
+            } else {
+            /**
+             * Precisa criar uma função que faz o evaluate do valor para cada uma das operações encontradas, considerando o sort dessa operação
+             */
+              parameter.opnsReferences = []
+              var expressionErrors = []
+              opnsReferences.forEach(opnsReference => {
+                var expressionValue = evaluateExpression(parameter.operator, parameter.firstTerm, parameter.secondTerm, opnsReference.domain, opnsReference.typeDefinition, expressionErrors)
+                if (expressionValue === true) {
+                  parameter.opnsReferences.push(opnsReference)
+                }
+              })
+              console.log(parameter.opnsReferences, expressionErrors)
+              if (parameter.opnsReferences.length === 0 && expressionErrors.length > 0) {
+                console.log('entrou')
+                expressionErrors.forEach(err => {
+                  errors.push(err)
+                })
+              }
+            }
+          })
+        }
       }
 
       if (!found) {
@@ -350,7 +448,6 @@ function LotosSemantic (syntaticTree) {
   }
 
   function checkSpecification (syntaticTree) {
-    console.log(syntaticTree)
     checkBehaviours(syntaticTree.bahaviour, syntaticTree.processList || [], syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [], null, syntaticTree.functionality, syntaticTree.sorts)
   }
 
