@@ -326,7 +326,10 @@ function LotosSemantic (syntaticTree) {
     return !hasError
   }
 
-  function checkBehaviours (behaviour, processList, visibleGates, hidingGates, operand, functionality, sorts) {
+  function checkBehaviours (behaviour, processList, visibleGates, hidingGates, operand, functionality, sorts, variables) {
+    if (variables) {
+      variables = variables.slice(0)
+    }
     if (behaviour.identifier) {
       var found = null
       var helper = 'Term'
@@ -363,30 +366,35 @@ function LotosSemantic (syntaticTree) {
           if (parametersSize !== valuesSize) {
             errors.push(new SemanticExpection(`Process "${found.title.value}", expect ${parametersSize} parameters and got ${valuesSize}.`, behaviour.identifier))
           }
-        }
 
-        if (behaviour.values && behaviour.values.length) {
-          behaviour.values.forEach((value, index) => {
-            var valueFound = sorts.find(sort => {
-              return sort.id.value === value.sort.value
+          if (behaviour.values && behaviour.values.length) {
+            behaviour.values.forEach((value, index) => {
+              if (value.sort) {
+                let valueFound = sorts.find(sort => {
+                  return sort.id.value === value.sort.value
+                })
+                if (!valueFound) {
+                  errors.push(new SemanticExpection(`Sort not found "${value.sort.value}"`, value.sort))
+                }
+                if (valueFound && found.parameters && found.parameters[index]) {
+                  if (value.sort.value !== found.parameters[index].dominio.value) {
+                    errors.push(new SemanticExpection(`Process "${behaviour.identifier.value}" expects a sort "${found.parameters[index].dominio.value}" at "${index + 1}" position, and got "${value.sort.value}"`, value.sort))
+                  }
+                }
+                if (valueFound) {
+                  let valueToken = value.data.operator || value.data.firstTerm.token
+                  if (!valueExists(valueToken.value, valueFound.type)) {
+                    errors.push(new SemanticExpection(`The value "${valueToken.value}" dont exists in sort "${value.sort.value}"`, value.sort))
+                  }
+                }
+              } else {
+                let valueFound = sorts.find(sort => {
+                  return sort.id.value === found.parameters[index].dominio.value
+                })
+                evaluateExpression(value.data.operator, value.data.firstTerm, value.data.secondTerm, [found.parameters[index].dominio], valueFound.typeDefinition, errors)
+              }
             })
-            if (!valueFound) {
-              errors.push(new SemanticExpection(`Sort not found "${value.sort.value}"`, value.sort))
-            }
-
-            if (valueFound && found.parameters && found.parameters[index]) {
-              if (value.sort.value !== found.parameters[index].dominio.value) {
-                errors.push(new SemanticExpection(`Process "${behaviour.identifier.value}" expects a sort "${found.parameters[index].dominio.value}" at "${index + 1}" position, and got "${value.sort.value}"`, value.sort))
-              }
-            }
-
-            if (valueFound) {
-              var valueToken = value.data.operator || value.data.firstTerm.token
-              if (!valueExists(valueToken.value, valueFound.type)) {
-                errors.push(new SemanticExpection(`The value "${valueToken.value}" dont exists in sort "${value.sort.value}"`, value.sort))
-              }
-            }
-          })
+          }
         }
       } else if (behaviour.operand === OP_ACTION_PREFIX) {
         helper = 'Action Gate'
@@ -402,32 +410,56 @@ function LotosSemantic (syntaticTree) {
 
         if (behaviour.parameters && behaviour.parameters.length > 0) {
           behaviour.parameters.forEach(parameter => {
-            // equationTermExists(parameter.operator, parameter.firstTerm, parameter.secondTerm, null, syntaticTree.operationList)
-            var opnsReferences = extractSortsFromOperator(parameter.operator, parameter.firstTerm, syntaticTree.operationList)
-            /**
-             * Encontro as referências de operação possível
-             */
-            if (!opnsReferences || !opnsReferences.length) {
-              var parameterToken = parameter.operator || parameter.firstTerm.token
-              errors.push(new SemanticExpection(`The value "${parameterToken.value}" was not recognized in any sort`, parameterToken))
-            } else {
-            /**
-             * Precisa criar uma função que faz o evaluate do valor para cada uma das operações encontradas, considerando o sort dessa operação
-             */
-              parameter.opnsReferences = []
-              var expressionErrors = []
-              opnsReferences.forEach(opnsReference => {
-                var expressionValue = evaluateExpression(parameter.operator, parameter.firstTerm, parameter.secondTerm, opnsReference.domain, opnsReference.typeDefinition, expressionErrors)
-                if (expressionValue === true) {
-                  parameter.opnsReferences.push(opnsReference)
-                }
-              })
-              console.log(parameter.opnsReferences, expressionErrors)
-              if (parameter.opnsReferences.length === 0 && expressionErrors.length > 0) {
-                console.log('entrou')
-                expressionErrors.forEach(err => {
-                  errors.push(err)
+            if (parameter.imagem) {
+              /** testar se o id já existe nas variaveis */
+              if (variables) {
+                var foundInVariables = variables.find(variable => {
+                  return variable.imagem.value === parameter.imagem.value
                 })
+                if (foundInVariables) {
+                  errors.push(new SemanticExpection(`The variable "${parameter.imagem.value}" war declared before`, parameter.imagem))
+                }
+              }
+
+              /** testar se o dominio existe como sort */
+              var valueFound = syntaticTree.sorts.find(sort => {
+                return sort.id.value === parameter.dominio.value
+              })
+              if (!valueFound) {
+                errors.push(new SemanticExpection(`Sort not found "${parameter.dominio.value}"`, parameter.dominio))
+              }
+
+              /** adicionar as variaveis */
+              if (!variables) variables = []
+              variables.push(parameter)
+            } else {
+              if (!parameter.operator && !parameter.firstTerm.token) {
+                console.log('parameter', parameter)
+              }
+              var opnsReferences = extractSortsFromOperator(parameter.operator, parameter.firstTerm, syntaticTree.operationList)
+              /**
+               * Encontro as referências de operação possível
+               */
+              if (!opnsReferences || !opnsReferences.length) {
+                var parameterToken = parameter.operator || parameter.firstTerm.token
+                errors.push(new SemanticExpection(`The value "${parameterToken.value}" was not recognized in any sort`, parameterToken))
+              } else {
+              /**
+               * Precisa criar uma função que faz o evaluate do valor para cada uma das operações encontradas, considerando o sort dessa operação
+               */
+                parameter.opnsReferences = []
+                var expressionErrors = []
+                opnsReferences.forEach(opnsReference => {
+                  var expressionValue = evaluateExpression(parameter.operator, parameter.firstTerm, parameter.secondTerm, opnsReference.domain, opnsReference.typeDefinition, expressionErrors)
+                  if (expressionValue === true) {
+                    parameter.opnsReferences.push(opnsReference)
+                  }
+                })
+                if (parameter.opnsReferences.length === 0 && expressionErrors.length > 0) {
+                  expressionErrors.forEach(err => {
+                    errors.push(err)
+                  })
+                }
               }
             }
           })
@@ -440,15 +472,39 @@ function LotosSemantic (syntaticTree) {
     }
 
     if (behaviour.leftBehaviour) {
-      checkBehaviours(behaviour.leftBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality, sorts)
+      checkBehaviours(behaviour.leftBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality, sorts, variables)
     }
     if (behaviour.rightBehaviour) {
-      checkBehaviours(behaviour.rightBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality, sorts)
+      checkBehaviours(behaviour.rightBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality, sorts, variables)
+    }
+  }
+
+  function checkProcess (process) {
+    if (process.parameters && process.parameters.length) {
+      process.parameters.forEach(parameter => {
+        var valueFound = syntaticTree.sorts.find(sort => {
+          return sort.id.value === parameter.dominio.value
+        })
+        if (!valueFound) {
+          errors.push(new SemanticExpection(`Sort not found "${parameter.dominio.value}"`, parameter.dominio))
+        }
+      })
+    }
+    checkBehaviours(process.bahaviour, process.processList || [], process.visibleGateList || [], process.hidingGates || [], null, process.functionality, syntaticTree.sorts, process.parameters)
+    if (process.processList && process.processList.length > 0) {
+      process.processList.forEach(subprocess => {
+        checkProcess(subprocess)
+      })
     }
   }
 
   function checkSpecification (syntaticTree) {
     checkBehaviours(syntaticTree.bahaviour, syntaticTree.processList || [], syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [], null, syntaticTree.functionality, syntaticTree.sorts)
+    if (syntaticTree.processList && syntaticTree.processList.length > 0) {
+      syntaticTree.processList.forEach(process => {
+        checkProcess(process)
+      })
+    }
   }
 
   function startSemanticAnalysis () {
