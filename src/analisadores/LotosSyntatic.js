@@ -414,7 +414,7 @@ function LotosSyntatic (lexer) {
     level++
 
     if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
-      expression.firstTerm = evaluateExpression(level)
+      expression = evaluateExpression(level)
 
       if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
         errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))

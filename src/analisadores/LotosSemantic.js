@@ -391,7 +391,7 @@ function LotosSemantic (syntaticTree) {
                 let valueFound = sorts.find(sort => {
                   return sort.id.value === found.parameters[index].dominio.value
                 })
-                evaluateExpression(value.data.operator, value.data.firstTerm, value.data.secondTerm, [found.parameters[index].dominio], valueFound.typeDefinition, errors)
+                evaluateExpression(value.data.operator, value.data.firstTerm, value.data.secondTerm, [], valueFound.typeDefinition, errors)
               }
             })
           }
