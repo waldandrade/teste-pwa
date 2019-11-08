@@ -3,6 +3,7 @@
 const BINARY_OPERATION = 'BINARY_OPERATION'
 const OP_PROCESS_INSTANTIATION = 'OP_PROCESS_INSTANTIATION'
 const OP_ACTION_PREFIX = 'OP_ACTION_PREFIX'
+const OP_HIDING_EVENT = 'OP_HIDING_EVENT'
 
 function SemanticExpection (message, token) {
   this.reason = message
@@ -401,7 +402,40 @@ function LotosSemantic (syntaticTree) {
                 let valueFound = sorts.find(sort => {
                   return sort.id.value === found.parameters[index].dominio.value
                 })
-                evaluateExpression(value.data.operator, value.data.firstTerm, value.data.secondTerm, [], valueFound.typeDefinition, variables, errors)
+
+                let opnsReferences = extractSortsFromOperator(value.data.operator, value.data.firstTerm, syntaticTree.operationList)
+                if (!opnsReferences || !opnsReferences.length) {
+                  if (variables && variables.length && value.data.firstTerm && !value.data.firstTerm.arguments) {
+                    let variable = variables.find(v => {
+                      return v.imagem.value === value.data.firstTerm.token.value
+                    })
+                    if (!variable) {
+                      errors.push(new SemanticExpection(`The variable "${value.data.firstTerm.token.value}" was not found in behaviour context`, value.data.firstTerm.token))
+                    } else {
+                      value.opnsReferences = [variable]
+                    }
+                  } else {
+                    var parameterToken = value.operator || value.firstTerm.token
+                    errors.push(new SemanticExpection(`The value "${parameterToken.value}" was not recognized in any sort`, parameterToken))
+                  }
+                } else {
+                  /**
+                   * Precisa criar uma função que faz o evaluate do valor para cada uma das operações encontradas, considerando o sort dessa operação
+                   */
+                  value.opnsReferences = []
+                  var expressionErrors = []
+                  opnsReferences.forEach(opnsReference => {
+                    var expressionValue = evaluateExpression(value.data.operator, value.data.firstTerm, value.data.secondTerm, opnsReference.domain, opnsReference.typeDefinition, variables, expressionErrors)
+                    if (expressionValue === true) {
+                      value.opnsReferences.push(opnsReference)
+                    }
+                  })
+                  if (value.opnsReferences.length === 0 && expressionErrors.length > 0) {
+                    expressionErrors.forEach(err => {
+                      errors.push(err)
+                    })
+                  }
+                }
               }
             })
           }
@@ -443,7 +477,7 @@ function LotosSemantic (syntaticTree) {
               if (!variables) variables = []
               variables.push(parameter)
             } else {
-              var opnsReferences = extractSortsFromOperator(parameter.operator, parameter.firstTerm, syntaticTree.operationList)
+              let opnsReferences = extractSortsFromOperator(parameter.operator, parameter.firstTerm, syntaticTree.operationList)
               /**
                * Encontro as referências de operação possível
                */
@@ -484,7 +518,7 @@ function LotosSemantic (syntaticTree) {
         }
       }
 
-      if (!found) {
+      if (!found && behaviour.operand !== OP_HIDING_EVENT) {
         errors.push(new SemanticExpection(`Unknown ${helper} "${behaviour.identifier.value}"`, behaviour.identifier))
       }
     }
