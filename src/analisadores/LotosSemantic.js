@@ -415,25 +415,19 @@ function LotosSemantic (syntaticTree) {
                       value.opnsReferences = [variable]
                     }
                   } else {
-                    var parameterToken = value.operator || value.firstTerm.token
+                    let parameterToken = value.operator || value.firstTerm.token
                     errors.push(new SemanticExpection(`The value "${parameterToken.value}" was not recognized in any sort`, parameterToken))
                   }
                 } else {
-                  /**
-                   * Precisa criar uma função que faz o evaluate do valor para cada uma das operações encontradas, considerando o sort dessa operação
-                   */
-                  value.opnsReferences = []
-                  var expressionErrors = []
-                  opnsReferences.forEach(opnsReference => {
-                    var expressionValue = evaluateExpression(value.data.operator, value.data.firstTerm, value.data.secondTerm, opnsReference.domain, opnsReference.typeDefinition, variables, expressionErrors)
-                    if (expressionValue === true) {
-                      value.opnsReferences.push(opnsReference)
-                    }
+                  let foundOpnsReferencefromProcessParameters = opnsReferences.find(o => {
+                    return o.codomain.value === valueFound.id.value
                   })
-                  if (value.opnsReferences.length === 0 && expressionErrors.length > 0) {
-                    expressionErrors.forEach(err => {
-                      errors.push(err)
-                    })
+                  if (!foundOpnsReferencefromProcessParameters) {
+                    let parameterToken = value.operator || value.firstTerm.token
+                    errors.push(new SemanticExpection(`The value "${parameterToken.value}" was not recognized in "${valueFound.id.value}" sort`, parameterToken))
+                  } else {
+                    evaluateExpression(value.data.operator, value.data.firstTerm, value.data.secondTerm, foundOpnsReferencefromProcessParameters.domain, foundOpnsReferencefromProcessParameters.typeDefinition, variables, errors)
+                    value.opnsReferences = [foundOpnsReferencefromProcessParameters]
                   }
                 }
               }
