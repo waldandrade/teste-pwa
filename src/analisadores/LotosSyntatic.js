@@ -169,7 +169,7 @@ function LotosSyntatic (lexer) {
     return values
   }
 
-  function behaviour (expression) {
+  function behaviour (expression, isChild) {
     if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
       nextToken()
       expression = behaviour(new Behaviour())
@@ -261,8 +261,12 @@ function LotosSyntatic (lexer) {
         }
 
         nextToken()
-        expression.rightBehaviour = behaviour(new Behaviour())
+        expression.rightBehaviour = behaviour(new Behaviour(), true)
       }
+    }
+
+    if (isChild) {
+      return expression
     }
 
     if (actualToken.isA(BEHAVIOUR_OPERATION)) {

@@ -337,10 +337,8 @@ function LotosSemantic (syntaticTree) {
     return !hasError
   }
 
-  function checkBehaviours (behaviour, processList, visibleGates, hidingGates, operand, functionality, sorts, variables) {
-    if (variables) {
-      variables = variables.slice(0)
-    }
+  function checkBehaviours (behaviour, processList, visibleGates, hidingGates, functionality, sorts, importedVariables) {
+    let variables = importedVariables ? importedVariables.map(iv => iv) : []
     if (behaviour.identifier) {
       var found = null
       var helper = 'Term'
@@ -510,18 +508,21 @@ function LotosSemantic (syntaticTree) {
             }
           })
         }
+        if (behaviour.rightBehaviour) {
+          checkBehaviours(behaviour.rightBehaviour, processList, visibleGates, hidingGates, functionality, sorts, variables)
+        }
       }
 
       if (!found && behaviour.operand !== OP_HIDING_EVENT) {
         errors.push(new SemanticExpection(`Unknown ${helper} "${behaviour.identifier.value}"`, behaviour.identifier))
       }
-    }
-
-    if (behaviour.leftBehaviour) {
-      checkBehaviours(behaviour.leftBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality, sorts, variables)
-    }
-    if (behaviour.rightBehaviour) {
-      checkBehaviours(behaviour.rightBehaviour, processList, visibleGates, hidingGates, behaviour.operand, functionality, sorts, variables)
+    } else {
+      if (behaviour.leftBehaviour) {
+        checkBehaviours(behaviour.leftBehaviour, processList, visibleGates, hidingGates, functionality, sorts, importedVariables)
+      }
+      if (behaviour.rightBehaviour) {
+        checkBehaviours(behaviour.rightBehaviour, processList, visibleGates, hidingGates, functionality, sorts, importedVariables)
+      }
     }
   }
 
@@ -546,7 +547,7 @@ function LotosSemantic (syntaticTree) {
         }
       })
     }
-    checkBehaviours(process.bahaviour, visibleProcessList, process.visibleGateList || [], process.hidingGates || [], null, process.functionality, syntaticTree.sorts, process.parameters)
+    checkBehaviours(process.bahaviour, visibleProcessList, process.visibleGateList || [], process.hidingGates || [], process.functionality, syntaticTree.sorts, process.parameters)
     if (process.processList && process.processList.length > 0) {
       process.processList.forEach(subprocess => {
         checkProcess(subprocess, visibleProcessList)
@@ -556,7 +557,7 @@ function LotosSemantic (syntaticTree) {
 
   function checkSpecification (syntaticTree) {
     let visibleProcessList = (syntaticTree.processList || []).slice(0)
-    checkBehaviours(syntaticTree.bahaviour, visibleProcessList, syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [], null, syntaticTree.functionality, syntaticTree.sorts)
+    checkBehaviours(syntaticTree.bahaviour, visibleProcessList, syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [], syntaticTree.functionality, syntaticTree.sorts)
     if (syntaticTree.processList && syntaticTree.processList.length > 0) {
       syntaticTree.processList.forEach(process => {
         checkProcess(process, visibleProcessList)
