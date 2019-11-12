@@ -328,23 +328,20 @@ function LotosSyntatic (lexer) {
 
     specification.bahaviour = behaviour(new Behaviour())
 
-    if (!actualToken.isA(RESERVED_WORD, 'where')) {
-      errors.push(new SyntaticExpection(`Need a "where" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
-      return specification
-    }
+    if (actualToken.isA(RESERVED_WORD, 'where')) {
+      nextToken()
 
-    nextToken()
-
-    specification.processList = []
-    while (true) {
-      if (!actualToken.isA(RESERVED_WORD, 'process')) {
-        break
+      specification.processList = []
+      while (true) {
+        if (!actualToken.isA(RESERVED_WORD, 'process')) {
+          break
+        }
+        let processDeclaration = createProcess()
+        if (!processDeclaration) {
+          break
+        }
+        specification.processList.push(processDeclaration)
       }
-      let processDeclaration = createProcess()
-      if (!processDeclaration) {
-        break
-      }
-      specification.processList.push(processDeclaration)
     }
 
     if (!actualToken.isA(RESERVED_WORD, 'endspec')) {

@@ -29,8 +29,8 @@
               </v-toolbar>
               <v-flex>
                 <v-layout align-start justify-center column fill-height>
-                  <h4 v-if="$vuetify.breakpoint.mdAndDown" class="display-1 white--text">Uma ferramenta completa para especificação formal</h4>
-                  <h1 v-else class="display-2 white--text">Uma ferramenta completa para especificação formal</h1>
+                  <h4 v-if="$vuetify.breakpoint.mdAndDown" class="display-1 white--text">Uma ferramenta para especificação formal</h4>
+                  <h1 v-else class="display-2 white--text">Uma ferramenta para especificação formal</h1>
 
                   <h4 v-if="$vuetify.breakpoint.mdAndDown" class="mt-3 headline accent--text">Construa soluções com validação de comportamentos</h4>
                   <h3 v-else class="mt-3 display-1 accent--text">Construa soluções com validação de comportamentos</h3>
