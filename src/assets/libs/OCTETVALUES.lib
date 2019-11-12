@@ -1,0 +1,518 @@
+type OctetValues is Bit, Octet
+   opns
+      x00 (*! implementedby ADT_X00_OCTET *),
+      x01 (*! implementedby ADT_X01_OCTET *),
+      x02 (*! implementedby ADT_X02_OCTET *),
+      x03 (*! implementedby ADT_X03_OCTET *),
+      x04 (*! implementedby ADT_X04_OCTET *),
+      x05 (*! implementedby ADT_X05_OCTET *),
+      x06 (*! implementedby ADT_X06_OCTET *),
+      x07 (*! implementedby ADT_X07_OCTET *),
+      x08 (*! implementedby ADT_X08_OCTET *),
+      x09 (*! implementedby ADT_X09_OCTET *),
+      x0A (*! implementedby ADT_X0A_OCTET *),
+      x0B (*! implementedby ADT_X0B_OCTET *),
+      x0C (*! implementedby ADT_X0C_OCTET *),
+      x0D (*! implementedby ADT_X0D_OCTET *),
+      x0E (*! implementedby ADT_X0E_OCTET *),
+      x0F (*! implementedby ADT_X0F_OCTET *),
+      x10 (*! implementedby ADT_X10_OCTET *),
+      x11 (*! implementedby ADT_X11_OCTET *),
+      x12 (*! implementedby ADT_X12_OCTET *),
+      x13 (*! implementedby ADT_X13_OCTET *),
+      x14 (*! implementedby ADT_X14_OCTET *),
+      x15 (*! implementedby ADT_X15_OCTET *),
+      x16 (*! implementedby ADT_X16_OCTET *),
+      x17 (*! implementedby ADT_X17_OCTET *),
+      x18 (*! implementedby ADT_X18_OCTET *),
+      x19 (*! implementedby ADT_X19_OCTET *),
+      x1A (*! implementedby ADT_X1A_OCTET *),
+      x1B (*! implementedby ADT_X1B_OCTET *),
+      x1C (*! implementedby ADT_X1C_OCTET *),
+      x1D (*! implementedby ADT_X1D_OCTET *),
+      x1E (*! implementedby ADT_X1E_OCTET *),
+      x1F (*! implementedby ADT_X1F_OCTET *),
+      x20 (*! implementedby ADT_X20_OCTET *),
+      x21 (*! implementedby ADT_X21_OCTET *),
+      x22 (*! implementedby ADT_X22_OCTET *),
+      x23 (*! implementedby ADT_X23_OCTET *),
+      x24 (*! implementedby ADT_X24_OCTET *),
+      x25 (*! implementedby ADT_X25_OCTET *),
+      x26 (*! implementedby ADT_X26_OCTET *),
+      x27 (*! implementedby ADT_X27_OCTET *),
+      x28 (*! implementedby ADT_X28_OCTET *),
+      x29 (*! implementedby ADT_X29_OCTET *),
+      x2A (*! implementedby ADT_X2A_OCTET *),
+      x2B (*! implementedby ADT_X2B_OCTET *),
+      x2C (*! implementedby ADT_X2C_OCTET *),
+      x2D (*! implementedby ADT_X2D_OCTET *),
+      x2E (*! implementedby ADT_X2E_OCTET *),
+      x2F (*! implementedby ADT_X2F_OCTET *),
+      x30 (*! implementedby ADT_X30_OCTET *),
+      x31 (*! implementedby ADT_X31_OCTET *),
+      x32 (*! implementedby ADT_X32_OCTET *),
+      x33 (*! implementedby ADT_X33_OCTET *),
+      x34 (*! implementedby ADT_X34_OCTET *),
+      x35 (*! implementedby ADT_X35_OCTET *),
+      x36 (*! implementedby ADT_X36_OCTET *),
+      x37 (*! implementedby ADT_X37_OCTET *),
+      x38 (*! implementedby ADT_X38_OCTET *),
+      x39 (*! implementedby ADT_X39_OCTET *),
+      x3A (*! implementedby ADT_X3A_OCTET *),
+      x3B (*! implementedby ADT_X3B_OCTET *),
+      x3C (*! implementedby ADT_X3C_OCTET *),
+      x3D (*! implementedby ADT_X3D_OCTET *),
+      x3E (*! implementedby ADT_X3E_OCTET *),
+      x3F (*! implementedby ADT_X3F_OCTET *),
+      x40 (*! implementedby ADT_X40_OCTET *),
+      x41 (*! implementedby ADT_X41_OCTET *),
+      x42 (*! implementedby ADT_X42_OCTET *),
+      x43 (*! implementedby ADT_X43_OCTET *),
+      x44 (*! implementedby ADT_X44_OCTET *),
+      x45 (*! implementedby ADT_X45_OCTET *),
+      x46 (*! implementedby ADT_X46_OCTET *),
+      x47 (*! implementedby ADT_X47_OCTET *),
+      x48 (*! implementedby ADT_X48_OCTET *),
+      x49 (*! implementedby ADT_X49_OCTET *),
+      x4A (*! implementedby ADT_X4A_OCTET *),
+      x4B (*! implementedby ADT_X4B_OCTET *),
+      x4C (*! implementedby ADT_X4C_OCTET *),
+      x4D (*! implementedby ADT_X4D_OCTET *),
+      x4E (*! implementedby ADT_X4E_OCTET *),
+      x4F (*! implementedby ADT_X4F_OCTET *),
+      x50 (*! implementedby ADT_X50_OCTET *),
+      x51 (*! implementedby ADT_X51_OCTET *),
+      x52 (*! implementedby ADT_X52_OCTET *),
+      x53 (*! implementedby ADT_X53_OCTET *),
+      x54 (*! implementedby ADT_X54_OCTET *),
+      x55 (*! implementedby ADT_X55_OCTET *),
+      x56 (*! implementedby ADT_X56_OCTET *),
+      x57 (*! implementedby ADT_X57_OCTET *),
+      x58 (*! implementedby ADT_X58_OCTET *),
+      x59 (*! implementedby ADT_X59_OCTET *),
+      x5A (*! implementedby ADT_X5A_OCTET *),
+      x5B (*! implementedby ADT_X5B_OCTET *),
+      x5C (*! implementedby ADT_X5C_OCTET *),
+      x5D (*! implementedby ADT_X5D_OCTET *),
+      x5E (*! implementedby ADT_X5E_OCTET *),
+      x5F (*! implementedby ADT_X5F_OCTET *),
+      x60 (*! implementedby ADT_X60_OCTET *),
+      x61 (*! implementedby ADT_X61_OCTET *),
+      x62 (*! implementedby ADT_X62_OCTET *),
+      x63 (*! implementedby ADT_X63_OCTET *),
+      x64 (*! implementedby ADT_X64_OCTET *),
+      x65 (*! implementedby ADT_X65_OCTET *),
+      x66 (*! implementedby ADT_X66_OCTET *),
+      x67 (*! implementedby ADT_X67_OCTET *),
+      x68 (*! implementedby ADT_X68_OCTET *),
+      x69 (*! implementedby ADT_X69_OCTET *),
+      x6A (*! implementedby ADT_X6A_OCTET *),
+      x6B (*! implementedby ADT_X6B_OCTET *),
+      x6C (*! implementedby ADT_X6C_OCTET *),
+      x6D (*! implementedby ADT_X6D_OCTET *),
+      x6E (*! implementedby ADT_X6E_OCTET *),
+      x6F (*! implementedby ADT_X6F_OCTET *),
+      x70 (*! implementedby ADT_X70_OCTET *),
+      x71 (*! implementedby ADT_X71_OCTET *),
+      x72 (*! implementedby ADT_X72_OCTET *),
+      x73 (*! implementedby ADT_X73_OCTET *),
+      x74 (*! implementedby ADT_X74_OCTET *),
+      x75 (*! implementedby ADT_X75_OCTET *),
+      x76 (*! implementedby ADT_X76_OCTET *),
+      x77 (*! implementedby ADT_X77_OCTET *),
+      x78 (*! implementedby ADT_X78_OCTET *),
+      x79 (*! implementedby ADT_X79_OCTET *),
+      x7A (*! implementedby ADT_X7A_OCTET *),
+      x7B (*! implementedby ADT_X7B_OCTET *),
+      x7C (*! implementedby ADT_X7C_OCTET *),
+      x7D (*! implementedby ADT_X7D_OCTET *),
+      x7E (*! implementedby ADT_X7E_OCTET *),
+      x7F (*! implementedby ADT_X7F_OCTET *),
+      x80 (*! implementedby ADT_X80_OCTET *),
+      x81 (*! implementedby ADT_X81_OCTET *),
+      x82 (*! implementedby ADT_X82_OCTET *),
+      x83 (*! implementedby ADT_X83_OCTET *),
+      x84 (*! implementedby ADT_X84_OCTET *),
+      x85 (*! implementedby ADT_X85_OCTET *),
+      x86 (*! implementedby ADT_X86_OCTET *),
+      x87 (*! implementedby ADT_X87_OCTET *),
+      x88 (*! implementedby ADT_X88_OCTET *),
+      x89 (*! implementedby ADT_X89_OCTET *),
+      x8A (*! implementedby ADT_X8A_OCTET *),
+      x8B (*! implementedby ADT_X8B_OCTET *),
+      x8C (*! implementedby ADT_X8C_OCTET *),
+      x8D (*! implementedby ADT_X8D_OCTET *),
+      x8E (*! implementedby ADT_X8E_OCTET *),
+      x8F (*! implementedby ADT_X8F_OCTET *),
+      x90 (*! implementedby ADT_X90_OCTET *),
+      x91 (*! implementedby ADT_X91_OCTET *),
+      x92 (*! implementedby ADT_X92_OCTET *),
+      x93 (*! implementedby ADT_X93_OCTET *),
+      x94 (*! implementedby ADT_X94_OCTET *),
+      x95 (*! implementedby ADT_X95_OCTET *),
+      x96 (*! implementedby ADT_X96_OCTET *),
+      x97 (*! implementedby ADT_X97_OCTET *),
+      x98 (*! implementedby ADT_X98_OCTET *),
+      x99 (*! implementedby ADT_X99_OCTET *),
+      x9A (*! implementedby ADT_X9A_OCTET *),
+      x9B (*! implementedby ADT_X9B_OCTET *),
+      x9C (*! implementedby ADT_X9C_OCTET *),
+      x9D (*! implementedby ADT_X9D_OCTET *),
+      x9E (*! implementedby ADT_X9E_OCTET *),
+      x9F (*! implementedby ADT_X9F_OCTET *),
+      xA0 (*! implementedby ADT_XA0_OCTET *),
+      xA1 (*! implementedby ADT_XA1_OCTET *),
+      xA2 (*! implementedby ADT_XA2_OCTET *),
+      xA3 (*! implementedby ADT_XA3_OCTET *),
+      xA4 (*! implementedby ADT_XA4_OCTET *),
+      xA5 (*! implementedby ADT_XA5_OCTET *),
+      xA6 (*! implementedby ADT_XA6_OCTET *),
+      xA7 (*! implementedby ADT_XA7_OCTET *),
+      xA8 (*! implementedby ADT_XA8_OCTET *),
+      xA9 (*! implementedby ADT_XA9_OCTET *),
+      xAA (*! implementedby ADT_XAA_OCTET *),
+      xAB (*! implementedby ADT_XAB_OCTET *),
+      xAC (*! implementedby ADT_XAC_OCTET *),
+      xAD (*! implementedby ADT_XAD_OCTET *),
+      xAE (*! implementedby ADT_XAE_OCTET *),
+      xAF (*! implementedby ADT_XAF_OCTET *),
+      xB0 (*! implementedby ADT_XB0_OCTET *),
+      xB1 (*! implementedby ADT_XB1_OCTET *),
+      xB2 (*! implementedby ADT_XB2_OCTET *),
+      xB3 (*! implementedby ADT_XB3_OCTET *),
+      xB4 (*! implementedby ADT_XB4_OCTET *),
+      xB5 (*! implementedby ADT_XB5_OCTET *),
+      xB6 (*! implementedby ADT_XB6_OCTET *),
+      xB7 (*! implementedby ADT_XB7_OCTET *),
+      xB8 (*! implementedby ADT_XB8_OCTET *),
+      xB9 (*! implementedby ADT_XB9_OCTET *),
+      xBA (*! implementedby ADT_XBA_OCTET *),
+      xBB (*! implementedby ADT_XBB_OCTET *),
+      xBC (*! implementedby ADT_XBC_OCTET *),
+      xBD (*! implementedby ADT_XBD_OCTET *),
+      xBE (*! implementedby ADT_XBE_OCTET *),
+      xBF (*! implementedby ADT_XBF_OCTET *),
+      xC0 (*! implementedby ADT_XC0_OCTET *),
+      xC1 (*! implementedby ADT_XC1_OCTET *),
+      xC2 (*! implementedby ADT_XC2_OCTET *),
+      xC3 (*! implementedby ADT_XC3_OCTET *),
+      xC4 (*! implementedby ADT_XC4_OCTET *),
+      xC5 (*! implementedby ADT_XC5_OCTET *),
+      xC6 (*! implementedby ADT_XC6_OCTET *),
+      xC7 (*! implementedby ADT_XC7_OCTET *),
+      xC8 (*! implementedby ADT_XC8_OCTET *),
+      xC9 (*! implementedby ADT_XC9_OCTET *),
+      xCA (*! implementedby ADT_XCA_OCTET *),
+      xCB (*! implementedby ADT_XCB_OCTET *),
+      xCC (*! implementedby ADT_XCC_OCTET *),
+      xCD (*! implementedby ADT_XCD_OCTET *),
+      xCE (*! implementedby ADT_XCE_OCTET *),
+      xCF (*! implementedby ADT_XCF_OCTET *),
+      xD0 (*! implementedby ADT_XD0_OCTET *),
+      xD1 (*! implementedby ADT_XD1_OCTET *),
+      xD2 (*! implementedby ADT_XD2_OCTET *),
+      xD3 (*! implementedby ADT_XD3_OCTET *),
+      xD4 (*! implementedby ADT_XD4_OCTET *),
+      xD5 (*! implementedby ADT_XD5_OCTET *),
+      xD6 (*! implementedby ADT_XD6_OCTET *),
+      xD7 (*! implementedby ADT_XD7_OCTET *),
+      xD8 (*! implementedby ADT_XD8_OCTET *),
+      xD9 (*! implementedby ADT_XD9_OCTET *),
+      xDA (*! implementedby ADT_XDA_OCTET *),
+      xDB (*! implementedby ADT_XDB_OCTET *),
+      xDC (*! implementedby ADT_XDC_OCTET *),
+      xDD (*! implementedby ADT_XDD_OCTET *),
+      xDE (*! implementedby ADT_XDE_OCTET *),
+      xDF (*! implementedby ADT_XDF_OCTET *),
+      xE0 (*! implementedby ADT_XE0_OCTET *),
+      xE1 (*! implementedby ADT_XE1_OCTET *),
+      xE2 (*! implementedby ADT_XE2_OCTET *),
+      xE3 (*! implementedby ADT_XE3_OCTET *),
+      xE4 (*! implementedby ADT_XE4_OCTET *),
+      xE5 (*! implementedby ADT_XE5_OCTET *),
+      xE6 (*! implementedby ADT_XE6_OCTET *),
+      xE7 (*! implementedby ADT_XE7_OCTET *),
+      xE8 (*! implementedby ADT_XE8_OCTET *),
+      xE9 (*! implementedby ADT_XE9_OCTET *),
+      xEA (*! implementedby ADT_XEA_OCTET *),
+      xEB (*! implementedby ADT_XEB_OCTET *),
+      xEC (*! implementedby ADT_XEC_OCTET *),
+      xED (*! implementedby ADT_XED_OCTET *),
+      xEE (*! implementedby ADT_XEE_OCTET *),
+      xEF (*! implementedby ADT_XEF_OCTET *),
+      xF0 (*! implementedby ADT_XF0_OCTET *),
+      xF1 (*! implementedby ADT_XF1_OCTET *),
+      xF2 (*! implementedby ADT_XF2_OCTET *),
+      xF3 (*! implementedby ADT_XF3_OCTET *),
+      xF4 (*! implementedby ADT_XF4_OCTET *),
+      xF5 (*! implementedby ADT_XF5_OCTET *),
+      xF6 (*! implementedby ADT_XF6_OCTET *),
+      xF7 (*! implementedby ADT_XF7_OCTET *),
+      xF8 (*! implementedby ADT_XF8_OCTET *),
+      xF9 (*! implementedby ADT_XF9_OCTET *),
+      xFA (*! implementedby ADT_XFA_OCTET *),
+      xFB (*! implementedby ADT_XFB_OCTET *),
+      xFC (*! implementedby ADT_XFC_OCTET *),
+      xFD (*! implementedby ADT_XFD_OCTET *),
+      xFE (*! implementedby ADT_XFE_OCTET *),
+      xFF (*! implementedby ADT_XFF_OCTET *) : -> Octet
+
+   eqns
+   ofsort Octet
+      x00 = Octet (0, 0, 0, 0, 0, 0, 0, 0);
+      x01 = Octet (0, 0, 0, 0, 0, 0, 0, 1);
+      x02 = Octet (0, 0, 0, 0, 0, 0, 1, 0);
+      x03 = Octet (0, 0, 0, 0, 0, 0, 1, 1);
+      x04 = Octet (0, 0, 0, 0, 0, 1, 0, 0);
+      x05 = Octet (0, 0, 0, 0, 0, 1, 0, 1);
+      x06 = Octet (0, 0, 0, 0, 0, 1, 1, 0);
+      x07 = Octet (0, 0, 0, 0, 0, 1, 1, 1);
+      x08 = Octet (0, 0, 0, 0, 1, 0, 0, 0);
+      x09 = Octet (0, 0, 0, 0, 1, 0, 0, 1);
+      x0A = Octet (0, 0, 0, 0, 1, 0, 1, 0);
+      x0B = Octet (0, 0, 0, 0, 1, 0, 1, 1);
+      x0C = Octet (0, 0, 0, 0, 1, 1, 0, 0);
+      x0D = Octet (0, 0, 0, 0, 1, 1, 0, 1);
+      x0E = Octet (0, 0, 0, 0, 1, 1, 1, 0);
+      x0F = Octet (0, 0, 0, 0, 1, 1, 1, 1);
+      x10 = Octet (0, 0, 0, 1, 0, 0, 0, 0);
+      x11 = Octet (0, 0, 0, 1, 0, 0, 0, 1);
+      x12 = Octet (0, 0, 0, 1, 0, 0, 1, 0);
+      x13 = Octet (0, 0, 0, 1, 0, 0, 1, 1);
+      x14 = Octet (0, 0, 0, 1, 0, 1, 0, 0);
+      x15 = Octet (0, 0, 0, 1, 0, 1, 0, 1);
+      x16 = Octet (0, 0, 0, 1, 0, 1, 1, 0);
+      x17 = Octet (0, 0, 0, 1, 0, 1, 1, 1);
+      x18 = Octet (0, 0, 0, 1, 1, 0, 0, 0);
+      x19 = Octet (0, 0, 0, 1, 1, 0, 0, 1);
+      x1A = Octet (0, 0, 0, 1, 1, 0, 1, 0);
+      x1B = Octet (0, 0, 0, 1, 1, 0, 1, 1);
+      x1C = Octet (0, 0, 0, 1, 1, 1, 0, 0);
+      x1D = Octet (0, 0, 0, 1, 1, 1, 0, 1);
+      x1E = Octet (0, 0, 0, 1, 1, 1, 1, 0);
+      x1F = Octet (0, 0, 0, 1, 1, 1, 1, 1);
+      x20 = Octet (0, 0, 1, 0, 0, 0, 0, 0);
+      x21 = Octet (0, 0, 1, 0, 0, 0, 0, 1);
+      x22 = Octet (0, 0, 1, 0, 0, 0, 1, 0);
+      x23 = Octet (0, 0, 1, 0, 0, 0, 1, 1);
+      x24 = Octet (0, 0, 1, 0, 0, 1, 0, 0);
+      x25 = Octet (0, 0, 1, 0, 0, 1, 0, 1);
+      x26 = Octet (0, 0, 1, 0, 0, 1, 1, 0);
+      x27 = Octet (0, 0, 1, 0, 0, 1, 1, 1);
+      x28 = Octet (0, 0, 1, 0, 1, 0, 0, 0);
+      x29 = Octet (0, 0, 1, 0, 1, 0, 0, 1);
+      x2A = Octet (0, 0, 1, 0, 1, 0, 1, 0);
+      x2B = Octet (0, 0, 1, 0, 1, 0, 1, 1);
+      x2C = Octet (0, 0, 1, 0, 1, 1, 0, 0);
+      x2D = Octet (0, 0, 1, 0, 1, 1, 0, 1);
+      x2E = Octet (0, 0, 1, 0, 1, 1, 1, 0);
+      x2F = Octet (0, 0, 1, 0, 1, 1, 1, 1);
+      x30 = Octet (0, 0, 1, 1, 0, 0, 0, 0);
+      x31 = Octet (0, 0, 1, 1, 0, 0, 0, 1);
+      x32 = Octet (0, 0, 1, 1, 0, 0, 1, 0);
+      x33 = Octet (0, 0, 1, 1, 0, 0, 1, 1);
+      x34 = Octet (0, 0, 1, 1, 0, 1, 0, 0);
+      x35 = Octet (0, 0, 1, 1, 0, 1, 0, 1);
+      x36 = Octet (0, 0, 1, 1, 0, 1, 1, 0);
+      x37 = Octet (0, 0, 1, 1, 0, 1, 1, 1);
+      x38 = Octet (0, 0, 1, 1, 1, 0, 0, 0);
+      x39 = Octet (0, 0, 1, 1, 1, 0, 0, 1);
+      x3A = Octet (0, 0, 1, 1, 1, 0, 1, 0);
+      x3B = Octet (0, 0, 1, 1, 1, 0, 1, 1);
+      x3C = Octet (0, 0, 1, 1, 1, 1, 0, 0);
+      x3D = Octet (0, 0, 1, 1, 1, 1, 0, 1);
+      x3E = Octet (0, 0, 1, 1, 1, 1, 1, 0);
+      x3F = Octet (0, 0, 1, 1, 1, 1, 1, 1);
+      x40 = Octet (0, 1, 0, 0, 0, 0, 0, 0);
+      x41 = Octet (0, 1, 0, 0, 0, 0, 0, 1);
+      x42 = Octet (0, 1, 0, 0, 0, 0, 1, 0);
+      x43 = Octet (0, 1, 0, 0, 0, 0, 1, 1);
+      x44 = Octet (0, 1, 0, 0, 0, 1, 0, 0);
+      x45 = Octet (0, 1, 0, 0, 0, 1, 0, 1);
+      x46 = Octet (0, 1, 0, 0, 0, 1, 1, 0);
+      x47 = Octet (0, 1, 0, 0, 0, 1, 1, 1);
+      x48 = Octet (0, 1, 0, 0, 1, 0, 0, 0);
+      x49 = Octet (0, 1, 0, 0, 1, 0, 0, 1);
+      x4A = Octet (0, 1, 0, 0, 1, 0, 1, 0);
+      x4B = Octet (0, 1, 0, 0, 1, 0, 1, 1);
+      x4C = Octet (0, 1, 0, 0, 1, 1, 0, 0);
+      x4D = Octet (0, 1, 0, 0, 1, 1, 0, 1);
+      x4E = Octet (0, 1, 0, 0, 1, 1, 1, 0);
+      x4F = Octet (0, 1, 0, 0, 1, 1, 1, 1);
+      x50 = Octet (0, 1, 0, 1, 0, 0, 0, 0);
+      x51 = Octet (0, 1, 0, 1, 0, 0, 0, 1);
+      x52 = Octet (0, 1, 0, 1, 0, 0, 1, 0);
+      x53 = Octet (0, 1, 0, 1, 0, 0, 1, 1);
+      x54 = Octet (0, 1, 0, 1, 0, 1, 0, 0);
+      x55 = Octet (0, 1, 0, 1, 0, 1, 0, 1);
+      x56 = Octet (0, 1, 0, 1, 0, 1, 1, 0);
+      x57 = Octet (0, 1, 0, 1, 0, 1, 1, 1);
+      x58 = Octet (0, 1, 0, 1, 1, 0, 0, 0);
+      x59 = Octet (0, 1, 0, 1, 1, 0, 0, 1);
+      x5A = Octet (0, 1, 0, 1, 1, 0, 1, 0);
+      x5B = Octet (0, 1, 0, 1, 1, 0, 1, 1);
+      x5C = Octet (0, 1, 0, 1, 1, 1, 0, 0);
+      x5D = Octet (0, 1, 0, 1, 1, 1, 0, 1);
+      x5E = Octet (0, 1, 0, 1, 1, 1, 1, 0);
+      x5F = Octet (0, 1, 0, 1, 1, 1, 1, 1);
+      x60 = Octet (0, 1, 1, 0, 0, 0, 0, 0);
+      x61 = Octet (0, 1, 1, 0, 0, 0, 0, 1);
+      x62 = Octet (0, 1, 1, 0, 0, 0, 1, 0);
+      x63 = Octet (0, 1, 1, 0, 0, 0, 1, 1);
+      x64 = Octet (0, 1, 1, 0, 0, 1, 0, 0);
+      x65 = Octet (0, 1, 1, 0, 0, 1, 0, 1);
+      x66 = Octet (0, 1, 1, 0, 0, 1, 1, 0);
+      x67 = Octet (0, 1, 1, 0, 0, 1, 1, 1);
+      x68 = Octet (0, 1, 1, 0, 1, 0, 0, 0);
+      x69 = Octet (0, 1, 1, 0, 1, 0, 0, 1);
+      x6A = Octet (0, 1, 1, 0, 1, 0, 1, 0);
+      x6B = Octet (0, 1, 1, 0, 1, 0, 1, 1);
+      x6C = Octet (0, 1, 1, 0, 1, 1, 0, 0);
+      x6D = Octet (0, 1, 1, 0, 1, 1, 0, 1);
+      x6E = Octet (0, 1, 1, 0, 1, 1, 1, 0);
+      x6F = Octet (0, 1, 1, 0, 1, 1, 1, 1);
+      x70 = Octet (0, 1, 1, 1, 0, 0, 0, 0);
+      x71 = Octet (0, 1, 1, 1, 0, 0, 0, 1);
+      x72 = Octet (0, 1, 1, 1, 0, 0, 1, 0);
+      x73 = Octet (0, 1, 1, 1, 0, 0, 1, 1);
+      x74 = Octet (0, 1, 1, 1, 0, 1, 0, 0);
+      x75 = Octet (0, 1, 1, 1, 0, 1, 0, 1);
+      x76 = Octet (0, 1, 1, 1, 0, 1, 1, 0);
+      x77 = Octet (0, 1, 1, 1, 0, 1, 1, 1);
+      x78 = Octet (0, 1, 1, 1, 1, 0, 0, 0);
+      x79 = Octet (0, 1, 1, 1, 1, 0, 0, 1);
+      x7A = Octet (0, 1, 1, 1, 1, 0, 1, 0);
+      x7B = Octet (0, 1, 1, 1, 1, 0, 1, 1);
+      x7C = Octet (0, 1, 1, 1, 1, 1, 0, 0);
+      x7D = Octet (0, 1, 1, 1, 1, 1, 0, 1);
+      x7E = Octet (0, 1, 1, 1, 1, 1, 1, 0);
+      x7F = Octet (0, 1, 1, 1, 1, 1, 1, 1);
+      x80 = Octet (1, 0, 0, 0, 0, 0, 0, 0);
+      x81 = Octet (1, 0, 0, 0, 0, 0, 0, 1);
+      x82 = Octet (1, 0, 0, 0, 0, 0, 1, 0);
+      x83 = Octet (1, 0, 0, 0, 0, 0, 1, 1);
+      x84 = Octet (1, 0, 0, 0, 0, 1, 0, 0);
+      x85 = Octet (1, 0, 0, 0, 0, 1, 0, 1);
+      x86 = Octet (1, 0, 0, 0, 0, 1, 1, 0);
+      x87 = Octet (1, 0, 0, 0, 0, 1, 1, 1);
+      x88 = Octet (1, 0, 0, 0, 1, 0, 0, 0);
+      x89 = Octet (1, 0, 0, 0, 1, 0, 0, 1);
+      x8A = Octet (1, 0, 0, 0, 1, 0, 1, 0);
+      x8B = Octet (1, 0, 0, 0, 1, 0, 1, 1);
+      x8C = Octet (1, 0, 0, 0, 1, 1, 0, 0);
+      x8D = Octet (1, 0, 0, 0, 1, 1, 0, 1);
+      x8E = Octet (1, 0, 0, 0, 1, 1, 1, 0);
+      x8F = Octet (1, 0, 0, 0, 1, 1, 1, 1);
+      x90 = Octet (1, 0, 0, 1, 0, 0, 0, 0);
+      x91 = Octet (1, 0, 0, 1, 0, 0, 0, 1);
+      x92 = Octet (1, 0, 0, 1, 0, 0, 1, 0);
+      x93 = Octet (1, 0, 0, 1, 0, 0, 1, 1);
+      x94 = Octet (1, 0, 0, 1, 0, 1, 0, 0);
+      x95 = Octet (1, 0, 0, 1, 0, 1, 0, 1);
+      x96 = Octet (1, 0, 0, 1, 0, 1, 1, 0);
+      x97 = Octet (1, 0, 0, 1, 0, 1, 1, 1);
+      x98 = Octet (1, 0, 0, 1, 1, 0, 0, 0);
+      x99 = Octet (1, 0, 0, 1, 1, 0, 0, 1);
+      x9A = Octet (1, 0, 0, 1, 1, 0, 1, 0);
+      x9B = Octet (1, 0, 0, 1, 1, 0, 1, 1);
+      x9C = Octet (1, 0, 0, 1, 1, 1, 0, 0);
+      x9D = Octet (1, 0, 0, 1, 1, 1, 0, 1);
+      x9E = Octet (1, 0, 0, 1, 1, 1, 1, 0);
+      x9F = Octet (1, 0, 0, 1, 1, 1, 1, 1);
+      xA0 = Octet (1, 0, 1, 0, 0, 0, 0, 0);
+      xA1 = Octet (1, 0, 1, 0, 0, 0, 0, 1);
+      xA2 = Octet (1, 0, 1, 0, 0, 0, 1, 0);
+      xA3 = Octet (1, 0, 1, 0, 0, 0, 1, 1);
+      xA4 = Octet (1, 0, 1, 0, 0, 1, 0, 0);
+      xA5 = Octet (1, 0, 1, 0, 0, 1, 0, 1);
+      xA6 = Octet (1, 0, 1, 0, 0, 1, 1, 0);
+      xA7 = Octet (1, 0, 1, 0, 0, 1, 1, 1);
+      xA8 = Octet (1, 0, 1, 0, 1, 0, 0, 0);
+      xA9 = Octet (1, 0, 1, 0, 1, 0, 0, 1);
+      xAA = Octet (1, 0, 1, 0, 1, 0, 1, 0);
+      xAB = Octet (1, 0, 1, 0, 1, 0, 1, 1);
+      xAC = Octet (1, 0, 1, 0, 1, 1, 0, 0);
+      xAD = Octet (1, 0, 1, 0, 1, 1, 0, 1);
+      xAE = Octet (1, 0, 1, 0, 1, 1, 1, 0);
+      xAF = Octet (1, 0, 1, 0, 1, 1, 1, 1);
+      xB0 = Octet (1, 0, 1, 1, 0, 0, 0, 0);
+      xB1 = Octet (1, 0, 1, 1, 0, 0, 0, 1);
+      xB2 = Octet (1, 0, 1, 1, 0, 0, 1, 0);
+      xB3 = Octet (1, 0, 1, 1, 0, 0, 1, 1);
+      xB4 = Octet (1, 0, 1, 1, 0, 1, 0, 0);
+      xB5 = Octet (1, 0, 1, 1, 0, 1, 0, 1);
+      xB6 = Octet (1, 0, 1, 1, 0, 1, 1, 0);
+      xB7 = Octet (1, 0, 1, 1, 0, 1, 1, 1);
+      xB8 = Octet (1, 0, 1, 1, 1, 0, 0, 0);
+      xB9 = Octet (1, 0, 1, 1, 1, 0, 0, 1);
+      xBA = Octet (1, 0, 1, 1, 1, 0, 1, 0);
+      xBB = Octet (1, 0, 1, 1, 1, 0, 1, 1);
+      xBC = Octet (1, 0, 1, 1, 1, 1, 0, 0);
+      xBD = Octet (1, 0, 1, 1, 1, 1, 0, 1);
+      xBE = Octet (1, 0, 1, 1, 1, 1, 1, 0);
+      xBF = Octet (1, 0, 1, 1, 1, 1, 1, 1);
+      xC0 = Octet (1, 1, 0, 0, 0, 0, 0, 0);
+      xC1 = Octet (1, 1, 0, 0, 0, 0, 0, 1);
+      xC2 = Octet (1, 1, 0, 0, 0, 0, 1, 0);
+      xC3 = Octet (1, 1, 0, 0, 0, 0, 1, 1);
+      xC4 = Octet (1, 1, 0, 0, 0, 1, 0, 0);
+      xC5 = Octet (1, 1, 0, 0, 0, 1, 0, 1);
+      xC6 = Octet (1, 1, 0, 0, 0, 1, 1, 0);
+      xC7 = Octet (1, 1, 0, 0, 0, 1, 1, 1);
+      xC8 = Octet (1, 1, 0, 0, 1, 0, 0, 0);
+      xC9 = Octet (1, 1, 0, 0, 1, 0, 0, 1);
+      xCA = Octet (1, 1, 0, 0, 1, 0, 1, 0);
+      xCB = Octet (1, 1, 0, 0, 1, 0, 1, 1);
+      xCC = Octet (1, 1, 0, 0, 1, 1, 0, 0);
+      xCD = Octet (1, 1, 0, 0, 1, 1, 0, 1);
+      xCE = Octet (1, 1, 0, 0, 1, 1, 1, 0);
+      xCF = Octet (1, 1, 0, 0, 1, 1, 1, 1);
+      xD0 = Octet (1, 1, 0, 1, 0, 0, 0, 0);
+      xD1 = Octet (1, 1, 0, 1, 0, 0, 0, 1);
+      xD2 = Octet (1, 1, 0, 1, 0, 0, 1, 0);
+      xD3 = Octet (1, 1, 0, 1, 0, 0, 1, 1);
+      xD4 = Octet (1, 1, 0, 1, 0, 1, 0, 0);
+      xD5 = Octet (1, 1, 0, 1, 0, 1, 0, 1);
+      xD6 = Octet (1, 1, 0, 1, 0, 1, 1, 0);
+      xD7 = Octet (1, 1, 0, 1, 0, 1, 1, 1);
+      xD8 = Octet (1, 1, 0, 1, 1, 0, 0, 0);
+      xD9 = Octet (1, 1, 0, 1, 1, 0, 0, 1);
+      xDA = Octet (1, 1, 0, 1, 1, 0, 1, 0);
+      xDB = Octet (1, 1, 0, 1, 1, 0, 1, 1);
+      xDC = Octet (1, 1, 0, 1, 1, 1, 0, 0);
+      xDD = Octet (1, 1, 0, 1, 1, 1, 0, 1);
+      xDE = Octet (1, 1, 0, 1, 1, 1, 1, 0);
+      xDF = Octet (1, 1, 0, 1, 1, 1, 1, 1);
+      xE0 = Octet (1, 1, 1, 0, 0, 0, 0, 0);
+      xE1 = Octet (1, 1, 1, 0, 0, 0, 0, 1);
+      xE2 = Octet (1, 1, 1, 0, 0, 0, 1, 0);
+      xE3 = Octet (1, 1, 1, 0, 0, 0, 1, 1);
+      xE4 = Octet (1, 1, 1, 0, 0, 1, 0, 0);
+      xE5 = Octet (1, 1, 1, 0, 0, 1, 0, 1);
+      xE6 = Octet (1, 1, 1, 0, 0, 1, 1, 0);
+      xE7 = Octet (1, 1, 1, 0, 0, 1, 1, 1);
+      xE8 = Octet (1, 1, 1, 0, 1, 0, 0, 0);
+      xE9 = Octet (1, 1, 1, 0, 1, 0, 0, 1);
+      xEA = Octet (1, 1, 1, 0, 1, 0, 1, 0);
+      xEB = Octet (1, 1, 1, 0, 1, 0, 1, 1);
+      xEC = Octet (1, 1, 1, 0, 1, 1, 0, 0);
+      xED = Octet (1, 1, 1, 0, 1, 1, 0, 1);
+      xEE = Octet (1, 1, 1, 0, 1, 1, 1, 0);
+      xEF = Octet (1, 1, 1, 0, 1, 1, 1, 1);
+      xF0 = Octet (1, 1, 1, 1, 0, 0, 0, 0);
+      xF1 = Octet (1, 1, 1, 1, 0, 0, 0, 1);
+      xF2 = Octet (1, 1, 1, 1, 0, 0, 1, 0);
+      xF3 = Octet (1, 1, 1, 1, 0, 0, 1, 1);
+      xF4 = Octet (1, 1, 1, 1, 0, 1, 0, 0);
+      xF5 = Octet (1, 1, 1, 1, 0, 1, 0, 1);
+      xF6 = Octet (1, 1, 1, 1, 0, 1, 1, 0);
+      xF7 = Octet (1, 1, 1, 1, 0, 1, 1, 1);
+      xF8 = Octet (1, 1, 1, 1, 1, 0, 0, 0);
+      xF9 = Octet (1, 1, 1, 1, 1, 0, 0, 1);
+      xFA = Octet (1, 1, 1, 1, 1, 0, 1, 0);
+      xFB = Octet (1, 1, 1, 1, 1, 0, 1, 1);
+      xFC = Octet (1, 1, 1, 1, 1, 1, 0, 0);
+      xFD = Octet (1, 1, 1, 1, 1, 1, 0, 1);
+      xFE = Octet (1, 1, 1, 1, 1, 1, 1, 0);
+      xFF = Octet (1, 1, 1, 1, 1, 1, 1, 1);
+endtype

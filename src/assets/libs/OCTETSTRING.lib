@@ -1,0 +1,40 @@
+type OctetString is Octet
+   sorts
+      OctetString (*! implementedby ADT_OCTETSTRING comparedby ADT_CMP_OCTETSTRING
+                    printedby ADT_PRINT_OCTETSTRING *)
+   opns
+      <> (*! implementedby ADT_EMPTY_OCTETSTRING constructor *) : -> OctetString
+      _+_ (*! implementedby ADT_PLUS_OCTETSTRING constructor *) : Octet, OctetString -> OctetString
+      Octet (*! implementedby ADT_OCTET_OCTETSTRING *) : Octet -> OctetString
+      _+_ (*! implementedby ADT_OTHER_PLUS_OCTETSTRING *) : OctetString, Octet -> OctetString
+      _++_ (*! implementedby ADT_CONCAT_OCTETSTRING *) : OctetString, OctetString -> OctetString
+      Reverse (*! implementedby ADT_REVERSE_OCTETSTRING *) : OctetString -> OctetString
+      Length (*! implementedby ADT_LENGTH_OCTETSTRING *) : OctetString -> Nat
+      _eq_ (*! implementedby ADT_EQ_OCTETSTRING *), 
+      _ne_ (*! implementedby ADT_NE_OCTETSTRING *) : OctetString, OctetString -> Bool
+   eqns
+      forall s, t : OctetString, x, y : Octet, a : Bool
+      ofsort OctetString
+         Octet (x) = x + <>;
+      ofsort OctetString
+         <> + x = x + <>;
+        (x + s) + y = x + (s + y);
+      ofsort OctetString
+         <> ++ s = s;
+         (x + s) ++ t = x + (s ++ t);
+      ofsort OctetString
+         Reverse (<>) = <>;
+         Reverse (x + s) = Reverse (s) + x;
+      ofsort Nat
+         Length (<>) = 0;
+         Length (x + s) = Succ (Length (s));
+      ofsort Bool
+         <> eq <> = true;
+         <> eq (x + s) = false;
+         (x + s) eq <> = false;
+         x eq y => (x + s) eq (y + t) = s eq t;
+         x ne y => (x + s) eq (y + t) = false;
+      ofsort Bool
+         s ne t = not (s eq t)
+endtype
+

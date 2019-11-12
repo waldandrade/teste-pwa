@@ -1,0 +1,45 @@
+type DecDigit is Boolean, NaturalNumber
+   sorts
+      DecDigit (*! implementedby ADT_DECDIGIT comparedby ADT_CMP_DECDIGIT
+                   iteratedby ADT_ENUM_FIRST_DECDIGIT and ADT_ENUM_NEXT_DECDIGIT
+                   printedby ADT_PRINT_DECDIGIT *)
+   opns
+      0 (*! implementedby ADT_D0 constructor *),
+      1 (*! implementedby ADT_D1 constructor *), 
+      2 (*! implementedby ADT_D2 constructor *), 
+      3 (*! implementedby ADT_D3 constructor *), 
+      4 (*! implementedby ADT_D4 constructor *), 
+      5 (*! implementedby ADT_D5 constructor *),
+      6 (*! implementedby ADT_D6 constructor *),
+      7 (*! implementedby ADT_D7 constructor *), 
+      8 (*! implementedby ADT_D8 constructor *),
+      9 (*! implementedby ADT_D9 constructor *) : -> DecDigit
+      _eq_ (*! implementedby ADT_EQ_DECDIGIT *),
+      _ne_ (*! implementedby ADT_NE_DECDIGIT *),
+      _lt_ (*! implementedby ADT_LT_DECDIGIT *), 
+      _le_ (*! implementedby ADT_LE_DECDIGIT *), 
+      _ge_ (*! implementedby ADT_GE_DECDIGIT *), 
+      _gt_ (*! implementedby ADT_GT_DECDIGIT *) : DecDigit, DecDigit -> Bool
+      NatNum (*! implementedby ADT_NATNUM_DECDIGIT *) : DecDigit -> Nat
+   eqns
+      forall x, y : DecDigit
+      ofsort Nat
+         NatNum (0) = 0;
+         NatNum (1) = Succ (NatNum (0));
+         NatNum (2) = Succ (NatNum (1));
+         NatNum (3) = Succ (NatNum (2));
+         NatNum (4) = Succ (NatNum (3));
+         NatNum (5) = Succ (NatNum (4));
+         NatNum (6) = Succ (NatNum (5));
+         NatNum (7) = Succ (NatNum (6));
+         NatNum (8) = Succ (NatNum (7));
+         NatNum (9) = Succ (NatNum (8))
+      ofsort Bool
+         x eq y = NatNum (x) eq NatNum (y);
+         x ne y = NatNum (x) ne NatNum (y);
+         x lt y = NatNum (x) lt NatNum (y);
+         x le y = NatNum (x) le NatNum (y);
+         x ge y = NatNum (x) ge NatNum (y);
+         x gt y = NatNum (x) gt NatNum (y)
+endtype
+

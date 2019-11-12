@@ -1,0 +1,41 @@
+type OctDigit is Boolean, NaturalNumber
+   sorts
+      OctDigit (*! implementedby ADT_OCTDIGIT comparedby ADT_CMP_OCTDIGIT
+                   iteratedby ADT_ENUM_FIRST_OCTDIGIT and ADT_ENUM_NEXT_OCTDIGIT
+                   printedby ADT_PRINT_OCTDIGIT *)
+   opns
+      0 (*! implementedby ADT_O0 constructor *),
+      1 (*! implementedby ADT_O1 constructor *), 
+      2 (*! implementedby ADT_O2 constructor *), 
+      3 (*! implementedby ADT_O3 constructor *), 
+      4 (*! implementedby ADT_O4 constructor *), 
+      5 (*! implementedby ADT_O5 constructor *),
+      6 (*! implementedby ADT_O6 constructor *),
+      7 (*! implementedby ADT_O7 constructor *) : -> OctDigit
+      _eq_ (*! implementedby ADT_EQ_OCTDIGIT *),
+      _ne_ (*! implementedby ADT_NE_OCTDIGIT *),
+      _lt_ (*! implementedby ADT_LT_OCTDIGIT *), 
+      _le_ (*! implementedby ADT_LE_OCTDIGIT *), 
+      _ge_ (*! implementedby ADT_GE_OCTDIGIT *), 
+      _gt_ (*! implementedby ADT_GT_OCTDIGIT *) : OctDigit, OctDigit -> Bool
+      NatNum (*! implementedby ADT_NATNUM_OCTDIGIT *) : OctDigit -> Nat
+   eqns
+      forall x, y : OctDigit
+      ofsort Nat
+         NatNum (0) = 0;
+         NatNum (1) = Succ (NatNum (0));
+         NatNum (2) = Succ (NatNum (1));
+         NatNum (3) = Succ (NatNum (2));
+         NatNum (4) = Succ (NatNum (3));
+         NatNum (5) = Succ (NatNum (4));
+         NatNum (6) = Succ (NatNum (5));
+         NatNum (7) = Succ (NatNum (6))
+      ofsort Bool
+         x eq y = NatNum (x) eq NatNum (y);
+         x ne y = NatNum (x) ne NatNum (y);
+         x lt y = NatNum (x) lt NatNum (y);
+         x le y = NatNum (x) le NatNum (y);
+         x ge y = NatNum (x) ge NatNum (y);
+         x gt y = NatNum (x) gt NatNum (y)
+endtype
+

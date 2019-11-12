@@ -1,0 +1,10 @@
+type OctNatRepr is OctString
+  opns
+     NatNum (*! implementedby ADT_NATNUM_OCTSTRING *) : OctString -> Nat
+  eqns
+   forall os : OctString, o : OctDigit
+   ofsort Nat
+      NatNum (Oct (o)) = NatNum (o);
+      NatNum (o + os) = NatNum (o) * (Succ (NatNum (7)) ** Length (os)) + NatNum (os)
+endtype
+

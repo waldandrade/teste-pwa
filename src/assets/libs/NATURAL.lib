@@ -1,0 +1,68 @@
+
+library NATURALNUMBER endlib
+
+type Natural is NaturalNumber
+   opns 1 (*! implementedby ADT_N1 *), 
+        2 (*! implementedby ADT_N2 *), 
+        3 (*! implementedby ADT_N3 *), 
+        4 (*! implementedby ADT_N4 *), 
+        5 (*! implementedby ADT_N5 *), 
+        6 (*! implementedby ADT_N6 *), 
+        7 (*! implementedby ADT_N7 *),
+        8 (*! implementedby ADT_N8 *),
+        9 (*! implementedby ADT_N9 *) : -> Nat
+        _-_  (*! implementedby ADT_MINUS_NAT *),
+        _div_ (*! implementedby ADT_DIV_NAT *),
+	_mod_ (*! implementedby ADT_MOD_NAT *) : Nat, Nat -> Nat
+	_==_ (*! implementedby ADT_EQ_BIS_NAT *),
+        _<>_ (*! implementedby ADT_NE_BIS_NAT *),
+	_<_ (*! implementedby ADT_LT_BIS_NAT *),
+	_<=_ (*! implementedby ADT_LE_BIS_NAT *),
+	_>_ (*! implementedby ADT_GT_BIS_NAT *),
+	_>=_ (*! implementedby ADT_GE_BIS_NAT *) : Nat, Nat -> Bool
+        min (*! implementedby ADT_MIN_NAT *),
+        max (*! implementedby ADT_MAX_NAT *),
+        gcd (*! implementedby ADT_GCD_NAT *),
+        scm (*! implementedby ADT_SCM_NAT *) : Nat, Nat -> Nat
+   eqns
+      forall m, n : Nat
+      ofsort Nat
+         1 = Succ (0);
+         2 = Succ (1);
+         3 = Succ (2);
+         4 = Succ (3);
+         5 = Succ (4);
+         6 = Succ (5);
+         7 = Succ (6);
+         8 = Succ (7);
+         9 = Succ (8);
+      ofsort Nat
+         m - 0 = m;
+         Succ (m) - Succ (n) = m - n;
+      ofsort Nat
+         n ne 0, m lt n => m div n = 0;
+         n ne 0, m ge n => m div n = 1 + ((m - n) div n);
+      ofsort Nat
+         n ne 0, m lt n => m mod n = m;
+         n ne 0, m ge n => m mod n = ((m - n) mod n);
+      ofsort Bool
+         m == n                    = m eq n;
+         m <> n                    = m ne n;
+         m <= n                    = m le n;
+         m < n                     = m lt n;
+         m > n                     = m gt n;
+         m >= n                    = m ge n;
+      ofsort Nat
+         m le n => min (m, n) = m;
+         m gt n => min (m, n) = n;
+      ofsort Nat
+         m ge n => max (m, n) = m;
+         m lt n => max (m, n) = n;
+      ofsort Nat
+         m eq n, m ne 0 => gcd (m, n) = m;
+         m lt n, m ne 0 => gcd (m, n) = gcd (m, n - m);
+         m gt n, n ne 0 => gcd (m, n) = gcd (m - n, n);
+      ofsort Nat
+         scm (m, n) = (m * n) div gcd (m, n);
+endtype
+

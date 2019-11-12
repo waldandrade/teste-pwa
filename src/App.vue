@@ -64,6 +64,35 @@
               </template>
             </v-list-group>
           </v-list-group>
+          <v-list-group
+            value="true"
+          >
+            <template v-slot:activator>
+              <v-list-tile>
+                <v-list-tile-title>Libs</v-list-tile-title>
+              </v-list-tile>
+            </template>
+            <v-list-group
+              no-action
+              sub-group
+              value="true"
+            >
+              <template v-slot:activator>
+                <v-list-tile exact>
+                  <v-list-tile-title>Internal</v-list-tile-title>
+                </v-list-tile>
+              </template>
+
+              <template v-for="(lib, i) in internalLibraries">
+                <v-list-tile
+                  :key="i"
+                  @click="execute('openInternalLib', i)"
+                >
+                  <v-list-tile-title v-text="lib.name"></v-list-tile-title>
+                </v-list-tile>
+              </template>
+            </v-list-group>
+            </v-list-group>
         </v-list>
         <template v-for="item in items">
           <v-list-tile @click="execute(item.action)" :key="item.text">
@@ -128,6 +157,9 @@ export default {
     },
     explore () {
       return this.$store.getters.explore
+    },
+    internalLibraries () {
+      return this.$store.getters.internalLibraries
     }
   },
   props: {

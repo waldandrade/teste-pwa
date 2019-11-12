@@ -1,0 +1,56 @@
+type HexDigit is NaturalNumber
+   sorts
+      HexDigit (*! implementedby ADT_HEXDIGIT comparedby ADT_CMP_HEXDIGIT
+                   iteratedby ADT_ENUM_FIRST_HEXDIGIT and ADT_ENUM_NEXT_HEXDIGIT
+                   printedby ADT_PRINT_HEXDIGIT *)
+   opns
+      0 (*! implementedby ADT_H0 constructor *),
+      1 (*! implementedby ADT_H1 constructor *), 
+      2 (*! implementedby ADT_H2 constructor *), 
+      3 (*! implementedby ADT_H3 constructor *), 
+      4 (*! implementedby ADT_H4 constructor *), 
+      5 (*! implementedby ADT_H5 constructor *),
+      6 (*! implementedby ADT_H6 constructor *),
+      7 (*! implementedby ADT_H7 constructor *), 
+      8 (*! implementedby ADT_H8 constructor *),
+      9 (*! implementedby ADT_H9 constructor *),
+      A (*! implementedby ADT_HA constructor *),
+      B (*! implementedby ADT_HB constructor *), 
+      C (*! implementedby ADT_HC constructor *), 
+      D (*! implementedby ADT_HD constructor *), 
+      E (*! implementedby ADT_HE constructor *), 
+      F (*! implementedby ADT_HF constructor *) : -> HexDigit
+      _eq_ (*! implementedby ADT_EQ_HEXDIGIT *),
+      _ne_ (*! implementedby ADT_NE_HEXDIGIT *),
+      _lt_ (*! implementedby ADT_LT_HEXDIGIT *), 
+      _le_ (*! implementedby ADT_LE_HEXDIGIT *), 
+      _ge_ (*! implementedby ADT_GE_HEXDIGIT *), 
+      _gt_ (*! implementedby ADT_GT_HEXDIGIT *) : HexDigit, HexDigit -> Bool
+      NatNum (*! implementedby ADT_NATNUM_HEXDIGIT *) : HexDigit -> Nat
+   eqns
+      forall x, y : HexDigit
+      ofsort Nat
+         NatNum (0) = 0;
+         NatNum (1) = Succ (NatNum (0));
+         NatNum (2) = Succ (NatNum (1));
+         NatNum (3) = Succ (NatNum (2));
+         NatNum (4) = Succ (NatNum (3));
+         NatNum (5) = Succ (NatNum (4));
+         NatNum (6) = Succ (NatNum (5));
+         NatNum (7) = Succ (NatNum (6));
+         NatNum (8) = Succ (NatNum (7));
+         NatNum (9) = Succ (NatNum (8));
+         NatNum (A) = Succ (NatNum (9));
+         NatNum (B) = Succ (NatNum (A));
+         NatNum (C) = Succ (NatNum (B));
+         NatNum (D) = Succ (NatNum (C));
+         NatNum (E) = Succ (NatNum (D));
+         NatNum (F) = Succ (NatNum (E));
+      ofsort Bool
+         x eq y = NatNum (x) eq NatNum (y);
+         x ne y = NatNum (x) ne NatNum (y);
+         x lt y = NatNum (x) lt NatNum (y);
+         x le y = NatNum (x) le NatNum (y);
+         x ge y = NatNum (x) ge NatNum (y);
+         x gt y = NatNum (x) gt NatNum (y)
+endtype

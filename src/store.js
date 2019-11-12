@@ -21,7 +21,69 @@ export default new Vuex.Store({
     loadingGeneral: null,
     error: null,
     headers: null,
-    mini: false
+    mini: false,
+    internalLibraries: [
+      {
+        name: 'BASICNATURALNUMBER'
+      },
+      {
+        name: 'BIT'
+      },
+      {
+        name: 'BITNATREPR'
+      },
+      {
+        name: 'BITSTRING'
+      },
+      {
+        name: 'BOOLEAN'
+      },
+      {
+        name: 'DECDIGIT'
+      },
+      {
+        name: 'DECNATREPR'
+      },
+      {
+        name: 'DECSTRING'
+      },
+      {
+        name: 'HEXDIGIT'
+      },
+      {
+        name: 'HEXNATREPR'
+      },
+      {
+        name: 'HEXSTRING'
+      },
+      {
+        name: 'INTEGERNUMBER'
+      },
+      {
+        name: 'INTEGER'
+      },
+      {
+        name: 'NATREPRESENTATIONS'
+      },
+      {
+        name: 'NATURALNUMBER'
+      },
+      {
+        name: 'OCTDIGIT'
+      },
+      {
+        name: 'OCTET'
+      },
+      {
+        name: 'OCTETSTRING'
+      },
+      {
+        name: 'OCTNATREPR'
+      },
+      {
+        name: 'OCTSTRING'
+      }
+    ]
   },
   mutations: {
     addLib (state, lib) {
@@ -133,6 +195,36 @@ export default new Vuex.Store({
     },
     addLib ({ commit }, lib) {
       commit('addLib', lib)
+    },
+    openInternalLib ({ commit, state }, index) {
+      var lib = state.internalLibraries[index]
+      commit('setExplore', false)
+      commit('setLoadingGeneral', 'Aguarde ...')
+      var indexFindLib = 0
+      var findLib = state.openedSpecifications.some((spec, index) => {
+        indexFindLib = index
+        return spec.abstractName === `${lib.name}.lib`
+      })
+      if (!findLib) {
+        if (lib.code === undefined) {
+          var xhr = new XMLHttpRequest()
+          xhr.onload = function (event) {
+            console.log(xhr)
+            var blob = xhr.response
+            lib.code = blob
+            lib.isDirty = false
+            console.log('entrou')
+            commit('setLoadingGeneral', null)
+            commit('openSpecification', lib)
+          }
+          xhr.open('GET', require(`./assets/libs/${lib.name}.lib`))
+          xhr.send()
+        } else {
+          commit('openSpecification', lib)
+        }
+      } else {
+        commit('setSelectedFile', indexFindLib)
+      }
     },
     openSpecification ({ commit, state }, index) {
       var specification = state.specifications[index]
@@ -311,6 +403,9 @@ export default new Vuex.Store({
     },
     libs (state) {
       return state.libs
+    },
+    internalLibraries (state) {
+      return state.internalLibraries
     },
     explore (state) {
       return state.explore

@@ -1,0 +1,1284 @@
+module OCTETVALUES (BIT, OCTET) is
+
+function x00 : Octet is
+   !implementedby "ADT_X00_OCTET"
+   return Octet (0, 0, 0, 0, 0, 0, 0, 0)
+end function
+
+function x01 : Octet is
+   !implementedby "ADT_X01_OCTET"
+   return Octet (0, 0, 0, 0, 0, 0, 0, 1)
+end function
+
+function x02 : Octet is
+   !implementedby "ADT_X02_OCTET"
+   return Octet (0, 0, 0, 0, 0, 0, 1, 0)
+end function
+
+function x03 : Octet is
+   !implementedby "ADT_X03_OCTET"
+   return Octet (0, 0, 0, 0, 0, 0, 1, 1)
+end function
+
+function x04 : Octet is
+   !implementedby "ADT_X04_OCTET"
+   return Octet (0, 0, 0, 0, 0, 1, 0, 0)
+end function
+
+function x05 : Octet is
+   !implementedby "ADT_X05_OCTET"
+   return Octet (0, 0, 0, 0, 0, 1, 0, 1)
+end function
+
+function x06 : Octet is
+   !implementedby "ADT_X06_OCTET"
+   return Octet (0, 0, 0, 0, 0, 1, 1, 0)
+end function
+
+function x07 : Octet is
+   !implementedby "ADT_X07_OCTET"
+   return Octet (0, 0, 0, 0, 0, 1, 1, 1)
+end function
+
+function x08 : Octet is
+   !implementedby "ADT_X08_OCTET"
+   return Octet (0, 0, 0, 0, 1, 0, 0, 0)
+end function
+
+function x09 : Octet is
+   !implementedby "ADT_X09_OCTET"
+   return Octet (0, 0, 0, 0, 1, 0, 0, 1)
+end function
+
+function x0A : Octet is
+   !implementedby "ADT_X0A_OCTET"
+   return Octet (0, 0, 0, 0, 1, 0, 1, 0)
+end function
+
+function x0B : Octet is
+   !implementedby "ADT_X0B_OCTET"
+   return Octet (0, 0, 0, 0, 1, 0, 1, 1)
+end function
+
+function x0C : Octet is
+   !implementedby "ADT_X0C_OCTET"
+   return Octet (0, 0, 0, 0, 1, 1, 0, 0)
+end function
+
+function x0D : Octet is
+   !implementedby "ADT_X0D_OCTET"
+   return Octet (0, 0, 0, 0, 1, 1, 0, 1)
+end function
+
+function x0E : Octet is
+   !implementedby "ADT_X0E_OCTET"
+   return Octet (0, 0, 0, 0, 1, 1, 1, 0)
+end function
+
+function x0F : Octet is
+   !implementedby "ADT_X0F_OCTET"
+   return Octet (0, 0, 0, 0, 1, 1, 1, 1)
+end function
+
+function x10 : Octet is
+   !implementedby "ADT_X10_OCTET"
+   return Octet (0, 0, 0, 1, 0, 0, 0, 0)
+end function
+
+function x11 : Octet is
+   !implementedby "ADT_X11_OCTET"
+   return Octet (0, 0, 0, 1, 0, 0, 0, 1)
+end function
+
+function x12 : Octet is
+   !implementedby "ADT_X12_OCTET"
+   return Octet (0, 0, 0, 1, 0, 0, 1, 0)
+end function
+
+function x13 : Octet is
+   !implementedby "ADT_X13_OCTET"
+   return Octet (0, 0, 0, 1, 0, 0, 1, 1)
+end function
+
+function x14 : Octet is
+   !implementedby "ADT_X14_OCTET"
+   return Octet (0, 0, 0, 1, 0, 1, 0, 0)
+end function
+
+function x15 : Octet is
+   !implementedby "ADT_X15_OCTET"
+   return Octet (0, 0, 0, 1, 0, 1, 0, 1)
+end function
+
+function x16 : Octet is
+   !implementedby "ADT_X16_OCTET"
+   return Octet (0, 0, 0, 1, 0, 1, 1, 0)
+end function
+
+function x17 : Octet is
+   !implementedby "ADT_X17_OCTET"
+   return Octet (0, 0, 0, 1, 0, 1, 1, 1)
+end function
+
+function x18 : Octet is
+   !implementedby "ADT_X18_OCTET"
+   return Octet (0, 0, 0, 1, 1, 0, 0, 0)
+end function
+
+function x19 : Octet is
+   !implementedby "ADT_X19_OCTET"
+   return Octet (0, 0, 0, 1, 1, 0, 0, 1)
+end function
+
+function x1A : Octet is
+   !implementedby "ADT_X1A_OCTET"
+   return Octet (0, 0, 0, 1, 1, 0, 1, 0)
+end function
+
+function x1B : Octet is
+   !implementedby "ADT_X1B_OCTET"
+   return Octet (0, 0, 0, 1, 1, 0, 1, 1)
+end function
+
+function x1C : Octet is
+   !implementedby "ADT_X1C_OCTET"
+   return Octet (0, 0, 0, 1, 1, 1, 0, 0)
+end function
+
+function x1D : Octet is
+   !implementedby "ADT_X1D_OCTET"
+   return Octet (0, 0, 0, 1, 1, 1, 0, 1)
+end function
+
+function x1E : Octet is
+   !implementedby "ADT_X1E_OCTET"
+   return Octet (0, 0, 0, 1, 1, 1, 1, 0)
+end function
+
+function x1F : Octet is
+   !implementedby "ADT_X1F_OCTET"
+   return Octet (0, 0, 0, 1, 1, 1, 1, 1)
+end function
+
+function x20 : Octet is
+   !implementedby "ADT_X20_OCTET"
+   return Octet (0, 0, 1, 0, 0, 0, 0, 0)
+end function
+
+function x21 : Octet is
+   !implementedby "ADT_X21_OCTET"
+   return Octet (0, 0, 1, 0, 0, 0, 0, 1)
+end function
+
+function x22 : Octet is
+   !implementedby "ADT_X22_OCTET"
+   return Octet (0, 0, 1, 0, 0, 0, 1, 0)
+end function
+
+function x23 : Octet is
+   !implementedby "ADT_X23_OCTET"
+   return Octet (0, 0, 1, 0, 0, 0, 1, 1)
+end function
+
+function x24 : Octet is
+   !implementedby "ADT_X24_OCTET"
+   return Octet (0, 0, 1, 0, 0, 1, 0, 0)
+end function
+
+function x25 : Octet is
+   !implementedby "ADT_X25_OCTET"
+   return Octet (0, 0, 1, 0, 0, 1, 0, 1)
+end function
+
+function x26 : Octet is
+   !implementedby "ADT_X26_OCTET"
+   return Octet (0, 0, 1, 0, 0, 1, 1, 0)
+end function
+
+function x27 : Octet is
+   !implementedby "ADT_X27_OCTET"
+   return Octet (0, 0, 1, 0, 0, 1, 1, 1)
+end function
+
+function x28 : Octet is
+   !implementedby "ADT_X28_OCTET"
+   return Octet (0, 0, 1, 0, 1, 0, 0, 0)
+end function
+
+function x29 : Octet is
+   !implementedby "ADT_X29_OCTET"
+   return Octet (0, 0, 1, 0, 1, 0, 0, 1)
+end function
+
+function x2A : Octet is
+   !implementedby "ADT_X2A_OCTET"
+   return Octet (0, 0, 1, 0, 1, 0, 1, 0)
+end function
+
+function x2B : Octet is
+   !implementedby "ADT_X2B_OCTET"
+   return Octet (0, 0, 1, 0, 1, 0, 1, 1)
+end function
+
+function x2C : Octet is
+   !implementedby "ADT_X2C_OCTET"
+   return Octet (0, 0, 1, 0, 1, 1, 0, 0)
+end function
+
+function x2D : Octet is
+   !implementedby "ADT_X2D_OCTET"
+   return Octet (0, 0, 1, 0, 1, 1, 0, 1)
+end function
+
+function x2E : Octet is
+   !implementedby "ADT_X2E_OCTET"
+   return Octet (0, 0, 1, 0, 1, 1, 1, 0)
+end function
+
+function x2F : Octet is
+   !implementedby "ADT_X2F_OCTET"
+   return Octet (0, 0, 1, 0, 1, 1, 1, 1)
+end function
+
+function x30 : Octet is
+   !implementedby "ADT_X30_OCTET"
+   return Octet (0, 0, 1, 1, 0, 0, 0, 0)
+end function
+
+function x31 : Octet is
+   !implementedby "ADT_X31_OCTET"
+   return Octet (0, 0, 1, 1, 0, 0, 0, 1)
+end function
+
+function x32 : Octet is
+   !implementedby "ADT_X32_OCTET"
+   return Octet (0, 0, 1, 1, 0, 0, 1, 0)
+end function
+
+function x33 : Octet is
+   !implementedby "ADT_X33_OCTET"
+   return Octet (0, 0, 1, 1, 0, 0, 1, 1)
+end function
+
+function x34 : Octet is
+   !implementedby "ADT_X34_OCTET"
+   return Octet (0, 0, 1, 1, 0, 1, 0, 0)
+end function
+
+function x35 : Octet is
+   !implementedby "ADT_X35_OCTET"
+   return Octet (0, 0, 1, 1, 0, 1, 0, 1)
+end function
+
+function x36 : Octet is
+   !implementedby "ADT_X36_OCTET"
+   return Octet (0, 0, 1, 1, 0, 1, 1, 0)
+end function
+
+function x37 : Octet is
+   !implementedby "ADT_X37_OCTET"
+   return Octet (0, 0, 1, 1, 0, 1, 1, 1)
+end function
+
+function x38 : Octet is
+   !implementedby "ADT_X38_OCTET"
+   return Octet (0, 0, 1, 1, 1, 0, 0, 0)
+end function
+
+function x39 : Octet is
+   !implementedby "ADT_X39_OCTET"
+   return Octet (0, 0, 1, 1, 1, 0, 0, 1)
+end function
+
+function x3A : Octet is
+   !implementedby "ADT_X3A_OCTET"
+   return Octet (0, 0, 1, 1, 1, 0, 1, 0)
+end function
+
+function x3B : Octet is
+   !implementedby "ADT_X3B_OCTET"
+   return Octet (0, 0, 1, 1, 1, 0, 1, 1)
+end function
+
+function x3C : Octet is
+   !implementedby "ADT_X3C_OCTET"
+   return Octet (0, 0, 1, 1, 1, 1, 0, 0)
+end function
+
+function x3D : Octet is
+   !implementedby "ADT_X3D_OCTET"
+   return Octet (0, 0, 1, 1, 1, 1, 0, 1)
+end function
+
+function x3E : Octet is
+   !implementedby "ADT_X3E_OCTET"
+   return Octet (0, 0, 1, 1, 1, 1, 1, 0)
+end function
+
+function x3F : Octet is
+   !implementedby "ADT_X3F_OCTET"
+   return Octet (0, 0, 1, 1, 1, 1, 1, 1)
+end function
+
+function x40 : Octet is
+   !implementedby "ADT_X40_OCTET"
+   return Octet (0, 1, 0, 0, 0, 0, 0, 0)
+end function
+
+function x41 : Octet is
+   !implementedby "ADT_X41_OCTET"
+   return Octet (0, 1, 0, 0, 0, 0, 0, 1)
+end function
+
+function x42 : Octet is
+   !implementedby "ADT_X42_OCTET"
+   return Octet (0, 1, 0, 0, 0, 0, 1, 0)
+end function
+
+function x43 : Octet is
+   !implementedby "ADT_X43_OCTET"
+   return Octet (0, 1, 0, 0, 0, 0, 1, 1)
+end function
+
+function x44 : Octet is
+   !implementedby "ADT_X44_OCTET"
+   return Octet (0, 1, 0, 0, 0, 1, 0, 0)
+end function
+
+function x45 : Octet is
+   !implementedby "ADT_X45_OCTET"
+   return Octet (0, 1, 0, 0, 0, 1, 0, 1)
+end function
+
+function x46 : Octet is
+   !implementedby "ADT_X46_OCTET"
+   return Octet (0, 1, 0, 0, 0, 1, 1, 0)
+end function
+
+function x47 : Octet is
+   !implementedby "ADT_X47_OCTET"
+   return Octet (0, 1, 0, 0, 0, 1, 1, 1)
+end function
+
+function x48 : Octet is
+   !implementedby "ADT_X48_OCTET"
+   return Octet (0, 1, 0, 0, 1, 0, 0, 0)
+end function
+
+function x49 : Octet is
+   !implementedby "ADT_X49_OCTET"
+   return Octet (0, 1, 0, 0, 1, 0, 0, 1)
+end function
+
+function x4A : Octet is
+   !implementedby "ADT_X4A_OCTET"
+   return Octet (0, 1, 0, 0, 1, 0, 1, 0)
+end function
+
+function x4B : Octet is
+   !implementedby "ADT_X4B_OCTET"
+   return Octet (0, 1, 0, 0, 1, 0, 1, 1)
+end function
+
+function x4C : Octet is
+   !implementedby "ADT_X4C_OCTET"
+   return Octet (0, 1, 0, 0, 1, 1, 0, 0)
+end function
+
+function x4D : Octet is
+   !implementedby "ADT_X4D_OCTET"
+   return Octet (0, 1, 0, 0, 1, 1, 0, 1)
+end function
+
+function x4E : Octet is
+   !implementedby "ADT_X4E_OCTET"
+   return Octet (0, 1, 0, 0, 1, 1, 1, 0)
+end function
+
+function x4F : Octet is
+   !implementedby "ADT_X4F_OCTET"
+   return Octet (0, 1, 0, 0, 1, 1, 1, 1)
+end function
+
+function x50 : Octet is
+   !implementedby "ADT_X50_OCTET"
+   return Octet (0, 1, 0, 1, 0, 0, 0, 0)
+end function
+
+function x51 : Octet is
+   !implementedby "ADT_X51_OCTET"
+   return Octet (0, 1, 0, 1, 0, 0, 0, 1)
+end function
+
+function x52 : Octet is
+   !implementedby "ADT_X52_OCTET"
+   return Octet (0, 1, 0, 1, 0, 0, 1, 0)
+end function
+
+function x53 : Octet is
+   !implementedby "ADT_X53_OCTET"
+   return Octet (0, 1, 0, 1, 0, 0, 1, 1)
+end function
+
+function x54 : Octet is
+   !implementedby "ADT_X54_OCTET"
+   return Octet (0, 1, 0, 1, 0, 1, 0, 0)
+end function
+
+function x55 : Octet is
+   !implementedby "ADT_X55_OCTET"
+   return Octet (0, 1, 0, 1, 0, 1, 0, 1)
+end function
+
+function x56 : Octet is
+   !implementedby "ADT_X56_OCTET"
+   return Octet (0, 1, 0, 1, 0, 1, 1, 0)
+end function
+
+function x57 : Octet is
+   !implementedby "ADT_X57_OCTET"
+   return Octet (0, 1, 0, 1, 0, 1, 1, 1)
+end function
+
+function x58 : Octet is
+   !implementedby "ADT_X58_OCTET"
+   return Octet (0, 1, 0, 1, 1, 0, 0, 0)
+end function
+
+function x59 : Octet is
+   !implementedby "ADT_X59_OCTET"
+   return Octet (0, 1, 0, 1, 1, 0, 0, 1)
+end function
+
+function x5A : Octet is
+   !implementedby "ADT_X5A_OCTET"
+   return Octet (0, 1, 0, 1, 1, 0, 1, 0)
+end function
+
+function x5B : Octet is
+   !implementedby "ADT_X5B_OCTET"
+   return Octet (0, 1, 0, 1, 1, 0, 1, 1)
+end function
+
+function x5C : Octet is
+   !implementedby "ADT_X5C_OCTET"
+   return Octet (0, 1, 0, 1, 1, 1, 0, 0)
+end function
+
+function x5D : Octet is
+   !implementedby "ADT_X5D_OCTET"
+   return Octet (0, 1, 0, 1, 1, 1, 0, 1)
+end function
+
+function x5E : Octet is
+   !implementedby "ADT_X5E_OCTET"
+   return Octet (0, 1, 0, 1, 1, 1, 1, 0)
+end function
+
+function x5F : Octet is
+   !implementedby "ADT_X5F_OCTET"
+   return Octet (0, 1, 0, 1, 1, 1, 1, 1)
+end function
+
+function x60 : Octet is
+   !implementedby "ADT_X60_OCTET"
+   return Octet (0, 1, 1, 0, 0, 0, 0, 0)
+end function
+
+function x61 : Octet is
+   !implementedby "ADT_X61_OCTET"
+   return Octet (0, 1, 1, 0, 0, 0, 0, 1)
+end function
+
+function x62 : Octet is
+   !implementedby "ADT_X62_OCTET"
+   return Octet (0, 1, 1, 0, 0, 0, 1, 0)
+end function
+
+function x63 : Octet is
+   !implementedby "ADT_X63_OCTET"
+   return Octet (0, 1, 1, 0, 0, 0, 1, 1)
+end function
+
+function x64 : Octet is
+   !implementedby "ADT_X64_OCTET"
+   return Octet (0, 1, 1, 0, 0, 1, 0, 0)
+end function
+
+function x65 : Octet is
+   !implementedby "ADT_X65_OCTET"
+   return Octet (0, 1, 1, 0, 0, 1, 0, 1)
+end function
+
+function x66 : Octet is
+   !implementedby "ADT_X66_OCTET"
+   return Octet (0, 1, 1, 0, 0, 1, 1, 0)
+end function
+
+function x67 : Octet is
+   !implementedby "ADT_X67_OCTET"
+   return Octet (0, 1, 1, 0, 0, 1, 1, 1)
+end function
+
+function x68 : Octet is
+   !implementedby "ADT_X68_OCTET"
+   return Octet (0, 1, 1, 0, 1, 0, 0, 0)
+end function
+
+function x69 : Octet is
+   !implementedby "ADT_X69_OCTET"
+   return Octet (0, 1, 1, 0, 1, 0, 0, 1)
+end function
+
+function x6A : Octet is
+   !implementedby "ADT_X6A_OCTET"
+   return Octet (0, 1, 1, 0, 1, 0, 1, 0)
+end function
+
+function x6B : Octet is
+   !implementedby "ADT_X6B_OCTET"
+   return Octet (0, 1, 1, 0, 1, 0, 1, 1)
+end function
+
+function x6C : Octet is
+   !implementedby "ADT_X6C_OCTET"
+   return Octet (0, 1, 1, 0, 1, 1, 0, 0)
+end function
+
+function x6D : Octet is
+   !implementedby "ADT_X6D_OCTET"
+   return Octet (0, 1, 1, 0, 1, 1, 0, 1)
+end function
+
+function x6E : Octet is
+   !implementedby "ADT_X6E_OCTET"
+   return Octet (0, 1, 1, 0, 1, 1, 1, 0)
+end function
+
+function x6F : Octet is
+   !implementedby "ADT_X6F_OCTET"
+   return Octet (0, 1, 1, 0, 1, 1, 1, 1)
+end function
+
+function x70 : Octet is
+   !implementedby "ADT_X70_OCTET"
+   return Octet (0, 1, 1, 1, 0, 0, 0, 0)
+end function
+
+function x71 : Octet is
+   !implementedby "ADT_X71_OCTET"
+   return Octet (0, 1, 1, 1, 0, 0, 0, 1)
+end function
+
+function x72 : Octet is
+   !implementedby "ADT_X72_OCTET"
+   return Octet (0, 1, 1, 1, 0, 0, 1, 0)
+end function
+
+function x73 : Octet is
+   !implementedby "ADT_X73_OCTET"
+   return Octet (0, 1, 1, 1, 0, 0, 1, 1)
+end function
+
+function x74 : Octet is
+   !implementedby "ADT_X74_OCTET"
+   return Octet (0, 1, 1, 1, 0, 1, 0, 0)
+end function
+
+function x75 : Octet is
+   !implementedby "ADT_X75_OCTET"
+   return Octet (0, 1, 1, 1, 0, 1, 0, 1)
+end function
+
+function x76 : Octet is
+   !implementedby "ADT_X76_OCTET"
+   return Octet (0, 1, 1, 1, 0, 1, 1, 0)
+end function
+
+function x77 : Octet is
+   !implementedby "ADT_X77_OCTET"
+   return Octet (0, 1, 1, 1, 0, 1, 1, 1)
+end function
+
+function x78 : Octet is
+   !implementedby "ADT_X78_OCTET"
+   return Octet (0, 1, 1, 1, 1, 0, 0, 0)
+end function
+
+function x79 : Octet is
+   !implementedby "ADT_X79_OCTET"
+   return Octet (0, 1, 1, 1, 1, 0, 0, 1)
+end function
+
+function x7A : Octet is
+   !implementedby "ADT_X7A_OCTET"
+   return Octet (0, 1, 1, 1, 1, 0, 1, 0)
+end function
+
+function x7B : Octet is
+   !implementedby "ADT_X7B_OCTET"
+   return Octet (0, 1, 1, 1, 1, 0, 1, 1)
+end function
+
+function x7C : Octet is
+   !implementedby "ADT_X7C_OCTET"
+   return Octet (0, 1, 1, 1, 1, 1, 0, 0)
+end function
+
+function x7D : Octet is
+   !implementedby "ADT_X7D_OCTET"
+   return Octet (0, 1, 1, 1, 1, 1, 0, 1)
+end function
+
+function x7E : Octet is
+   !implementedby "ADT_X7E_OCTET"
+   return Octet (0, 1, 1, 1, 1, 1, 1, 0)
+end function
+
+function x7F : Octet is
+   !implementedby "ADT_X7F_OCTET"
+   return Octet (0, 1, 1, 1, 1, 1, 1, 1)
+end function
+
+function x80 : Octet is
+   !implementedby "ADT_X80_OCTET"
+   return Octet (1, 0, 0, 0, 0, 0, 0, 0)
+end function
+
+function x81 : Octet is
+   !implementedby "ADT_X81_OCTET"
+   return Octet (1, 0, 0, 0, 0, 0, 0, 1)
+end function
+
+function x82 : Octet is
+   !implementedby "ADT_X82_OCTET"
+   return Octet (1, 0, 0, 0, 0, 0, 1, 0)
+end function
+
+function x83 : Octet is
+   !implementedby "ADT_X83_OCTET"
+   return Octet (1, 0, 0, 0, 0, 0, 1, 1)
+end function
+
+function x84 : Octet is
+   !implementedby "ADT_X84_OCTET"
+   return Octet (1, 0, 0, 0, 0, 1, 0, 0)
+end function
+
+function x85 : Octet is
+   !implementedby "ADT_X85_OCTET"
+   return Octet (1, 0, 0, 0, 0, 1, 0, 1)
+end function
+
+function x86 : Octet is
+   !implementedby "ADT_X86_OCTET"
+   return Octet (1, 0, 0, 0, 0, 1, 1, 0)
+end function
+
+function x87 : Octet is
+   !implementedby "ADT_X87_OCTET"
+   return Octet (1, 0, 0, 0, 0, 1, 1, 1)
+end function
+
+function x88 : Octet is
+   !implementedby "ADT_X88_OCTET"
+   return Octet (1, 0, 0, 0, 1, 0, 0, 0)
+end function
+
+function x89 : Octet is
+   !implementedby "ADT_X89_OCTET"
+   return Octet (1, 0, 0, 0, 1, 0, 0, 1)
+end function
+
+function x8A : Octet is
+   !implementedby "ADT_X8A_OCTET"
+   return Octet (1, 0, 0, 0, 1, 0, 1, 0)
+end function
+
+function x8B : Octet is
+   !implementedby "ADT_X8B_OCTET"
+   return Octet (1, 0, 0, 0, 1, 0, 1, 1)
+end function
+
+function x8C : Octet is
+   !implementedby "ADT_X8C_OCTET"
+   return Octet (1, 0, 0, 0, 1, 1, 0, 0)
+end function
+
+function x8D : Octet is
+   !implementedby "ADT_X8D_OCTET"
+   return Octet (1, 0, 0, 0, 1, 1, 0, 1)
+end function
+
+function x8E : Octet is
+   !implementedby "ADT_X8E_OCTET"
+   return Octet (1, 0, 0, 0, 1, 1, 1, 0)
+end function
+
+function x8F : Octet is
+   !implementedby "ADT_X8F_OCTET"
+   return Octet (1, 0, 0, 0, 1, 1, 1, 1)
+end function
+
+function x90 : Octet is
+   !implementedby "ADT_X90_OCTET"
+   return Octet (1, 0, 0, 1, 0, 0, 0, 0)
+end function
+
+function x91 : Octet is
+   !implementedby "ADT_X91_OCTET"
+   return Octet (1, 0, 0, 1, 0, 0, 0, 1)
+end function
+
+function x92 : Octet is
+   !implementedby "ADT_X92_OCTET"
+   return Octet (1, 0, 0, 1, 0, 0, 1, 0)
+end function
+
+function x93 : Octet is
+   !implementedby "ADT_X93_OCTET"
+   return Octet (1, 0, 0, 1, 0, 0, 1, 1)
+end function
+
+function x94 : Octet is
+   !implementedby "ADT_X94_OCTET"
+   return Octet (1, 0, 0, 1, 0, 1, 0, 0)
+end function
+
+function x95 : Octet is
+   !implementedby "ADT_X95_OCTET"
+   return Octet (1, 0, 0, 1, 0, 1, 0, 1)
+end function
+
+function x96 : Octet is
+   !implementedby "ADT_X96_OCTET"
+   return Octet (1, 0, 0, 1, 0, 1, 1, 0)
+end function
+
+function x97 : Octet is
+   !implementedby "ADT_X97_OCTET"
+   return Octet (1, 0, 0, 1, 0, 1, 1, 1)
+end function
+
+function x98 : Octet is
+   !implementedby "ADT_X98_OCTET"
+   return Octet (1, 0, 0, 1, 1, 0, 0, 0)
+end function
+
+function x99 : Octet is
+   !implementedby "ADT_X99_OCTET"
+   return Octet (1, 0, 0, 1, 1, 0, 0, 1)
+end function
+
+function x9A : Octet is
+   !implementedby "ADT_X9A_OCTET"
+   return Octet (1, 0, 0, 1, 1, 0, 1, 0)
+end function
+
+function x9B : Octet is
+   !implementedby "ADT_X9B_OCTET"
+   return Octet (1, 0, 0, 1, 1, 0, 1, 1)
+end function
+
+function x9C : Octet is
+   !implementedby "ADT_X9C_OCTET"
+   return Octet (1, 0, 0, 1, 1, 1, 0, 0)
+end function
+
+function x9D : Octet is
+   !implementedby "ADT_X9D_OCTET"
+   return Octet (1, 0, 0, 1, 1, 1, 0, 1)
+end function
+
+function x9E : Octet is
+   !implementedby "ADT_X9E_OCTET"
+   return Octet (1, 0, 0, 1, 1, 1, 1, 0)
+end function
+
+function x9F : Octet is
+   !implementedby "ADT_X9F_OCTET"
+   return Octet (1, 0, 0, 1, 1, 1, 1, 1)
+end function
+
+function xA0 : Octet is
+   !implementedby "ADT_XA0_OCTET"
+   return Octet (1, 0, 1, 0, 0, 0, 0, 0)
+end function
+
+function xA1 : Octet is
+   !implementedby "ADT_XA1_OCTET"
+   return Octet (1, 0, 1, 0, 0, 0, 0, 1)
+end function
+
+function xA2 : Octet is
+   !implementedby "ADT_XA2_OCTET"
+   return Octet (1, 0, 1, 0, 0, 0, 1, 0)
+end function
+
+function xA3 : Octet is
+   !implementedby "ADT_XA3_OCTET"
+   return Octet (1, 0, 1, 0, 0, 0, 1, 1)
+end function
+
+function xA4 : Octet is
+   !implementedby "ADT_XA4_OCTET"
+   return Octet (1, 0, 1, 0, 0, 1, 0, 0)
+end function
+
+function xA5 : Octet is
+   !implementedby "ADT_XA5_OCTET"
+   return Octet (1, 0, 1, 0, 0, 1, 0, 1)
+end function
+
+function xA6 : Octet is
+   !implementedby "ADT_XA6_OCTET"
+   return Octet (1, 0, 1, 0, 0, 1, 1, 0)
+end function
+
+function xA7 : Octet is
+   !implementedby "ADT_XA7_OCTET"
+   return Octet (1, 0, 1, 0, 0, 1, 1, 1)
+end function
+
+function xA8 : Octet is
+   !implementedby "ADT_XA8_OCTET"
+   return Octet (1, 0, 1, 0, 1, 0, 0, 0)
+end function
+
+function xA9 : Octet is
+   !implementedby "ADT_XA9_OCTET"
+   return Octet (1, 0, 1, 0, 1, 0, 0, 1)
+end function
+
+function xAA : Octet is
+   !implementedby "ADT_XAA_OCTET"
+   return Octet (1, 0, 1, 0, 1, 0, 1, 0)
+end function
+
+function xAB : Octet is
+   !implementedby "ADT_XAB_OCTET"
+   return Octet (1, 0, 1, 0, 1, 0, 1, 1)
+end function
+
+function xAC : Octet is
+   !implementedby "ADT_XAC_OCTET"
+   return Octet (1, 0, 1, 0, 1, 1, 0, 0)
+end function
+
+function xAD : Octet is
+   !implementedby "ADT_XAD_OCTET"
+   return Octet (1, 0, 1, 0, 1, 1, 0, 1)
+end function
+
+function xAE : Octet is
+   !implementedby "ADT_XAE_OCTET"
+   return Octet (1, 0, 1, 0, 1, 1, 1, 0)
+end function
+
+function xAF : Octet is
+   !implementedby "ADT_XAF_OCTET"
+   return Octet (1, 0, 1, 0, 1, 1, 1, 1)
+end function
+
+function xB0 : Octet is
+   !implementedby "ADT_XB0_OCTET"
+   return Octet (1, 0, 1, 1, 0, 0, 0, 0)
+end function
+
+function xB1 : Octet is
+   !implementedby "ADT_XB1_OCTET"
+   return Octet (1, 0, 1, 1, 0, 0, 0, 1)
+end function
+
+function xB2 : Octet is
+   !implementedby "ADT_XB2_OCTET"
+   return Octet (1, 0, 1, 1, 0, 0, 1, 0)
+end function
+
+function xB3 : Octet is
+   !implementedby "ADT_XB3_OCTET"
+   return Octet (1, 0, 1, 1, 0, 0, 1, 1)
+end function
+
+function xB4 : Octet is
+   !implementedby "ADT_XB4_OCTET"
+   return Octet (1, 0, 1, 1, 0, 1, 0, 0)
+end function
+
+function xB5 : Octet is
+   !implementedby "ADT_XB5_OCTET"
+   return Octet (1, 0, 1, 1, 0, 1, 0, 1)
+end function
+
+function xB6 : Octet is
+   !implementedby "ADT_XB6_OCTET"
+   return Octet (1, 0, 1, 1, 0, 1, 1, 0)
+end function
+
+function xB7 : Octet is
+   !implementedby "ADT_XB7_OCTET"
+   return Octet (1, 0, 1, 1, 0, 1, 1, 1)
+end function
+
+function xB8 : Octet is
+   !implementedby "ADT_XB8_OCTET"
+   return Octet (1, 0, 1, 1, 1, 0, 0, 0)
+end function
+
+function xB9 : Octet is
+   !implementedby "ADT_XB9_OCTET"
+   return Octet (1, 0, 1, 1, 1, 0, 0, 1)
+end function
+
+function xBA : Octet is
+   !implementedby "ADT_XBA_OCTET"
+   return Octet (1, 0, 1, 1, 1, 0, 1, 0)
+end function
+
+function xBB : Octet is
+   !implementedby "ADT_XBB_OCTET"
+   return Octet (1, 0, 1, 1, 1, 0, 1, 1)
+end function
+
+function xBC : Octet is
+   !implementedby "ADT_XBC_OCTET"
+   return Octet (1, 0, 1, 1, 1, 1, 0, 0)
+end function
+
+function xBD : Octet is
+   !implementedby "ADT_XBD_OCTET"
+   return Octet (1, 0, 1, 1, 1, 1, 0, 1)
+end function
+
+function xBE : Octet is
+   !implementedby "ADT_XBE_OCTET"
+   return Octet (1, 0, 1, 1, 1, 1, 1, 0)
+end function
+
+function xBF : Octet is
+   !implementedby "ADT_XBF_OCTET"
+   return Octet (1, 0, 1, 1, 1, 1, 1, 1)
+end function
+
+function xC0 : Octet is
+   !implementedby "ADT_XC0_OCTET"
+   return Octet (1, 1, 0, 0, 0, 0, 0, 0)
+end function
+
+function xC1 : Octet is
+   !implementedby "ADT_XC1_OCTET"
+   return Octet (1, 1, 0, 0, 0, 0, 0, 1)
+end function
+
+function xC2 : Octet is
+   !implementedby "ADT_XC2_OCTET"
+   return Octet (1, 1, 0, 0, 0, 0, 1, 0)
+end function
+
+function xC3 : Octet is
+   !implementedby "ADT_XC3_OCTET"
+   return Octet (1, 1, 0, 0, 0, 0, 1, 1)
+end function
+
+function xC4 : Octet is
+   !implementedby "ADT_XC4_OCTET"
+   return Octet (1, 1, 0, 0, 0, 1, 0, 0)
+end function
+
+function xC5 : Octet is
+   !implementedby "ADT_XC5_OCTET"
+   return Octet (1, 1, 0, 0, 0, 1, 0, 1)
+end function
+
+function xC6 : Octet is
+   !implementedby "ADT_XC6_OCTET"
+   return Octet (1, 1, 0, 0, 0, 1, 1, 0)
+end function
+
+function xC7 : Octet is
+   !implementedby "ADT_XC7_OCTET"
+   return Octet (1, 1, 0, 0, 0, 1, 1, 1)
+end function
+
+function xC8 : Octet is
+   !implementedby "ADT_XC8_OCTET"
+   return Octet (1, 1, 0, 0, 1, 0, 0, 0)
+end function
+
+function xC9 : Octet is
+   !implementedby "ADT_XC9_OCTET"
+   return Octet (1, 1, 0, 0, 1, 0, 0, 1)
+end function
+
+function xCA : Octet is
+   !implementedby "ADT_XCA_OCTET"
+   return Octet (1, 1, 0, 0, 1, 0, 1, 0)
+end function
+
+function xCB : Octet is
+   !implementedby "ADT_XCB_OCTET"
+   return Octet (1, 1, 0, 0, 1, 0, 1, 1)
+end function
+
+function xCC : Octet is
+   !implementedby "ADT_XCC_OCTET"
+   return Octet (1, 1, 0, 0, 1, 1, 0, 0)
+end function
+
+function xCD : Octet is
+   !implementedby "ADT_XCD_OCTET"
+   return Octet (1, 1, 0, 0, 1, 1, 0, 1)
+end function
+
+function xCE : Octet is
+   !implementedby "ADT_XCE_OCTET"
+   return Octet (1, 1, 0, 0, 1, 1, 1, 0)
+end function
+
+function xCF : Octet is
+   !implementedby "ADT_XCF_OCTET"
+   return Octet (1, 1, 0, 0, 1, 1, 1, 1)
+end function
+
+function xD0 : Octet is
+   !implementedby "ADT_XD0_OCTET"
+   return Octet (1, 1, 0, 1, 0, 0, 0, 0)
+end function
+
+function xD1 : Octet is
+   !implementedby "ADT_XD1_OCTET"
+   return Octet (1, 1, 0, 1, 0, 0, 0, 1)
+end function
+
+function xD2 : Octet is
+   !implementedby "ADT_XD2_OCTET"
+   return Octet (1, 1, 0, 1, 0, 0, 1, 0)
+end function
+
+function xD3 : Octet is
+   !implementedby "ADT_XD3_OCTET"
+   return Octet (1, 1, 0, 1, 0, 0, 1, 1)
+end function
+
+function xD4 : Octet is
+   !implementedby "ADT_XD4_OCTET"
+   return Octet (1, 1, 0, 1, 0, 1, 0, 0)
+end function
+
+function xD5 : Octet is
+   !implementedby "ADT_XD5_OCTET"
+   return Octet (1, 1, 0, 1, 0, 1, 0, 1)
+end function
+
+function xD6 : Octet is
+   !implementedby "ADT_XD6_OCTET"
+   return Octet (1, 1, 0, 1, 0, 1, 1, 0)
+end function
+
+function xD7 : Octet is
+   !implementedby "ADT_XD7_OCTET"
+   return Octet (1, 1, 0, 1, 0, 1, 1, 1)
+end function
+
+function xD8 : Octet is
+   !implementedby "ADT_XD8_OCTET"
+   return Octet (1, 1, 0, 1, 1, 0, 0, 0)
+end function
+
+function xD9 : Octet is
+   !implementedby "ADT_XD9_OCTET"
+   return Octet (1, 1, 0, 1, 1, 0, 0, 1)
+end function
+
+function xDA : Octet is
+   !implementedby "ADT_XDA_OCTET"
+   return Octet (1, 1, 0, 1, 1, 0, 1, 0)
+end function
+
+function xDB : Octet is
+   !implementedby "ADT_XDB_OCTET"
+   return Octet (1, 1, 0, 1, 1, 0, 1, 1)
+end function
+
+function xDC : Octet is
+   !implementedby "ADT_XDC_OCTET"
+   return Octet (1, 1, 0, 1, 1, 1, 0, 0)
+end function
+
+function xDD : Octet is
+   !implementedby "ADT_XDD_OCTET"
+   return Octet (1, 1, 0, 1, 1, 1, 0, 1)
+end function
+
+function xDE : Octet is
+   !implementedby "ADT_XDE_OCTET"
+   return Octet (1, 1, 0, 1, 1, 1, 1, 0)
+end function
+
+function xDF : Octet is
+   !implementedby "ADT_XDF_OCTET"
+   return Octet (1, 1, 0, 1, 1, 1, 1, 1)
+end function
+
+function xE0 : Octet is
+   !implementedby "ADT_XE0_OCTET"
+   return Octet (1, 1, 1, 0, 0, 0, 0, 0)
+end function
+
+function xE1 : Octet is
+   !implementedby "ADT_XE1_OCTET"
+   return Octet (1, 1, 1, 0, 0, 0, 0, 1)
+end function
+
+function xE2 : Octet is
+   !implementedby "ADT_XE2_OCTET"
+   return Octet (1, 1, 1, 0, 0, 0, 1, 0)
+end function
+
+function xE3 : Octet is
+   !implementedby "ADT_XE3_OCTET"
+   return Octet (1, 1, 1, 0, 0, 0, 1, 1)
+end function
+
+function xE4 : Octet is
+   !implementedby "ADT_XE4_OCTET"
+   return Octet (1, 1, 1, 0, 0, 1, 0, 0)
+end function
+
+function xE5 : Octet is
+   !implementedby "ADT_XE5_OCTET"
+   return Octet (1, 1, 1, 0, 0, 1, 0, 1)
+end function
+
+function xE6 : Octet is
+   !implementedby "ADT_XE6_OCTET"
+   return Octet (1, 1, 1, 0, 0, 1, 1, 0)
+end function
+
+function xE7 : Octet is
+   !implementedby "ADT_XE7_OCTET"
+   return Octet (1, 1, 1, 0, 0, 1, 1, 1)
+end function
+
+function xE8 : Octet is
+   !implementedby "ADT_XE8_OCTET"
+   return Octet (1, 1, 1, 0, 1, 0, 0, 0)
+end function
+
+function xE9 : Octet is
+   !implementedby "ADT_XE9_OCTET"
+   return Octet (1, 1, 1, 0, 1, 0, 0, 1)
+end function
+
+function xEA : Octet is
+   !implementedby "ADT_XEA_OCTET"
+   return Octet (1, 1, 1, 0, 1, 0, 1, 0)
+end function
+
+function xEB : Octet is
+   !implementedby "ADT_XEB_OCTET"
+   return Octet (1, 1, 1, 0, 1, 0, 1, 1)
+end function
+
+function xEC : Octet is
+   !implementedby "ADT_XEC_OCTET"
+   return Octet (1, 1, 1, 0, 1, 1, 0, 0)
+end function
+
+function xED : Octet is
+   !implementedby "ADT_XED_OCTET"
+   return Octet (1, 1, 1, 0, 1, 1, 0, 1)
+end function
+
+function xEE : Octet is
+   !implementedby "ADT_XEE_OCTET"
+   return Octet (1, 1, 1, 0, 1, 1, 1, 0)
+end function
+
+function xEF : Octet is
+   !implementedby "ADT_XEF_OCTET"
+   return Octet (1, 1, 1, 0, 1, 1, 1, 1)
+end function
+
+function xF0 : Octet is
+   !implementedby "ADT_XF0_OCTET"
+   return Octet (1, 1, 1, 1, 0, 0, 0, 0)
+end function
+
+function xF1 : Octet is
+   !implementedby "ADT_XF1_OCTET"
+   return Octet (1, 1, 1, 1, 0, 0, 0, 1)
+end function
+
+function xF2 : Octet is
+   !implementedby "ADT_XF2_OCTET"
+   return Octet (1, 1, 1, 1, 0, 0, 1, 0)
+end function
+
+function xF3 : Octet is
+   !implementedby "ADT_XF3_OCTET"
+   return Octet (1, 1, 1, 1, 0, 0, 1, 1)
+end function
+
+function xF4 : Octet is
+   !implementedby "ADT_XF4_OCTET"
+   return Octet (1, 1, 1, 1, 0, 1, 0, 0)
+end function
+
+function xF5 : Octet is
+   !implementedby "ADT_XF5_OCTET"
+   return Octet (1, 1, 1, 1, 0, 1, 0, 1)
+end function
+
+function xF6 : Octet is
+   !implementedby "ADT_XF6_OCTET"
+   return Octet (1, 1, 1, 1, 0, 1, 1, 0)
+end function
+
+function xF7 : Octet is
+   !implementedby "ADT_XF7_OCTET"
+   return Octet (1, 1, 1, 1, 0, 1, 1, 1)
+end function
+
+function xF8 : Octet is
+   !implementedby "ADT_XF8_OCTET"
+   return Octet (1, 1, 1, 1, 1, 0, 0, 0)
+end function
+
+function xF9 : Octet is
+   !implementedby "ADT_XF9_OCTET"
+   return Octet (1, 1, 1, 1, 1, 0, 0, 1)
+end function
+
+function xFA : Octet is
+   !implementedby "ADT_XFA_OCTET"
+   return Octet (1, 1, 1, 1, 1, 0, 1, 0)
+end function
+
+function xFB : Octet is
+   !implementedby "ADT_XFB_OCTET"
+   return Octet (1, 1, 1, 1, 1, 0, 1, 1)
+end function
+
+function xFC : Octet is
+   !implementedby "ADT_XFC_OCTET"
+   return Octet (1, 1, 1, 1, 1, 1, 0, 0)
+end function
+
+function xFD : Octet is
+   !implementedby "ADT_XFD_OCTET"
+   return Octet (1, 1, 1, 1, 1, 1, 0, 1)
+end function
+
+function xFE : Octet is
+   !implementedby "ADT_XFE_OCTET"
+   return Octet (1, 1, 1, 1, 1, 1, 1, 0)
+end function
+
+function xFF : Octet is
+   !implementedby "ADT_XFF_OCTET"
+   return Octet (1, 1, 1, 1, 1, 1, 1, 1)
+end function
+
+end module
+

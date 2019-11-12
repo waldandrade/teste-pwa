@@ -1,0 +1,10 @@
+type DecNatRepr is DecString
+  opns
+     NatNum (*! implementedby ADT_NATNUM_DECSTRING *) : DecString -> Nat
+  eqns
+   forall ds : DecString, d : DecDigit
+   ofsort Nat
+      NatNum (Dec (d)) = NatNum (d);
+      NatNum (d + ds) = NatNum (d) * (Succ (NatNum (9)) ** Length (ds)) + NatNum (ds)
+endtype
+

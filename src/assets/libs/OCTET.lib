@@ -1,0 +1,66 @@
+type Octet is Bit, Boolean
+    sorts
+       Octet (*! implementedby ADT_OCTET comparedby ADT_CMP_OCTET
+                 iteratedby ADT_ENUM_FIRST_OCTET and ADT_ENUM_NEXT_OCTET
+                 printedby ADT_PRINT_OCTET *)
+    opns
+       Octet (*! implementedby ADT_OCT constructor *) : 
+                     Bit, Bit, Bit, Bit, Bit, Bit, Bit, Bit -> Octet
+       Bit1 (*! implementedby ADT_BIT1_OCTET *),
+       Bit2 (*! implementedby ADT_BIT2_OCTET *),
+       Bit3 (*! implementedby ADT_BIT3_OCTET *),
+       Bit4 (*! implementedby ADT_BIT4_OCTET *),
+       Bit5 (*! implementedby ADT_BIT5_OCTET *), 
+       Bit6 (*! implementedby ADT_BIT6_OCTET *),
+       Bit7 (*! implementedby ADT_BIT7_OCTET *),
+       Bit8 (*! implementedby ADT_BIT8_OCTET *) : Octet -> Bit
+       not (*! implementedby ADT_NOT_OCTET *) : Octet -> Octet
+       _and_ (*! implementedby ADT_AND_OCTET *),
+       _or_ (*! implementedby ADT_OR_OCTET *),
+       _xor_ (*! implementedby ADT_XOR_OCTET *) : Octet, Octet -> Octet
+       _eq_ (*! implementedby ADT_EQ_OCTET *),
+       _ne_ (*! implementedby ADT_NE_OCTET *) : Octet, Octet -> Bool
+    eqns
+       forall b1, b2, b3, b4, b5, b6, b7, b8 : Bit, x, y : Octet
+       ofsort Bit
+          Bit1 (Octet (b1, b2, b3, b4, b5, b6, b7, b8)) = b1;
+          Bit2 (Octet (b1, b2, b3, b4, b5, b6, b7, b8)) = b2;
+          Bit3 (Octet (b1, b2, b3, b4, b5, b6, b7, b8)) = b3;
+          Bit4 (Octet (b1, b2, b3, b4, b5, b6, b7, b8)) = b4;
+          Bit5 (Octet (b1, b2, b3, b4, b5, b6, b7, b8)) = b5;
+          Bit6 (Octet (b1, b2, b3, b4, b5, b6, b7, b8)) = b6;
+          Bit7 (Octet (b1, b2, b3, b4, b5, b6, b7, b8)) = b7;
+          Bit8 (Octet (b1, b2, b3, b4, b5, b6, b7, b8)) = b8
+       ofsort Octet
+          not (x) = Octet (not (Bit1 (x)), not (Bit2 (x)),
+                           not (Bit3 (x)), not (Bit4 (x)), 
+                           not (Bit5 (x)), not (Bit6 (x)), 
+                           not (Bit7 (x)), not (Bit8 (x)))
+       ofsort Octet
+          x and y = Octet (Bit1 (x) and Bit1 (y), Bit2 (x) and Bit2 (y),
+                           Bit3 (x) and Bit3 (y), Bit4 (x) and Bit4 (y), 
+                           Bit5 (x) and Bit5 (y), Bit6 (x) and Bit6 (y), 
+                           Bit7 (x) and Bit7 (y), Bit8 (x) and Bit8 (y))
+       ofsort Octet
+          x or y =  Octet (Bit1 (x) or Bit1 (y), Bit2 (x) or Bit2 (y),
+                           Bit3 (x) or Bit3 (y), Bit4 (x) or Bit4 (y), 
+                           Bit5 (x) or Bit5 (y), Bit6 (x) or Bit6 (y), 
+                           Bit7 (x) or Bit7 (y), Bit8 (x) or Bit8 (y))
+       ofsort Octet
+          x xor y = Octet (Bit1 (x) xor Bit1 (y), Bit2 (x) xor Bit2 (y),
+                           Bit3 (x) xor Bit3 (y), Bit4 (x) xor Bit4 (y), 
+                           Bit5 (x) xor Bit5 (y), Bit6 (x) xor Bit6 (y), 
+                           Bit7 (x) xor Bit7 (y), Bit8 (x) xor Bit8 (y))
+       ofsort Bool
+          x eq y = (Bit1 (x) eq Bit1 (y)) and
+                   (Bit2 (x) eq Bit2 (y)) and
+                   (Bit3 (x) eq Bit3 (y)) and 
+                   (Bit4 (x) eq Bit4 (y)) and
+                   (Bit5 (x) eq Bit5 (y)) and
+                   (Bit6 (x) eq Bit6 (y)) and
+                   (Bit7 (x) eq Bit7 (y)) and
+                   (Bit8 (x) eq Bit8 (y))
+       ofsort Bool
+          x ne y = not (x eq y)
+endtype
+

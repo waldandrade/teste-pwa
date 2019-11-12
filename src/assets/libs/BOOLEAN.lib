@@ -1,0 +1,31 @@
+type Boolean is
+   sorts
+      Bool (*! implementedby ADT_BOOL comparedby ADT_CMP_BOOL
+               iteratedby ADT_ENUM_FIRST_BOOL and ADT_ENUM_NEXT_BOOL
+               printedby ADT_PRINT_BOOL *)
+   opns
+      false     (*! implementedby ADT_FALSE constructor *),
+      true      (*! implementedby ADT_TRUE constructor *) : -> Bool
+      not       (*! implementedby ADT_NOT *) : Bool -> Bool
+      _and_     (*! implementedby ADT_AND *),
+      _or_      (*! implementedby ADT_OR *),
+      _xor_     (*! implementedby ADT_XOR *),
+      _implies_ (*! implementedby ADT_IMPLIES *),
+      _iff_     (*! implementedby ADT_IFF *),
+      _eq_      (*! implementedby ADT_EQ_BOOL *),
+      _ne_      (*! implementedby ADT_NE_BOOL *) : Bool, Bool  -> Bool
+   eqns
+      forall x, y : Bool
+      ofsort Bool
+         not (true)   =  false;
+         not (false)  =  true;
+         x and true   =  x;
+         x and false  =  false;
+         x or true    =  true;
+         x or false   =  x;
+         x xor y      =  (x and not (y)) or (y and not (x));
+         x implies y  =  y or not (x);
+         x iff y      =  (x implies y) and (y implies x);
+         x eq y       =  x iff y;
+         x ne y       =  x xor y;
+endtype

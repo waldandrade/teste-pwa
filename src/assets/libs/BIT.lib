@@ -1,0 +1,43 @@
+type Bit is Boolean, NaturalNumber
+   sorts Bit (*! implementedby ADT_BIT comparedby ADT_CMP_BIT
+                 iteratedby ADT_ENUM_FIRST_BIT and ADT_ENUM_NEXT_BIT
+                 printedby ADT_PRINT_BIT *)
+   opns 0 (*! implementedby ADT_ZERO_BIT constructor *) : -> Bit
+        1 (*! implementedby ADT_ONE_BIT constructor *) : -> Bit
+        not (*! implementedby ADT_NOT_BIT *) : Bit -> Bit
+	_and_ (*! implementedby ADT_AND_BIT *),
+	_or_ (*! implementedby ADT_OR_BIT *),
+	_xor_ (*! implementedby ADT_XOR_BIT *) : Bit, Bit -> Bit
+	_eq_ (*! implementedby ADT_EQ_BIT *),
+	_ne_ (*! implementedby ADT_NE_BIT *),
+	_lt_ (*! implementedby ADT_LT_BIT *),
+	_le_ (*! implementedby ADT_LE_BIT *),
+	_ge_ (*! implementedby ADT_GE_BIT *),
+	_gt_ (*! implementedby ADT_GT_BIT *) : Bit, Bit -> Bool
+	NatNum (*! implementedby ADT_NATNUM_BIT *) : Bit -> Nat
+   eqns
+      forall x,y : Bit
+      ofsort Bit
+         not (0) = 1;
+         not (1) = 0;
+      ofsort Bit
+         x and 0 = 0;
+         x and 1 = x;
+      ofsort Bit
+         x or 0 = x;
+         x or 1 = 1;
+      ofsort Bit
+         x xor 0 = x;
+         x xor 1 = not (x);
+      ofsort Nat
+	 NatNum (0) = 0;
+ 	 NatNum (1) = Succ (0);
+      ofsort Bool
+ 	 x eq y = NatNum (x) eq NatNum (y);
+ 	 x ne y = NatNum (x) ne NatNum (y);
+ 	 x lt y = NatNum (x) lt NatNum (y);
+ 	 x le y = NatNum (x) le NatNum (y);
+ 	 x ge y = NatNum (x) ge NatNum (y);
+ 	 x gt y = NatNum (x) gt NatNum (y);
+endtype
+

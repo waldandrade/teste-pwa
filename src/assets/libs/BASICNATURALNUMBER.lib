@@ -1,0 +1,21 @@
+type BasicNaturalNumber is 
+   sorts Nat (*! implementedby ADT_NAT comparedby ADT_CMP_NAT
+                 iteratedby ADT_ENUM_FIRST_NAT and ADT_ENUM_NEXT_NAT
+                 printedby ADT_PRINT_NAT *)
+   opns 0 (*! implementedby ADT_N0 constructor *) : -> Nat
+        Succ (*! implementedby ADT_SUCC_NAT constructor *) : Nat -> Nat
+        _+_  (*! implementedby ADT_PLUS_NAT *),
+        _*_  (*! implementedby ADT_MULT_NAT *),
+        _**_ (*! implementedby ADT_POWER_NAT *) : Nat, Nat -> Nat
+   eqns
+      forall m, n : Nat
+      ofsort Nat
+         m + 0 = m;
+         m + Succ(n) = Succ(m) + n;
+      ofsort Nat
+         m * 0 = 0;
+         m * Succ(n) = m + (m * n);
+      ofsort Nat
+         m ** 0 = Succ(0);
+         m ** Succ(n) = m * (m ** n)
+endtype

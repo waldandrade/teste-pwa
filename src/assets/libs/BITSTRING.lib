@@ -1,0 +1,38 @@
+type BitString is Bit
+   sorts
+      BitString (*! implementedby ADT_BITSTRING comparedby ADT_CMP_BITSTRING
+                    printedby ADT_PRINT_BITSTRING *)
+   opns
+      Bit (*! implementedby ADT_BIT_BITSTRING constructor *) : Bit -> BitString
+      _+_ (*! implementedby ADT_PLUS_BITSTRING constructor *) : Bit, BitString -> BitString
+      _+_ (*! implementedby ADT_OTHER_PLUS_BITSTRING *) : BitString, Bit -> BitString
+      _++_ (*! implementedby ADT_CONCAT_BITSTRING *) : BitString, BitString -> BitString
+      Reverse (*! implementedby ADT_REVERSE_BITSTRING *) : BitString -> BitString
+      Length (*! implementedby ADT_LENGTH_BITSTRING *) : BitString -> Nat
+      _eq_ (*! implementedby ADT_EQ_BITSTRING *), 
+      _ne_ (*! implementedby ADT_NE_BITSTRING *) : BitString, BitString -> Bool
+   eqns
+      forall s, t : BitString, x, y : Bit, a : Bool
+      ofsort BitString
+         Bit (x) + y = x + Bit (y);
+         (x + s) + y = x + (s + y);
+      ofsort BitString
+         Bit (x) ++ s = x + s;
+         (x + s) ++ t = x + (s ++ t);
+      ofsort BitString
+         Reverse (Bit (x)) = Bit (x);
+         Reverse (x + s) = Reverse (s) + x;
+      ofsort Nat
+         Length (Bit (x)) = Succ (0);
+         Length (x + s) = Succ (Length (s));
+      ofsort Bool
+         x eq y => Bit (x) eq Bit (y) = true;
+         x ne y => Bit (x) eq Bit (y) = false;
+         Bit (x) eq (y + s) = false;
+         (x + s) eq Bit (y) = false;
+         x eq y => (x + s) eq (y + t) = s eq t;
+         x ne y => (x + s) eq (y + t) = false;
+      ofsort Bool
+         s ne t = not (s eq t)
+endtype
+

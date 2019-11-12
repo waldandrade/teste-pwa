@@ -1,0 +1,154 @@
+type IntegerNumber is NaturalNumber
+   sorts Int (*! implementedby ADT_INT comparedby ADT_CMP_INT
+                 iteratedby ADT_ENUM_FIRST_INT and ADT_ENUM_NEXT_INT
+                 printedby ADT_PRINT_INT *)
+   opns
+        Pos (*! implementedby ADT_POS_INT constructor *) : Nat -> Int 
+        Neg (*! implementedby ADT_NEG_INT constructor *) : Nat -> Int 
+        (* Pos (X) == X ; Neg (X) == - X - 1 *)
+        (* Pos (Pos (X)) == Neg (Neg (X)) == X *)
+        succ (*! implementedby ADT_SUCC_INT *),
+        pred (*! implementedby ADT_PRED_INT *) : Int -> Int
+        0 (*! implementedby ADT_I0 *),
+        1 (*! implementedby ADT_I1 *), 
+        2 (*! implementedby ADT_I2 *), 
+        3 (*! implementedby ADT_I3 *), 
+        4 (*! implementedby ADT_I4 *), 
+        5 (*! implementedby ADT_I5 *), 
+        6 (*! implementedby ADT_I6 *), 
+        7 (*! implementedby ADT_I7 *),
+        8 (*! implementedby ADT_I8 *),
+        9 (*! implementedby ADT_I9 *),
+        minus_1 (*! implementedby ADT_IM1 *), 
+        minus_2 (*! implementedby ADT_IM2 *), 
+        minus_3 (*! implementedby ADT_IM3 *), 
+        minus_4 (*! implementedby ADT_IM4 *), 
+        minus_5 (*! implementedby ADT_IM5 *), 
+        minus_6 (*! implementedby ADT_IM6 *), 
+        minus_7 (*! implementedby ADT_IM7 *),
+        minus_8 (*! implementedby ADT_IM8 *),
+        minus_9 (*! implementedby ADT_IM9 *) : -> Int
+	sign (*! implementedby ADT_SIGN_INT *),
+        abs  (*! implementedby ADT_ABS_INT *),
+	- (*! implementedby ADT_OPP_INT *) : Int -> Int
+        _+_  (*! implementedby ADT_PLUS_INT *),
+        _-_  (*! implementedby ADT_MINUS_INT *),
+        _*_  (*! implementedby ADT_MULT_INT *) : Int, Int -> Int
+        _**_ (*! implementedby ADT_POWER_INT *) : Int, Nat -> Int
+        _eq_ (*! implementedby ADT_EQ_INT *), 
+        _ne_ (*! implementedby ADT_NE_INT *), 
+        _lt_ (*! implementedby ADT_LT_INT *),
+        _le_ (*! implementedby ADT_LE_INT *),
+        _gt_ (*! implementedby ADT_GT_INT *),
+        _ge_ (*! implementedby ADT_GE_INT *),
+	_==_ (*! implementedby ADT_EQ_BIS_INT *),
+        _<>_ (*! implementedby ADT_NE_BIS_INT *),
+	_<_ (*! implementedby ADT_LT_BIS_INT *),
+	_<=_ (*! implementedby ADT_LE_BIS_INT *),
+	_>_ (*! implementedby ADT_GT_BIS_INT *),
+	_>=_ (*! implementedby ADT_GE_BIS_INT *) : Int, Int -> Bool
+        min (*! implementedby ADT_MIN_INT *),
+        max (*! implementedby ADT_MAX_INT *) : Int, Int -> Int
+	NatToInt (*! implementedby ADT_NATTOINT *) : Nat -> Int
+	IntToNat (*! implementedby ADT_INTTONAT *) : Int -> Nat
+    eqns
+        forall M, N:Nat, X, Y:Int
+        ofsort Int
+     	    succ (Pos (N)) = Pos (Succ (N));
+	    succ (Neg (0)) = Pos (0);
+	    succ (Neg (Succ (N))) = Neg (N);
+	ofsort Int
+	    pred (Pos (0)) = Neg (0);
+	    pred (Pos (Succ (N))) = Pos (N);
+	    pred (Neg (N)) = Neg (Succ (N));
+	ofsort Int
+            0 = Pos (0);
+            1 = succ (0);
+            2 = succ (1);
+            3 = succ (2);
+            4 = succ (3);
+            5 = succ (4);
+            6 = succ (5);
+            7 = succ (6);
+            8 = succ (7);
+            9 = succ (8);
+            minus_1 = pred (0);
+            minus_2 = pred (minus_1);
+            minus_3 = pred (minus_2);
+            minus_4 = pred (minus_3);
+            minus_5 = pred (minus_4);
+            minus_6 = pred (minus_5);
+            minus_7 = pred (minus_6);
+            minus_8 = pred (minus_7);
+            minus_9 = pred (minus_8);
+	ofsort Int
+	    sign (Pos (0)) = 0;
+	    sign (Pos (Succ (N))) = 1;
+	    sign (Neg (N)) = minus_1;
+    	ofsort Int
+    	    abs (Pos (N)) = Pos (N);
+    	    abs (Neg (N)) = Pos (Succ (N));
+        ofsort Int
+            - (Pos (0)) = Pos (0);
+            - (Pos (Succ (N))) = Neg (N);
+            - (Neg (N)) = Pos (Succ (N));
+        ofsort Int
+	    Pos (0) + X = X;
+	    Pos (Succ (N)) + X = Pos (N) + succ (X);
+	    Neg (0) + X = pred (X);
+	    Neg (Succ (N)) + X = Neg (N) + pred (X);
+        ofsort Int
+            X - Y = X + - (Y);
+        ofsort Int
+            Pos (0) * X = Pos (0);
+            Pos (Succ (N)) * X = (Pos (N) * X) + X;
+            Neg (0) * X = - (X);
+            Neg (Succ (N)) * X = (Neg (N) * X) - X;
+            (* 
+            ==> alternative axiomatization:
+            Pos (M) * Pos (N) = Pos (M * N);
+            Pos (M) * Neg (N) = succ (Neg (M * Succ (N)));
+            Neg (M) * Pos (N) = succ (Neg (Succ (M) * N));
+            Neg (M) * Neg (N) = Pos (Succ (M) * Succ (N));
+            *)
+        ofsort Int
+    	    X ** 0 = Succ (0);
+    	    X ** Succ (N) = X * (X ** N);
+        ofsort Bool
+            Pos (M) eq Pos (N) = M eq N;
+            Pos (M) eq Neg (N) = false;
+            Neg (M) eq Pos (N) = false;
+            Neg (M) eq Neg (N) = M eq N;
+        ofsort Bool
+            X ne Y = not (X eq Y);
+        ofsort Bool
+            Pos (M) lt Pos (N) = M lt N;
+            Pos (M) lt Neg (N) = false;
+            Neg (M) lt Pos (N) = true;
+            Neg (M) lt Neg (N) = M gt N;
+        ofsort Bool
+            X le Y = (X lt Y) or (X eq Y);
+        ofsort Bool
+            X gt Y = not (X le Y);
+        ofsort Bool
+            X ge Y = not (X lt Y);
+        ofsort Bool
+            X == Y = X eq Y;
+            X <> Y = X ne Y;
+            X <= Y = X le Y;
+            X < Y  = X lt Y;
+            X > Y  = X gt Y;
+            X >= Y = X ge Y;
+        ofsort Int
+            X le Y => min (X, Y) = X;
+            X gt Y => min (X, Y) = Y;
+        ofsort Int
+            X ge Y => max (X, Y) = X;
+            X lt Y => max (X, Y) = Y;
+        ofsort Int
+            NatToInt (N) = Pos (N);
+        ofsort Nat
+            IntToNat (Pos (N)) = N;
+            (* IntToNat (Neg (N)) is undefined *)
+endtype
+

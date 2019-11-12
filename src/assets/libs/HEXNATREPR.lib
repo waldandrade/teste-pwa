@@ -1,0 +1,10 @@
+type HexNatRepr is HexString
+  opns
+     NatNum (*! implementedby ADT_NATNUM_HEXSTRING *) : HexString -> Nat
+  eqns
+   forall hs : HexString, h : HexDigit
+   ofsort Nat
+      NatNum (Hex (h)) = NatNum (h);
+      NatNum (h + hs) = NatNum (h) * (Succ (NatNum (F)) ** Length (hs)) + NatNum (hs)
+endtype
+

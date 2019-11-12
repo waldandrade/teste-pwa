@@ -1,0 +1,38 @@
+type OctString is OctDigit
+   sorts
+      OctString (*! implementedby ADT_OCTSTRING comparedby ADT_CMP_OCTSTRING
+                    printedby ADT_PRINT_OCTSTRING *)
+   opns
+     Oct (*! implementedby ADT_OCT_OCTSTRING constructor *) : OctDigit -> OctString
+     _+_ (*! implementedby ADT_PLUS_OCTSTRING constructor *) : OctDigit, OctString -> OctString
+     _+_ (*! implementedby ADT_OTHER_PLUS_OCTSTRING *) : OctString, OctDigit -> OctString
+     _++_ (*! implementedby ADT_CONCAT_OCTSTRING *) : OctString, OctString -> OctString
+     Reverse (*! implementedby ADT_REVERSE_OCTSTRING *) : OctString -> OctString
+     Length (*! implementedby ADT_LENGTH_OCTSTRING *) : OctString -> Nat
+     _eq_ (*! implementedby ADT_EQ_OCTSTRING *), 
+     _ne_ (*! implementedby ADT_NE_OCTSTRING *) : OctString, OctString -> Bool
+   eqns
+      forall s, t : OctString, x, y : OctDigit, a : Bool
+      ofsort OctString
+         Oct (x) + y = x + Oct (y);
+         (x + s) + y = x + (s + y);
+      ofsort OctString
+         Oct (x) ++ s = x + s;
+         (x + s) ++ t = x + (s ++ t);
+      ofsort OctString
+         Reverse (Oct (x)) = Oct (x);
+         Reverse (x + s) = Reverse (s) + x;
+      ofsort Nat
+         Length (Oct (x)) = Succ (0);
+         Length (x + s) = Succ (Length (s));
+      ofsort Bool
+         x eq y => Oct (x) eq Oct (y) = true;
+         x ne y => Oct (x) eq Oct (y) = false;
+         Oct (x) eq (y + s) = false;
+         (x + s) eq Oct (y) = false;
+         x eq y => (x + s) eq (y + t) = s eq t;
+         x ne y => (x + s) eq (y + t) = false;
+      ofsort Bool
+         s ne t = not (s eq t)
+endtype
+

@@ -1,0 +1,37 @@
+type HexString is HexDigit
+   sorts
+      HexString (*! implementedby ADT_HEXSTRING comparedby ADT_CMP_HEXSTRING
+                    printedby ADT_PRINT_HEXSTRING *)
+   opns
+     Hex (*! implementedby ADT_HEX_HEXSTRING constructor *) : HexDigit -> HexString
+     _+_ (*! implementedby ADT_PLUS_HEXSTRING constructor *) : HexDigit, HexString -> HexString
+     _+_ (*! implementedby ADT_OTHER_PLUS_HEXSTRING *) : HexString, HexDigit -> HexString
+     _++_ (*! implementedby ADT_CONCAT_HEXSTRING *) : HexString, HexString -> HexString
+     Reverse (*! implementedby ADT_REVERSE_HEXSTRING *) : HexString -> HexString
+     Length (*! implementedby ADT_LENGTH_HEXSTRING *) : HexString -> Nat
+     _eq_ (*! implementedby ADT_EQ_HEXSTRING *), 
+     _ne_ (*! implementedby ADT_NE_HEXSTRING *) : HexString, HexString -> Bool
+   eqns
+      forall s, t : HexString, x, y : HexDigit, a : Bool
+      ofsort HexString
+         Hex (x) + y = x + Hex (y);
+         (x + s) + y = x + (s + y);
+      ofsort HexString
+         Hex (x) ++ s = x + s;
+         (x + s) ++ t = x + (s ++ t);
+      ofsort HexString
+         Reverse (Hex (x)) = Hex (x);
+         Reverse (x + s) = Reverse (s) + x;
+      ofsort Nat
+         Length (Hex (x)) = Succ (0);
+         Length (x + s) = Succ (Length (s));
+      ofsort Bool
+         x eq y => Hex (x) eq Hex (y) = true;
+         x ne y => Hex (x) eq Hex (y) = false;
+         Hex (x) eq (y + s) = false;
+         (x + s) eq Hex (y) = false;
+         x eq y => (x + s) eq (y + t) = s eq t;
+         x ne y => (x + s) eq (y + t) = false;
+      ofsort Bool
+         s ne t = not (s eq t)
+endtype

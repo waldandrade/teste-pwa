@@ -1,0 +1,40 @@
+
+library INTEGERNUMBER endlib
+
+type Integer is IntegerNumber, Natural
+   opns
+	_div_ (*! implementedby ADT_DIV_INT *),
+	_rem_ (*! implementedby ADT_REM_INT *),
+	_mod_ (*! implementedby ADT_MOD_INT *) : Int, Int -> Int
+   eqns
+	forall M, N:Nat, X, Y:Int
+	ofsort Int
+	    Pos (M) div Pos (N) = Pos (M div N);
+	    Pos (M) div Neg (N) = - (Pos (M div Succ (N)));
+	    Neg (M) div Pos (N) = - (Pos (Succ (M) div N));
+	    Neg (M) div Neg (N) = Pos (Succ (M) div Succ (N));
+	ofsort Int
+	    X >= 0, Y > 0 => X rem Y = X mod Y;
+	    X >= 0, Y < 0 => X rem Y = X mod abs (Y);
+	    X < 0, Y > 0 => X rem Y = -(abs (X) mod Y);
+	    X < 0, Y < 0 => X rem Y = -(abs (X) mod abs (Y));
+	    (*
+	     * the definition of rem is consistent with the mathematical
+	     * definition of remainder in Euclidian division, satisfying
+	     * the law [x rem y = x - (y * (x div y))]; the result is equal
+	     * to zero or has the same sign as the left operand
+	     *)
+	ofsort Int
+	    Y < 0, X <= Y => X mod Y = (X - Y) mod Y;
+	    Y > 0, X >= Y => X mod Y = (X - Y) mod Y;
+	    Y < 0, X > 0 => X mod Y = (X + Y) mod Y;
+	    Y > 0, X < 0 => X mod Y = (X + Y) mod Y;
+	    X mod Y = X;
+	    (*
+	     * the definition of mod is consistent with the mathematical
+	     * definition of the modulo operator in modulo arithmetic,
+	     * satisfying the law [(x+n) mod n = x mod n]; the result is equal
+	     * to zero or has the same sign as the right operand
+	     *)
+endtype
+

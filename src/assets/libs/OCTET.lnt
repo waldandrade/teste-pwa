@@ -1,0 +1,111 @@
+module OCTET (BIT) is
+
+type Octet is
+   !implementedby "ADT_OCTET"
+   !comparedby "ADT_CMP_OCTET"
+   !iteratedby "ADT_ENUM_FIRST_OCTET", "ADT_ENUM_NEXT_OCTET"
+   !printedby "ADT_PRINT_OCTET"
+   Octet (B1, B2, B3, B4, B5, B6, B7, B8 : Bit) !implementedby "ADT_OCT"
+   with "eq", "ne", "get"
+end type
+
+-------------------------------------------------------------------------------
+
+function Bit1 (O : Octet) : Bit is
+   !implementedby "ADT_BIT1_OCTET"
+   return O.B1
+end function
+
+-------------------------------------------------------------------------------
+
+function Bit2 (O : Octet) : Bit is
+   !implementedby "ADT_BIT2_OCTET"
+   return O.B2
+end function
+
+-------------------------------------------------------------------------------
+
+function Bit3 (O : Octet) : Bit is
+   !implementedby "ADT_BIT3_OCTET"
+   return O.B3
+end function
+
+-------------------------------------------------------------------------------
+
+function Bit4 (O : Octet) : Bit is
+   !implementedby "ADT_BIT4_OCTET"
+   return O.B4
+end function
+
+-------------------------------------------------------------------------------
+
+function Bit5 (O : Octet) : Bit is
+   !implementedby "ADT_BIT5_OCTET"
+   return O.B5
+end function
+
+-------------------------------------------------------------------------------
+
+function Bit6 (O : Octet) : Bit is
+   !implementedby "ADT_BIT6_OCTET"
+   return O.B6
+end function
+
+-------------------------------------------------------------------------------
+
+function Bit7 (O : Octet) : Bit is
+   !implementedby "ADT_BIT7_OCTET"
+   return O.B7
+end function
+
+-------------------------------------------------------------------------------
+
+function Bit8 (O : Octet) : Bit is
+   !implementedby "ADT_BIT8_OCTET"
+   return O.B8
+end function
+
+-------------------------------------------------------------------------------
+
+function not (O : Octet) : Octet is
+   !implementedby "ADT_NOT_OCTET"
+   return Octet (not (O.B1), not (O.B2),
+                 not (O.B3), not (O.B4),
+                 not (O.B5), not (O.B6),
+                 not (O.B7), not (O.B8))
+end function
+
+-------------------------------------------------------------------------------
+
+function _and_ (O1, O2 : Octet) : Octet is
+   !implementedby "ADT_AND_OCTET"
+   return Octet (O1.B1 and O2.B1, O1.B2 and O2.B2,
+                 O1.B3 and O2.B3, O1.B4 and O2.B4,
+                 O1.B5 and O2.B5, O1.B6 and O2.B6,
+                 O1.B7 and O2.B7, O1.B8 and O2.B8)
+end function
+
+-------------------------------------------------------------------------------
+
+function _or_ (O1, O2 : Octet) : Octet is
+   !implementedby "ADT_OR_OCTET"
+   return Octet (O1.B1 or O2.B1, O1.B2 or O2.B2,
+                 O1.B3 or O2.B3, O1.B4 or O2.B4,
+                 O1.B5 or O2.B5, O1.B6 or O2.B6,
+                 O1.B7 or O2.B7, O1.B8 or O2.B8)
+end function
+
+-------------------------------------------------------------------------------
+
+function _xor_ (O1, O2 : Octet) : Octet is
+   !implementedby "ADT_XOR_OCTET"
+   return Octet (O1.B1 xor O2.B1, O1.B2 xor O2.B2,
+                 O1.B3 xor O2.B3, O1.B4 xor O2.B4,
+                 O1.B5 xor O2.B5, O1.B6 xor O2.B6,
+                 O1.B7 xor O2.B7, O1.B8 xor O2.B8)
+end function
+
+-------------------------------------------------------------------------------
+
+end module
+

@@ -1,0 +1,2 @@
+type NatRepresentations is HexNatRepr, DecNatRepr, OctNatRepr, BitNatRepr
+endtype

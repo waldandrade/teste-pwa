@@ -1,0 +1,38 @@
+type DecString is DecDigit
+   sorts
+      DecString (*! implementedby ADT_DECSTRING comparedby ADT_CMP_DECSTRING
+                    printedby ADT_PRINT_DECSTRING *)
+   opns
+     Dec (*! implementedby ADT_DEC_DECSTRING constructor *) : DecDigit -> DecString
+     _+_ (*! implementedby ADT_PLUS_DECSTRING constructor *) : DecDigit, DecString -> DecString
+     _+_ (*! implementedby ADT_OTHER_PLUS_DECSTRING *) : DecString, DecDigit -> DecString
+     _++_ (*! implementedby ADT_CONCAT_DECSTRING *) : DecString, DecString -> DecString
+     Reverse (*! implementedby ADT_REVERSE_DECSTRING *) : DecString -> DecString
+     Length (*! implementedby ADT_LENGTH_DECSTRING *) : DecString -> Nat
+     _eq_ (*! implementedby ADT_EQ_DECSTRING *), 
+     _ne_ (*! implementedby ADT_NE_DECSTRING *) : DecString, DecString -> Bool
+   eqns
+      forall s, t : DecString, x, y : DecDigit, a : Bool
+      ofsort DecString
+         Dec (x) + y = x + Dec (y);
+         (x + s) + y = x + (s + y);
+      ofsort DecString
+         Dec (x) ++ s = x + s;
+         (x + s) ++ t = x + (s ++ t);
+      ofsort DecString
+         Reverse (Dec (x)) = Dec (x);
+         Reverse (x + s) = Reverse (s) + x;
+      ofsort Nat
+         Length (Dec (x)) = Succ (0);
+         Length (x + s) = Succ (Length (s));
+      ofsort Bool
+         x eq y => Dec (x) eq Dec (y) = true;
+         x ne y => Dec (x) eq Dec (y) = false;
+         Dec (x) eq (y + s) = false;
+         (x + s) eq Dec (y) = false;
+         x eq y => (x + s) eq (y + t) = s eq t;
+         x ne y => (x + s) eq (y + t) = false;
+      ofsort Bool
+         s ne t = not (s eq t)
+endtype
+

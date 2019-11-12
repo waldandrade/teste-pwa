@@ -1,0 +1,10 @@
+type BitNatRepr is BitString
+  opns
+     NatNum (*! implementedby ADT_NATNUM_BITSTRING *) : BitString -> Nat
+  eqns
+   forall bs : BitString, b : Bit
+   ofsort Nat
+      NatNum (Bit (b)) = NatNum (b);
+      NatNum (b + bs) = NatNum (b) * (Succ (NatNum (1)) ** Length (bs)) + NatNum (bs)
+endtype
+

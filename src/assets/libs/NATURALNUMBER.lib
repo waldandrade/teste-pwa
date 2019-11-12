@@ -1,0 +1,29 @@
+type NaturalNumber is BasicNaturalNumber, Boolean
+   opns 
+        _eq_ (*! implementedby ADT_EQ_NAT *), 
+        _ne_ (*! implementedby ADT_NE_NAT *), 
+        _lt_ (*! implementedby ADT_LT_NAT *),
+        _le_ (*! implementedby ADT_LE_NAT *),
+        _gt_ (*! implementedby ADT_GT_NAT *),
+        _ge_ (*! implementedby ADT_GE_NAT *) : Nat, Nat -> Bool
+   eqns
+      forall m, n : Nat
+      ofsort Bool
+         0 eq 0                   = true;
+         0 eq Succ (n)            = false;
+         Succ (m) eq 0            = false;                   
+         Succ (m) eq Succ (n)     = m eq n;                   
+      ofsort Bool
+         m ne n                   = not (m eq n);
+      ofsort Bool
+         0 lt 0                   = false;
+         0 lt Succ (n)            = true;
+         Succ (n) lt 0            = false;
+         Succ (m) lt Succ (n)     = m lt n;
+      ofsort Bool
+         m le n                   = (m lt n) or (m eq n);
+      ofsort Bool
+         m ge n                   = not (m lt n);
+      ofsort Bool
+         m gt n                   = not (m le n);
+endtype
