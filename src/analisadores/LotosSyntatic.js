@@ -36,7 +36,6 @@ function LotosSyntatic (lexer) {
   let raiz = null
   let errors = []
   let actualToken = null
-
   function nextToken () {
     actualToken = lexer.token()
   }
@@ -353,6 +352,17 @@ function LotosSyntatic (lexer) {
     return specification
   }
 
+  function importType (libraryTokenValue) {
+    var xhr = new XMLHttpRequest()
+    let code = null
+    xhr.onload = function (event) {
+      code = xhr.response
+    }
+    xhr.open('GET', () => require(`@/assets/libs/${libraryTokenValue}.lib`), false)
+    xhr.send()
+    return code
+  }
+
   // Method used to create a list of identifiers
   // libraryList
   // freeVariableList
@@ -375,10 +385,6 @@ function LotosSyntatic (lexer) {
     }
 
     return identifiers
-  }
-
-  function chargeLibraries (scope, libraries) {
-    console.log('deve carregar as libraries')
   }
 
   function evaluateExpressionList () {
@@ -942,13 +948,18 @@ function LotosSyntatic (lexer) {
 
       scope.libraryTokens = identifierList()
 
-      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, 'endlib')) {
-        errors.push(new SyntaticExpection(`Need a "endlib" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
+      if (scope.libraryTokens) {
+        scope.libraryTokens.forEach(libToken => {
+          let lib = importType(libToken.value)
+          if (!lib) {
+            errors.push(new SyntaticExpection(`Lib ${libToken.value} not found.`, libToken))
+          }
+        })
       }
 
-      if (scope.libraryTokens && scope.libraryTokens.length) {
-        chargeLibraries(scope, scope.libraryTokens)
+      if (!actualToken.isA(RESERVED_WORD, 'endlib')) {
+        errors.push(new SyntaticExpection(`Need a "endlib" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
       }
     } else if (actualToken.isA(RESERVED_WORD, 'type')) {
       if (!scope.types) {

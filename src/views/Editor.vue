@@ -150,6 +150,9 @@ export default {
   computed: {
     isDirty () {
       return this.spec.code !== this.specification.code
+    },
+    internalLibraries () {
+      return this.$store.getters.internalLibraries
     }
   }
 }
