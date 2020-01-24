@@ -397,10 +397,6 @@ function LotosSemantic (syntaticTree) {
                   }
                 }
               } else {
-                let valueFound = sorts.find(sort => {
-                  return sort.id.value === found.parameters[index].dominio.value
-                })
-
                 let opnsReferences = extractSortsFromOperator(value.data.operator, value.data.firstTerm, syntaticTree.operationList)
                 if (!opnsReferences || !opnsReferences.length) {
                   if (variables && variables.length && value.data.firstTerm && !value.data.firstTerm.arguments) {
@@ -418,11 +414,11 @@ function LotosSemantic (syntaticTree) {
                   }
                 } else {
                   let foundOpnsReferencefromProcessParameters = opnsReferences.find(o => {
-                    return o.codomain.value === valueFound.id.value
+                    return o.codomain.value === found.parameters[index].dominio.value
                   })
                   if (!foundOpnsReferencefromProcessParameters) {
-                    let parameterToken = value.operator || value.firstTerm.token
-                    errors.push(new SemanticExpection(`The value "${parameterToken.value}" was not recognized in "${valueFound.id.value}" sort`, parameterToken))
+                    let parameterToken = value.operator || value.data.firstTerm.token
+                    errors.push(new SemanticExpection(`The value "${parameterToken.value}" was not recognized in "${found.parameters[index].dominio.value}" sort`, parameterToken))
                   } else {
                     evaluateExpression(value.data.operator, value.data.firstTerm, value.data.secondTerm, foundOpnsReferencefromProcessParameters.domain, foundOpnsReferencefromProcessParameters.typeDefinition, variables, errors)
                     value.opnsReferences = [foundOpnsReferencefromProcessParameters]

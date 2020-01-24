@@ -34,6 +34,48 @@ import LotosSemantic from '@/analisadores/LotosSemantic.js'
 var LOTOSHINT = (function () {
   'use strict'
 
+  function importType (libraryTokenValue) {
+    var xhr = new XMLHttpRequest()
+    let code = null
+    xhr.onload = function (event) {
+      code = xhr.response
+    }
+    xhr.open('GET', require(`../assets/libs/${libraryTokenValue}.lib`), false)
+    xhr.send()
+    return code
+  }
+
+  var importLib = function (token, scope) {
+    /**
+     * Compilar o código das bibliotecas e na análise semântica importar as já compiladas
+     */
+    var libCode = importType(token.value)
+    var libLex = new LotosLexer(libCode)
+
+    let libSyn = null
+    if (libLex._errors.length) {
+      LOTOSHINT.errors = libLex._errors || []
+    } else {
+      /**
+       * Adicionar no analisador sinático a possibilidade de analisar um tipo diretamente
+       */
+      libSyn = new LotosSyntatic(libLex._tokens)
+      if (libSyn._errors.length) {
+        LOTOSHINT.errors = libSyn._errors || []
+      } else {
+        if (libSyn.raiz.operationList && libSyn.raiz.operationList.length) {
+          scope.operationList = !scope.operationList ? libSyn.raiz.operationList : libSyn.raiz.operationList.concat(scope.operationList)
+        }
+        if (libSyn.raiz.sorts && libSyn.raiz.sorts.length) {
+          scope.sorts = !scope.sorts ? libSyn.raiz.sorts : libSyn.raiz.sorts.concat(scope.sorts)
+        }
+        if (libSyn.raiz.types && libSyn.raiz.types.length) {
+          scope.types = !scope.types ? libSyn.raiz.types : libSyn.raiz.types.concat(scope.types)
+        }
+      }
+    }
+  }
+
   var itself = function (text, observer) {
     // eslint-disable-next-line no-unused-vars
     let syn = null
@@ -50,6 +92,11 @@ var LOTOSHINT = (function () {
         if (syn._errors.length) {
           LOTOSHINT.errors = syn._errors || []
         } else {
+          if (syn.raiz.libraryTokens) {
+            syn.raiz.libraryTokens.reverse().forEach(element => {
+              importLib(element, syn.raiz)
+            })
+          }
           var semantic = new LotosSemantic(syn.raiz)
           semantic.start()
           LOTOSHINT.errors = semantic._errors || []

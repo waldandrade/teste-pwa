@@ -17,5 +17,5 @@ type BasicNaturalNumber is
          m * Succ(n) = m + (m * n);
       ofsort Nat
          m ** 0 = Succ(0);
-         m ** Succ(n) = m * (m ** n)
+         m ** Succ(n) = m * (m ** n);
 endtype

@@ -23,7 +23,6 @@ const OP_OPERATION = 'OP_OPERATION'
 const OP_PALALLELISM = 'OP_PALALLELISM'
 const OP_ACTION_PREFIX = 'OP_ACTION_PREFIX'
 const OP_HIDING_EVENT = 'OP_HIDING_EVENT'
-const OP_EXIT = 'OP_EXIT'
 
 function SyntaticExpection (message, token) {
   this.reason = message
@@ -73,6 +72,12 @@ function LotosSyntatic (lexer) {
     }
 
     return parameterList
+  }
+
+  function createType (token) {
+    let typeScope = {}
+    analizeType(typeScope)
+    return typeScope
   }
 
   function createProcess (token) {
@@ -934,6 +939,69 @@ function LotosSyntatic (lexer) {
     return true
   }
 
+  function analizeType (scope) {
+    if (!scope.types) {
+      scope.types = []
+    }
+
+    let typeDefinition = {}
+
+    nextToken()
+    if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
+      errors.push(new SyntaticExpection(`Type definition needs a "identifier" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+      return false
+    }
+
+    typeDefinition.title = actualToken
+
+    nextToken()
+
+    if (!actualToken.isA(RESERVED_WORD, 'is')) {
+      errors.push(new SyntaticExpection(`Expected 'is' after type identifier, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+      return false
+    }
+
+    // Is a extended sort
+    while (true) {
+      nextToken()
+      if (!actualToken.isA('id') && !actualToken.isA(RESERVED_SORT)) {
+        break
+      }
+
+      if (!typeDefinition.extendedTypes) {
+        typeDefinition.extendedTypes = []
+      }
+
+      typeDefinition.extendedTypes.push(actualToken)
+
+      nextToken()
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ',')) {
+        break
+      }
+    }
+
+    if (actualToken.isA(RESERVED_WORD, 'renamedby') && typeDefinition.extendedTypes && typeDefinition.extendedTypes.length === 1) {
+      nextToken()
+
+      if (!typeRenamingFunctions(scope, typeDefinition)) {
+        errors.push(new SyntaticExpection('There was a error in type declaration.', actualToken))
+      }
+    } else {
+      // Carrega os sorts nas definições de tipo
+      if (!typeDefinitionFunctions(scope, typeDefinition)) {
+        errors.push(new SyntaticExpection('There was a error in type declaration.', actualToken))
+      }
+    }
+
+    scope.types.unshift(typeDefinition)
+
+    if (!actualToken.isA(RESERVED_WORD, 'endtype')) {
+      errors.push(new SyntaticExpection(`Expected 'endtype' ending the type definition block, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+      return false
+    }
+  }
+
   /**
    * Definições de tipo, importação de bibliotecas, etc
    */
@@ -962,66 +1030,7 @@ function LotosSyntatic (lexer) {
         return false
       }
     } else if (actualToken.isA(RESERVED_WORD, 'type')) {
-      if (!scope.types) {
-        scope.types = []
-      }
-
-      let typeDefinition = {}
-
-      nextToken()
-      if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
-        errors.push(new SyntaticExpection(`Type definition needs a "identifier" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
-      }
-
-      typeDefinition.title = actualToken
-
-      nextToken()
-
-      if (!actualToken.isA(RESERVED_WORD, 'is')) {
-        errors.push(new SyntaticExpection(`Expected 'is' after type identifier, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
-      }
-
-      // Is a extended sort
-      while (true) {
-        nextToken()
-        if (!actualToken.isA('id') && !actualToken.isA(RESERVED_SORT)) {
-          break
-        }
-
-        if (!typeDefinition.extendedTypes) {
-          typeDefinition.extendedTypes = []
-        }
-
-        typeDefinition.extendedTypes.push(actualToken)
-
-        nextToken()
-
-        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ',')) {
-          break
-        }
-      }
-
-      if (actualToken.isA(RESERVED_WORD, 'renamedby') && typeDefinition.extendedTypes && typeDefinition.extendedTypes.length === 1) {
-        nextToken()
-
-        if (!typeRenamingFunctions(scope, typeDefinition)) {
-          errors.push(new SyntaticExpection('There was a error in type declaration.', actualToken))
-        }
-      } else {
-        // Carrega os sorts nas definições de tipo
-        if (!typeDefinitionFunctions(scope, typeDefinition)) {
-          errors.push(new SyntaticExpection('There was a error in type declaration.', actualToken))
-        }
-      }
-
-      scope.types.unshift(typeDefinition)
-
-      if (!actualToken.isA(RESERVED_WORD, 'endtype')) {
-        errors.push(new SyntaticExpection(`Expected 'endtype' ending the type definition block, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
-      }
+      analizeType(scope)
     } else {
       return false
     }
@@ -1104,6 +1113,10 @@ function LotosSyntatic (lexer) {
 
     if (token.isA(RESERVED_WORD, 'process')) {
       return createProcess(token)
+    }
+
+    if (token.isA(RESERVED_WORD, 'type')) {
+      return createType(token)
     }
 
     return null
