@@ -31,12 +31,23 @@ function SyntaticExpection (message, token) {
   this.line = token.line
 }
 
+function InterruptException (message, token) {
+  this.message = message
+  this.name = 'InterruptException'
+  this.token = token
+}
+
 function LotosSyntatic (lexer) {
   let raiz = null
   let errors = []
   let actualToken = null
+  let storeToken = null
   function nextToken () {
+    storeToken = { ...actualToken }
     actualToken = lexer.token()
+    if (!actualToken) {
+      throw new InterruptException(`The specification is incompleted`, storeToken)
+    }
   }
 
   function parameterList () {
@@ -57,7 +68,7 @@ function LotosSyntatic (lexer) {
         return null
       }
       nextToken()
-      if (!actualToken.isA(ID)) {
+      if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
         errors.push(new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
         break
       }
@@ -300,72 +311,65 @@ function LotosSyntatic (lexer) {
     let specification = new Specification()
     specification.token = token
 
-    decl(specification)
+    try {
+      decl(specification)
 
-    nextToken()
-    if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
-      errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
-      return specification
-    }
+      nextToken()
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
+        errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+        return specification
+      }
 
-    functionType(specification)
+      functionType(specification)
 
-    definitionOfTypes(specification)
+      definitionOfTypes(specification)
 
-    if (!actualToken.isA(RESERVED_WORD, 'behaviour')) {
-      errors.push(new SyntaticExpection(`Need a "behaviour" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
-      return specification
-    }
-
-    nextToken()
-
-    if (actualToken.isA(RESERVED_WORD, 'hide')) {
-      specification.hidingGates = identifierList()
-
-      if (!actualToken.isA(RESERVED_WORD, 'in')) {
-        errors.push(new SyntaticExpection(`Need a "in" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+      if (!actualToken.isA(RESERVED_WORD, 'behaviour')) {
+        errors.push(new SyntaticExpection(`Need a "behaviour" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
         return specification
       }
 
       nextToken()
-    }
 
-    specification.bahaviour = behaviour(new Behaviour())
+      if (actualToken.isA(RESERVED_WORD, 'hide')) {
+        specification.hidingGates = identifierList()
 
-    if (actualToken.isA(RESERVED_WORD, 'where')) {
-      nextToken()
-
-      specification.processList = []
-      while (true) {
-        if (!actualToken.isA(RESERVED_WORD, 'process')) {
-          break
+        if (!actualToken.isA(RESERVED_WORD, 'in')) {
+          errors.push(new SyntaticExpection(`Need a "in" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+          return specification
         }
-        let processDeclaration = createProcess()
-        if (!processDeclaration) {
-          break
-        }
-        specification.processList.push(processDeclaration)
+
+        nextToken()
       }
-    }
 
-    if (!actualToken.isA(RESERVED_WORD, 'endspec')) {
-      errors.push(new SyntaticExpection(`Need a "endspec" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+      specification.bahaviour = behaviour(new Behaviour())
+
+      if (actualToken.isA(RESERVED_WORD, 'where')) {
+        nextToken()
+
+        specification.processList = []
+        while (true) {
+          if (!actualToken.isA(RESERVED_WORD, 'process')) {
+            break
+          }
+          let processDeclaration = createProcess()
+          if (!processDeclaration) {
+            break
+          }
+          specification.processList.push(processDeclaration)
+        }
+      }
+
+      if (!actualToken.isA(RESERVED_WORD, 'endspec')) {
+        errors.push(new SyntaticExpection(`Need a "endspec" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+        return specification
+      }
+      nextToken()
+      return specification
+    } catch (e) {
+      errors.push(new SyntaticExpection(e.message, e.token))
       return specification
     }
-    nextToken()
-
-    return specification
-  }
-
-  function importType (libraryTokenValue) {
-    var xhr = new XMLHttpRequest()
-    let code = null
-    xhr.onload = function (event) {
-      code = xhr.response
-    }
-    xhr.open('GET', () => require(`@/assets/libs/${libraryTokenValue}.lib`), false)
-    xhr.send()
-    return code
   }
 
   // Method used to create a list of identifiers
@@ -376,7 +380,7 @@ function LotosSyntatic (lexer) {
 
     while (true) {
       nextToken()
-      if (!actualToken.isA(ID)) {
+      if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
         if (identifiers.length) {
           errors.push(new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
         }
@@ -641,7 +645,7 @@ function LotosSyntatic (lexer) {
       id: {}
     }
 
-    if (!actualToken.isA(ID)) {
+    if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
       errors.push(new SyntaticExpection(`Renamed sort needs a "sort" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
       return false
     }
@@ -859,7 +863,7 @@ function LotosSyntatic (lexer) {
     if (actualToken.isA(RESERVED_WORD, 'formalsorts')) {
       nextToken()
       let formalSort = {}
-      if (!actualToken.isA(ID)) {
+      if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
         errors.push(new SyntaticExpection(`Sorts definition needs a "identifier" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
         return false
       }
@@ -1016,15 +1020,6 @@ function LotosSyntatic (lexer) {
 
       scope.libraryTokens = identifierList()
 
-      if (scope.libraryTokens) {
-        scope.libraryTokens.forEach(libToken => {
-          let lib = importType(libToken.value)
-          if (!lib) {
-            errors.push(new SyntaticExpection(`Lib ${libToken.value} not found.`, libToken))
-          }
-        })
-      }
-
       if (!actualToken.isA(RESERVED_WORD, 'endlib')) {
         errors.push(new SyntaticExpection(`Need a "endlib" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
         return false
@@ -1123,36 +1118,44 @@ function LotosSyntatic (lexer) {
   }
 
   function decl (scope) {
-    nextToken()
-    if (!actualToken.isA(ID)) {
-      errors.push(new SyntaticExpection(`Need a "id" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-      return false
+    try {
+      nextToken()
+      if (!actualToken.isA(ID)) {
+        errors.push(new SyntaticExpection(`Need a "id" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+      scope.title = actualToken
+
+      nextToken()
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, '[')) {
+        errors.push(new SyntaticExpection(`Need a "[" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      scope.visibleGateList = gateList()
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ']')) {
+        errors.push(new SyntaticExpection(`Need a "]" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return false
+      }
+
+      return true
+    } catch (e) {
+      throw e
     }
-    scope.title = actualToken
-
-    nextToken()
-    if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, '[')) {
-      errors.push(new SyntaticExpection(`Need a "[" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-      return false
-    }
-
-    scope.visibleGateList = gateList()
-
-    if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ']')) {
-      errors.push(new SyntaticExpection(`Need a "]" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-      return false
-    }
-
-    return true
   }
 
   // currentToken()
-
-  nextToken()
-  raiz = scopeCheck(actualToken)
-
-  if (!raiz) {
-    errors.push(new SyntaticExpection(`Specifications need start with "process" or "specification"`, 1, 1, actualToken))
+  try {
+    nextToken()
+    raiz = scopeCheck(actualToken)
+    if (!raiz) {
+      errors.push(new SyntaticExpection(`Specifications need start with "process" or "specification"`, actualToken))
+    }
+  } catch (e) {
+    if (e instanceof InterruptException) {
+      errors.push(new SyntaticExpection(e.message, e.token))
+    }
   }
 
   return {
