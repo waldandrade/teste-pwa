@@ -43,22 +43,21 @@ function LotosSemantic (syntaticTree) {
     }
   }
 
-  function extendedSorts (extendedTypes, sorts, opns) {
+  function extendedSorts (original, extendedTypes, sorts, opns) {
     extendedTypes.forEach(element => {
       var found = syntaticTree.types.find(otherTypes => {
         return otherTypes.title.value === element.value
       })
       if (found) {
+        found.overridedBy = original
         if (found.sorts) {
           sorts.push(found.sorts)
         }
-        if (opns) {
-          if (found.opns && found.opns.length) {
-            found.opns.forEach(foundOpns => opns.push(foundOpns))
-          }
+        if (found.opns) {
+          found.opns.forEach(o => opns.unshift(o))
         }
         if (found.extendedTypes && found.extendedTypes.length) {
-          extendedSorts(found.extendedTypes, sorts, opns)
+          extendedSorts(original, found.extendedTypes, sorts, opns)
         }
       }
     })
@@ -66,11 +65,13 @@ function LotosSemantic (syntaticTree) {
 
   function generateSortAndOpnsList (type) {
     type.sortList = []
-    if (type.sorts) {
-      type.sortList.push(type.sorts)
-    }
-    if (type.extendedTypes && type.extendedTypes.length) {
-      extendedSorts(type.extendedTypes, type.sortList, type.opns)
+    if (type.extendedTypes && type.extendedTypes.length && !type.overridedBy) {
+      if (!type.opns) {
+        type.opns = []
+      }
+      extendedSorts(type, type.extendedTypes, type.sortList, type.opns)
+    } else {
+      if (type.sorts) type.sortList.push(type.sorts)
     }
   }
 
@@ -78,7 +79,8 @@ function LotosSemantic (syntaticTree) {
    * Verifica os tipos de dados utilizados nos operadores e equações
    * - Verificar os Sorts das variáveis declaradas, e se está funcionando bem quando tem mais de um tipo de variável
    */
-  function sortsNotExists (type) {
+  function sortsNotExists (typeDef) {
+    let type = typeDef.overridedBy || typeDef
     if (type.opns && type.opns.length) {
       type.opns.forEach(opns => {
         if (opns.operand.type === BINARY_OPERATION) {
@@ -178,7 +180,8 @@ function LotosSemantic (syntaticTree) {
     })
   }
 
-  function valueExists (value, type) {
+  function valueExists (value, typeDef) {
+    let type = typeDef.overridedBy || typeDef
     if (type && type.opns && type.opns.length) {
       var found = type.opns.find(opns => {
         return opns.operand.value === value
@@ -186,14 +189,6 @@ function LotosSemantic (syntaticTree) {
       if (found) {
         return found
       }
-    }
-    if (type && type.extendedTypes && type.extendedTypes.length) {
-      type.extendedTypes.forEach(element => {
-        var extendedType = syntaticTree.types.find(otherTypes => {
-          return otherTypes.title.value === element.value
-        })
-        return valueExists(value, extendedType)
-      })
     }
     return null
   }
@@ -223,7 +218,7 @@ function LotosSemantic (syntaticTree) {
       let operation = termInOpns(firstTerm.token, opns)
 
       if (!variable && !operation) {
-        errors.push(new SemanticExpection(`Unknown term "${firstTerm.token.value}"`, firstTerm.token))
+        errors.push(new SemanticExpection(`Unknown term 1 "${firstTerm.token.value}"`, firstTerm.token))
       }
 
       if (operation && firstTerm.arguments && firstTerm.arguments.length) {
@@ -393,7 +388,7 @@ function LotosSemantic (syntaticTree) {
                 if (valueFound) {
                   let valueToken = value.data.operator || value.data.firstTerm.token
                   if (!valueExists(valueToken.value, valueFound.type)) {
-                    errors.push(new SemanticExpection(`The value "${valueToken.value}" dont exists in sort "${value.sort.value}"`, value.sort))
+                    errors.push(new SemanticExpection(`The value "${valueToken.value}" don't exists in sort "${value.sort.value}"`, value.sort))
                   }
                 }
               } else {
@@ -577,7 +572,7 @@ function LotosSemantic (syntaticTree) {
         }
         if (type.eqns && type.eqns.equationGroups) {
           type.eqns.equationGroups.forEach(equationGroup => {
-            checkEquationTermsExists(equationGroup, type.eqns.variables, type.opns)
+            checkEquationTermsExists(equationGroup, type.eqns.variables, type.overridedBy ? type.overridedBy.opns : type.opns)
           })
         }
       })
