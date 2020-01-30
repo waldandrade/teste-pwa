@@ -242,7 +242,7 @@ function LotosSemantic (syntaticTree) {
   }
 
   function extractSortsFromOperator (operator, firstTerm, opnsList) {
-    return opnsList.filter(opns => {
+    return (opnsList || []).filter(opns => {
       return opns.operand.value === (operator ? operator.value : firstTerm.token.value)
     })
   }

@@ -17,6 +17,16 @@ class Behaviour {
 
   _values
 
+  _guard
+
+  set guard (guard) {
+    this._guard = guard
+  }
+
+  get guard () {
+    return this._guard
+  }
+
   set values (values) {
     this._values = values
   }

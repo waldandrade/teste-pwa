@@ -190,7 +190,36 @@ function LotosSyntatic (lexer) {
   }
 
   function behaviour (expression, isChild) {
-    if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+    if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '[')) {
+      nextToken()
+
+      let guard = {}
+
+      guard.domain = evaluateExpression(0)
+      if (!actualToken.isA(SPECIAL_CHARACTER, '=')) {
+        errors.push(new SyntaticExpection(`Need a "=" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return null
+      }
+      nextToken()
+      guard.domain = evaluateExpression(0)
+      expression.guard = guard
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ']')) {
+        errors.push(new SyntaticExpection(`Need a "]" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return null
+      }
+
+      nextToken()
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, '->')) {
+        errors.push(new SyntaticExpection(`Need a "->" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return null
+      }
+
+      nextToken()
+
+      expression = behaviour(expression)
+    } else if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
       nextToken()
       expression = behaviour(new Behaviour())
 

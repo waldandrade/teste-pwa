@@ -31,48 +31,67 @@ import LotosLexer from '@/analisadores/LotosLexer.js'
 import LotosSyntatic from '@/analisadores/LotosSyntatic.js'
 import LotosSemantic from '@/analisadores/LotosSemantic.js'
 
+function SyntaticExpection (message, token) {
+  this.reason = message
+  this.name = 'SyntaticExpection'
+  this.column = token.column
+  this.line = token.line
+}
+
 var LOTOSHINT = (function () {
   'use strict'
 
-  function importType (libraryTokenValue) {
+  function importType (libraryToken) {
     var xhr = new XMLHttpRequest()
     let code = null
     xhr.onload = function (event) {
       code = xhr.response
     }
-    xhr.open('GET', require(`../assets/libs/${libraryTokenValue}.lib`), false)
-    xhr.send()
-    return code
+    try {
+      xhr.open('GET', require(`../assets/libs/${libraryToken.value}.lib`), false)
+      xhr.send()
+      return code
+    } catch (e) {
+      if (e.code === 'MODULE_NOT_FOUND') {
+        throw new SyntaticExpection(`Lib ${libraryToken.value} não encontrada`, libraryToken)
+      } else {
+        throw new SyntaticExpection(`Erro ao carregar a lib ${libraryToken.value}`, libraryToken)
+      }
+    }
   }
 
   var importLib = function (token, scope) {
     /**
      * Compilar o código das bibliotecas e na análise semântica importar as já compiladas
      */
-    var libCode = importType(token.value)
-    var libLex = new LotosLexer(libCode)
+    try {
+      var libCode = importType(token)
+      var libLex = new LotosLexer(libCode)
 
-    let libSyn = null
-    if (libLex._errors.length) {
-      LOTOSHINT.errors = libLex._errors || []
-    } else {
-      /**
-       * Adicionar no analisador sinático a possibilidade de analisar um tipo diretamente
-       */
-      libSyn = new LotosSyntatic(libLex._tokens)
-      if (libSyn._errors.length) {
-        LOTOSHINT.errors = libSyn._errors || []
+      let libSyn = null
+      if (libLex._errors.length) {
+        LOTOSHINT.errors = libLex._errors || []
       } else {
-        if (libSyn.raiz.operationList && libSyn.raiz.operationList.length) {
-          scope.operationList = !scope.operationList ? libSyn.raiz.operationList : libSyn.raiz.operationList.concat(scope.operationList)
-        }
-        if (libSyn.raiz.sorts && libSyn.raiz.sorts.length) {
-          scope.sorts = !scope.sorts ? libSyn.raiz.sorts : libSyn.raiz.sorts.concat(scope.sorts)
-        }
-        if (libSyn.raiz.types && libSyn.raiz.types.length) {
-          scope.types = !scope.types ? libSyn.raiz.types : libSyn.raiz.types.concat(scope.types)
+        /**
+         * Adicionar no analisador sinático a possibilidade de analisar um tipo diretamente
+         */
+        libSyn = new LotosSyntatic(libLex._tokens)
+        if (libSyn._errors.length) {
+          LOTOSHINT.errors = libSyn._errors || []
+        } else {
+          if (libSyn.raiz.operationList && libSyn.raiz.operationList.length) {
+            scope.operationList = !scope.operationList ? libSyn.raiz.operationList : libSyn.raiz.operationList.concat(scope.operationList)
+          }
+          if (libSyn.raiz.sorts && libSyn.raiz.sorts.length) {
+            scope.sorts = !scope.sorts ? libSyn.raiz.sorts : libSyn.raiz.sorts.concat(scope.sorts)
+          }
+          if (libSyn.raiz.types && libSyn.raiz.types.length) {
+            scope.types = !scope.types ? libSyn.raiz.types : libSyn.raiz.types.concat(scope.types)
+          }
         }
       }
+    } catch (e) {
+      throw e
     }
   }
 
@@ -89,20 +108,27 @@ var LOTOSHINT = (function () {
         LOTOSHINT.errors = lex._errors || []
       } else {
         syn = new LotosSyntatic(lex._tokens)
+        if (syn.raiz.libraryTokens) {
+          syn.raiz.libraryTokens.reverse().forEach(element => {
+            try {
+              importLib(element, syn.raiz)
+            } catch (e) {
+              LOTOSHINT.errors.push(e)
+            }
+          })
+        }
+
         if (syn._errors.length) {
           LOTOSHINT.errors = syn._errors || []
         } else {
-          if (syn.raiz.libraryTokens) {
-            syn.raiz.libraryTokens.reverse().forEach(element => {
-              importLib(element, syn.raiz)
-            })
-          }
           var semantic = new LotosSemantic(syn.raiz)
           semantic.start()
           LOTOSHINT.errors = semantic._errors || []
         }
       }
     }
+
+    console.log(LOTOSHINT.errors)
 
     return LOTOSHINT.errors.length === 0
   }
