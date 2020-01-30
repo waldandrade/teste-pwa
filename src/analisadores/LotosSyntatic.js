@@ -23,6 +23,11 @@ const OP_OPERATION = 'OP_OPERATION'
 const OP_PALALLELISM = 'OP_PALALLELISM'
 const OP_ACTION_PREFIX = 'OP_ACTION_PREFIX'
 const OP_HIDING_EVENT = 'OP_HIDING_EVENT'
+const OP_EXIT = 'OP_EXIT'
+const OP_STOP = 'OP_STOP'
+const OP_ENABLE = 'OP_ENABLE'
+const OP_DISABLE = 'OP_DISABLE'
+// stop é uma expression de interrupção, ou seja, a expressão não termina corretamente
 
 function SyntaticExpection (message, token) {
   this.reason = message
@@ -254,7 +259,7 @@ function LotosSyntatic (lexer) {
                 return null
               }
               nextToken()
-              if (!actualToken.isA(ID)) {
+              if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
                 errors.push(new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
                 break
               }
@@ -278,6 +283,10 @@ function LotosSyntatic (lexer) {
         nextToken()
         expression.rightBehaviour = behaviour(new Behaviour(), true)
       }
+    } else if (actualToken.isA(RESERVED_WORD, 'exit') || actualToken.isA(RESERVED_WORD, 'stop')) {
+      expression.operand = actualToken.isA(RESERVED_WORD, 'exit') ? OP_EXIT : OP_STOP
+      nextToken()
+      return expression
     }
 
     if (isChild) {
@@ -295,8 +304,12 @@ function LotosSyntatic (lexer) {
             return null
           }
         }
+      } else if (actualToken.isA(BEHAVIOUR_OPERATION, '>>')) {
+        operationalExpression.operand = OP_ENABLE
+      } else if (actualToken.isA(BEHAVIOUR_OPERATION, '[>')) {
+        operationalExpression.operand = OP_DISABLE
       } else {
-        operationalExpression.operator = OP_OPERATION
+        operationalExpression.operand = OP_OPERATION
       }
       operationalExpression.leftBehaviour = expression
       nextToken()

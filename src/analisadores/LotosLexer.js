@@ -10,7 +10,7 @@ const RESERVED_WORD = /\b(implementedby|specification|actualizedby|enumeratedby|
 const RESERVED_SORT = /\b(BasicNaturalNumber|NatRepresentations|NaturalNumber|OctetString|OctNatRepr|BitNatRepr|BitString|DecDigit|DecNatRepr|DecString|HexNatRepr|HexString|OctString|OctDigit|Boolean|HexDigit|String|Octet|Bool|Bit|Nat|Set)\b/
 // const STRONG_RESERVED_WORD = /(BasicNaturalNumber|Bit|BitNatRepr|BitString|Bool|Boolean|DecDigit|DecNatRepr|DecString|HexDigit|HexNatRepr|HexString|NatRepresentations|Nat|NaturalNumber|OctDigit|Octet|OctetString|OctNatRepr|OctString|Set|String|false|true|and|Bit1|Bit2|Bit3|Bit4|Bit5|Bit6|Bit7|Bit8|Card|eq|ge|gt|iff|implies|Includes|Insert|Ints|IsIn|IsSubsetOf|le|Length|lt|Minus|NatNum|ne|not|NotIn|or|Remove|Reverse|Succ|Union|xor)/
 const RESERVED_LEXICAL_TOKEN = /(\(|\)|\{|\}|,|\.|->|:=|:|;|\[|\]|=>)/
-const BEHAVIOUR_OPERATION = /(>>|\|\|\||\]\||\|\[|\[\]|\[>|\?|!)/
+const BEHAVIOUR_OPERATION = /(>>|\|\|\||\|\||\]\||\|\[|\[\]|\[>|\?|!)/
 const SPECIAL_CHARACTER = /(\*|#|%|&|\\|\+|-|\.|\/|<|>|@|\^|~|\{|\}|=)+/
 const IDENTIFIER = /[a-zA-Z_][a-zA-Z0-9_]*/
 const NUMBER = /[+-]?[0-9]+/
