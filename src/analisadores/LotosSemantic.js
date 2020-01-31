@@ -321,7 +321,7 @@ function LotosSemantic (syntaticTree) {
           /**
            * Guardando o operador computado
            */
-          arg.data = foundArg
+          arg.sortData = foundArg
           var argValue = evaluateExpression(arg.operator, arg.firstTerm, arg.secondTerm, foundArg.domain, argSort.type, variables, expressionErrors)
           if (!argValue) {
             hasError = true
@@ -386,20 +386,20 @@ function LotosSemantic (syntaticTree) {
                   }
                 }
                 if (valueFound) {
-                  let valueToken = value.data.operator || value.data.firstTerm.token
+                  let valueToken = value.operator || value.firstTerm.token
                   if (!valueExists(valueToken.value, valueFound.type)) {
                     errors.push(new SemanticExpection(`The value "${valueToken.value}" don't exists in sort "${value.sort.value}"`, value.sort))
                   }
                 }
               } else {
-                let opnsReferences = extractSortsFromOperator(value.data.operator, value.data.firstTerm, syntaticTree.operationList)
+                let opnsReferences = extractSortsFromOperator(value.operator, value.firstTerm, syntaticTree.operationList)
                 if (!opnsReferences || !opnsReferences.length) {
-                  if (variables && variables.length && value.data.firstTerm && !value.data.firstTerm.arguments) {
+                  if (variables && variables.length && value.firstTerm && !value.firstTerm.arguments) {
                     let variable = variables.find(v => {
-                      return v.imagem.value === value.data.firstTerm.token.value
+                      return v.imagem.value === value.firstTerm.token.value
                     })
                     if (!variable) {
-                      errors.push(new SemanticExpection(`The variable "${value.data.firstTerm.token.value}" was not found in behaviour context`, value.data.firstTerm.token))
+                      errors.push(new SemanticExpection(`The variable "${value.firstTerm.token.value}" was not found in behaviour context`, value.firstTerm.token))
                     } else {
                       value.opnsReferences = [variable]
                     }
@@ -412,10 +412,10 @@ function LotosSemantic (syntaticTree) {
                     return o.codomain.value === found.parameters[index].dominio.value
                   })
                   if (!foundOpnsReferencefromProcessParameters) {
-                    let parameterToken = value.operator || value.data.firstTerm.token
+                    let parameterToken = value.operator || value.firstTerm.token
                     errors.push(new SemanticExpection(`The value "${parameterToken.value}" was not recognized in "${found.parameters[index].dominio.value}" sort`, parameterToken))
                   } else {
-                    evaluateExpression(value.data.operator, value.data.firstTerm, value.data.secondTerm, foundOpnsReferencefromProcessParameters.domain, foundOpnsReferencefromProcessParameters.typeDefinition, variables, errors)
+                    evaluateExpression(value.operator, value.firstTerm, value.secondTerm, foundOpnsReferencefromProcessParameters.domain, foundOpnsReferencefromProcessParameters.typeDefinition, variables, errors)
                     value.opnsReferences = [foundOpnsReferencefromProcessParameters]
                   }
                 }
@@ -449,7 +449,7 @@ function LotosSemantic (syntaticTree) {
               }
 
               /** testar se o dominio existe como sort */
-              var valueFound = syntaticTree.sorts.find(sort => {
+              var valueFound = (syntaticTree.sorts || []).find(sort => {
                 return sort.id.value === parameter.dominio.value
               })
               if (!valueFound) {
@@ -520,7 +520,7 @@ function LotosSemantic (syntaticTree) {
   function checkProcess (process, dadProcessList) {
     if (process.parameters && process.parameters.length) {
       process.parameters.forEach(parameter => {
-        var valueFound = syntaticTree.sorts.find(sort => {
+        var valueFound = (syntaticTree.sorts || []).find(sort => {
           return sort.id.value === parameter.dominio.value
         })
         if (!valueFound) {

@@ -119,16 +119,14 @@ var LOTOSHINT = (function () {
         }
 
         if (syn._errors.length) {
-          LOTOSHINT.errors = syn._errors || []
+          LOTOSHINT.errors = (LOTOSHINT.errors || []).concat(syn._errors)
         } else {
           var semantic = new LotosSemantic(syn.raiz)
           semantic.start()
-          LOTOSHINT.errors = semantic._errors || []
+          LOTOSHINT.errors = (LOTOSHINT.errors || []).concat(semantic._errors)
         }
       }
     }
-
-    console.log(LOTOSHINT.errors)
 
     return LOTOSHINT.errors.length === 0
   }
@@ -191,25 +189,6 @@ export default {
   },
   methods: {
     onCmReady (cm) {
-      // var lotoslint = function (text, observer) {
-      //   // eslint-disable-next-line no-unused-vars
-      //   let syn = null
-
-      //   if (text && text.length) {
-      //     var lex = new LotosLexer(text)
-      //     syn = new LotosSyntatic(lex._tokens)
-      //     console.log(syn.raiz)
-      //   }
-
-      //   this.prototype.data = () => {
-      //     return {
-      //       functions: [],
-      //       errors: syn.errors, // é nesta estrutura que ficará os errors que serão apresentados no editor
-      //       options: {}
-      //     }
-      //   }
-      // }
-
       window.LOTOSLINT = LOTOSHINT
 
       cm.on('keypress', (event) => {

@@ -157,9 +157,7 @@ function LotosSyntatic (lexer) {
 
     while (true) {
       // Definindo as expressões que formam a equação, no nível maior '0'
-      let value = {
-        data: evaluateExpression(0)
-      }
+      let value = evaluateExpression(0)
 
       if (!value) {
         break
