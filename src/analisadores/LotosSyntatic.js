@@ -125,7 +125,7 @@ function LotosSyntatic (lexer) {
     }
     nextToken()
 
-    process.bahaviour = behaviour(new Behaviour())
+    process.behaviour = behaviour(new Behaviour())
 
     if (actualToken.isA(RESERVED_WORD, 'where')) {
       nextToken()
@@ -382,7 +382,7 @@ function LotosSyntatic (lexer) {
         nextToken()
       }
 
-      specification.bahaviour = behaviour(new Behaviour())
+      specification.behaviour = behaviour(new Behaviour())
 
       if (actualToken.isA(RESERVED_WORD, 'where')) {
         nextToken()
@@ -891,7 +891,6 @@ function LotosSyntatic (lexer) {
       let operation = { ...operationToken, operand: op }
       typeDefinition.opns.push(operation)
       operations.unshift(operation)
-      // console.log(operation.operand, operation)
     })
 
     operationList(operations, typeDefinition)

@@ -22,6 +22,7 @@ export default new Vuex.Store({
     error: null,
     headers: null,
     mini: false,
+    raiz: null,
     internalLibraries: [
       {
         name: 'BASICNATURALNUMBER'
@@ -146,9 +147,15 @@ export default new Vuex.Store({
     },
     setMini (state, mini) {
       state.mini = mini
+    },
+    setRaiz (state, raiz) {
+      state.raiz = raiz
     }
   },
   actions: {
+    storeRaiz ({ commit }, raiz) {
+      commit('setRaiz', raiz)
+    },
     toggleMini ({ commit }, mini) {
       commit('setMini', mini)
     },
@@ -209,11 +216,9 @@ export default new Vuex.Store({
         if (lib.code === undefined) {
           var xhr = new XMLHttpRequest()
           xhr.onload = function (event) {
-            console.log(xhr)
             var blob = xhr.response
             lib.code = blob
             lib.isDirty = false
-            console.log('entrou')
             commit('setLoadingGeneral', null)
             commit('openSpecification', lib)
           }
@@ -247,7 +252,6 @@ export default new Vuex.Store({
               var blob = xhr.response
               specification.code = blob
               specification.isDirty = false
-              console.log('entrou')
               commit('setLoadingGeneral', null)
               commit('openSpecification', specification)
             }
@@ -317,7 +321,6 @@ export default new Vuex.Store({
           error => {
             commit('setLoading', false)
             commit('setError', error)
-            console.log(error)
           }
         )
     },
@@ -328,7 +331,6 @@ export default new Vuex.Store({
           error => {
             commit('setLoading', false)
             commit('setError', error)
-            console.log(error)
           }
         )
     },
@@ -346,18 +348,6 @@ export default new Vuex.Store({
       const user = payload
       commit('setLoading', false)
       if (user) {
-        // let storage = firebase.storage()
-        // storage.ref(`users/avatars/${user.uid}.png`).getDownloadURL()
-        //   .then(
-        //     imageUrl => {
-        //       commit('setUserImage', imageUrl)
-        //     }
-        //   ).catch(
-        //     error => {
-        //       console.log('erro', error)
-        //     }
-        //   )
-
         const newUser = {
           id: user.uid,
           email: user.email,
@@ -415,6 +405,9 @@ export default new Vuex.Store({
     },
     mini (state) {
       return state.mini
+    },
+    raiz (state) {
+      return state.raiz
     }
   }
 })

@@ -371,6 +371,9 @@ function LotosSemantic (syntaticTree) {
             errors.push(new SemanticExpection(`Process "${found.title.value}", expect ${parametersSize} parameters and got ${valuesSize}.`, behaviour.identifier))
           }
 
+          /** testar */
+          behaviour.leftBehaviour = found.behaviour
+
           if (behaviour.values && behaviour.values.length) {
             behaviour.values.forEach((value, index) => {
               if (value.sort) {
@@ -538,7 +541,7 @@ function LotosSemantic (syntaticTree) {
         }
       })
     }
-    checkBehaviours(process.bahaviour, visibleProcessList, process.visibleGateList || [], process.hidingGates || [], process.functionality, syntaticTree.sorts, process.parameters)
+    checkBehaviours(process.behaviour, visibleProcessList, process.visibleGateList || [], process.hidingGates || [], process.functionality, syntaticTree.sorts, process.parameters)
     if (process.processList && process.processList.length > 0) {
       process.processList.forEach(subprocess => {
         checkProcess(subprocess, visibleProcessList)
@@ -548,7 +551,7 @@ function LotosSemantic (syntaticTree) {
 
   function checkSpecification (syntaticTree) {
     let visibleProcessList = (syntaticTree.processList || []).slice(0)
-    checkBehaviours(syntaticTree.bahaviour, visibleProcessList, syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [], syntaticTree.functionality, syntaticTree.sorts)
+    checkBehaviours(syntaticTree.behaviour, visibleProcessList, syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [], syntaticTree.functionality, syntaticTree.sorts)
     if (syntaticTree.processList && syntaticTree.processList.length > 0) {
       syntaticTree.processList.forEach(process => {
         checkProcess(process, visibleProcessList)

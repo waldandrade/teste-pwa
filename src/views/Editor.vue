@@ -124,6 +124,9 @@ var LOTOSHINT = (function () {
           var semantic = new LotosSemantic(syn.raiz)
           semantic.start()
           LOTOSHINT.errors = (LOTOSHINT.errors || []).concat(semantic._errors)
+          if (!LOTOSHINT.errors.length) {
+            LOTOSHINT.store.dispatch('storeRaiz', syn.raiz)
+          }
         }
       }
     }
@@ -189,6 +192,7 @@ export default {
   },
   methods: {
     onCmReady (cm) {
+      LOTOSHINT.store = this.$store
       window.LOTOSLINT = LOTOSHINT
 
       cm.on('keypress', (event) => {

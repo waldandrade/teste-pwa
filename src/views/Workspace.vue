@@ -33,8 +33,25 @@
               v-for="(specification, i) in openedSpecifications"
               :key="i"
               :value="specifications.abstractName"
+               style="position: relative"
             >
               <editor :specification="specification"></editor>
+              <v-fab-transition>
+                <v-btn
+                  v-show="raiz != null"
+                  fixed
+                  dark
+                  round
+                  bottom
+                  right
+                  color="pink"
+                  class="jlotos-btn-simular"
+                  @click="() => simular(raiz)"
+                >
+                  Simular
+                  <v-icon>play_arrow</v-icon>
+                </v-btn>
+              </v-fab-transition>
             </v-tab-item>
           </v-tabs-items>
         </v-tabs>
@@ -212,6 +229,10 @@
       </v-form>
     </v-dialog>
 
+    <v-dialog fullscreen persistent scrollable :value="temSimulacao" style="overflow-x: hidden">
+      <simulacao v-if="temSimulacao" :raiz="simulacao" @encerrarSimulacao="() => simulacao = null"></simulacao>
+    </v-dialog>
+
     <v-dialog width="400" persistent v-model="criarEspecificacao">
       <v-form ref="form" lazy-validation autocomplete="off">
         <v-card>
@@ -302,11 +323,13 @@
 
 import Editor from '@/views/Editor'
 import AppAlert from '@/util/Alert'
+import Simulacao from '@/views/Simulacao'
 
 export default {
-  components: { Editor, AppAlert },
+  components: { Editor, AppAlert, Simulacao },
   data () {
     return {
+      simulacao: null,
       activeFile: null,
       loginErro: false,
       errorMessage: '',
@@ -365,6 +388,12 @@ export default {
     }
   },
   computed: {
+    temSimulacao () {
+      return this.simulacao != null
+    },
+    raiz () {
+      return this.$store.getters.raiz
+    },
     loadingGeneral () {
       var loading = this.$store.getters.loadingGeneral
       return {
@@ -398,6 +427,9 @@ export default {
     }
   },
   methods: {
+    simular (raiz) {
+      this.simulacao = raiz
+    },
     close (index) {
       this.$store.dispatch('closeSpecification', index)
     },
