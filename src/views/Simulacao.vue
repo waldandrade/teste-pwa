@@ -1,5 +1,5 @@
 <template>
-  <v-card  dark>
+  <v-card >
     <v-card-title primary-title>
           <div>
             <h3 class="headline mb-0">ANIMAÇÃO</h3>
@@ -25,6 +25,7 @@
       <v-divider vertical></v-divider>
       <v-flex :style="{'max-width': `calc(100% - 120px)`}">
         <v-layout
+          pa-4
           class="simulationContainer"
           ref="simulation"
           :style="{'max-width': `calc(100%)`, 'overflow-x': 'scroll', 'white-space': 'nowrap', 'flex-wrap': 'wrap'}"
@@ -82,7 +83,6 @@ export default {
     this.$nextTick(() => {
       let vm = this
       this.$root.$on('novoElemento', () => {
-        console.log(vm.$refs.simulation)
         vm.$refs.simulation.scrollLeft = vm.$refs.simulation.scrollWidth
       })
     })

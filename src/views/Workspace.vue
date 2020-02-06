@@ -229,7 +229,7 @@
       </v-form>
     </v-dialog>
 
-    <v-dialog fullscreen persistent scrollable :value="temSimulacao" style="overflow-x: hidden">
+    <v-dialog fullscreen persistent :value="temSimulacao" style="overflow-x: hidden; overflow-y: hidden">
       <simulacao v-if="temSimulacao" :raiz="simulacao" @encerrarSimulacao="() => simulacao = null"></simulacao>
     </v-dialog>
 

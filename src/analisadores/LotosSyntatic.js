@@ -27,6 +27,7 @@ const OP_EXIT = 'OP_EXIT'
 const OP_STOP = 'OP_STOP'
 const OP_ENABLE = 'OP_ENABLE'
 const OP_DISABLE = 'OP_DISABLE'
+const OP_CHOICE = 'OP_CHOICE'
 // stop é uma expression de interrupção, ou seja, a expressão não termina corretamente
 
 function SyntaticExpection (message, token) {
@@ -335,6 +336,8 @@ function LotosSyntatic (lexer) {
         operationalExpression.operand = OP_ENABLE
       } else if (actualToken.isA(BEHAVIOUR_OPERATION, '[>')) {
         operationalExpression.operand = OP_DISABLE
+      } else if (actualToken.isA(BEHAVIOUR_OPERATION, '[]')) {
+        operationalExpression.operand = OP_CHOICE
       } else {
         operationalExpression.operand = OP_OPERATION
       }

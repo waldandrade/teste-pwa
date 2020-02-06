@@ -505,6 +505,10 @@ function LotosSemantic (syntaticTree) {
         if (behaviour.rightBehaviour) {
           checkBehaviours(behaviour.rightBehaviour, processList, visibleGates, hidingGates, functionality, sorts, variables)
         }
+      } else if (behaviour.operand === OP_HIDING_EVENT) {
+        if (behaviour.rightBehaviour) {
+          checkBehaviours(behaviour.rightBehaviour, processList, visibleGates, hidingGates, functionality, sorts, variables)
+        }
       }
 
       if (!found && behaviour.operand !== OP_HIDING_EVENT) {
