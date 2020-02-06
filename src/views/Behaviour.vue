@@ -6,8 +6,35 @@
         <h5 class="subtitle ma-0">{{ blockTitle[behaviour.operand] }}</h5>
       </div>
     </v-card-title>
-    <behaviour :behaviour="behaviour.leftBehaviour" :eventContext="eventContext" v-if="behaviour.leftBehaviour"></behaviour>
-    <v-layout v-else shrink align-start justify-end row >
+    <behaviour :behaviour="behaviour.leftBehaviour" :eventContext="contexts[behaviour.operand]" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
+    <behaviour :behaviour="behaviour.rightBehaviour" :eventContext="contexts[behaviour.operand]" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour"></behaviour>
+    <v-layout v-if="behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP'" shrink align-start justify-end row >
+      <v-flex shrink>
+        <v-chip class="red">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
+      </v-flex>
+      <v-flex shrink>
+        <v-btn class="red" @click="() => {}" icon small>
+          <v-icon>block</v-icon>
+        </v-btn>
+      </v-flex>
+    </v-layout>
+    <v-layout v-if="behaviour.operand === 'OP_ACTION_PREFIX' || behaviour.operand === 'OP_HIDING_EVENT'" shrink align-start justify-end row >
+      <v-flex shrink>
+        <v-chip>{{behaviour.identifier.value}}</v-chip>
+      </v-flex>
+      <v-flex shrink v-if="isGateParallel">
+        <v-btn class="yellow" @click="() => {}" icon small>
+          <v-icon>schedule</v-icon>
+        </v-btn>
+      </v-flex>
+      <v-flex shrink v-else>
+        <v-btn @click="() => levelUp()" icon small>
+          <v-icon>keyboard_arrow_right</v-icon>
+        </v-btn>
+      </v-flex>
+      <behaviour :behaviour="behaviour.rightBehaviour" :eventContext="eventContext" v-if="level === 1 && behaviour.rightBehaviour"></behaviour>
+    </v-layout>
+    <!-- <v-layout v-else shrink align-start justify-end row >
         <v-flex shrink>
           <v-chip :class="{red: behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP' }">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : behaviour.operand === 'OP_STOP' ? 'STOP' : behaviour.identifier.value}}</v-chip>
         </v-flex>
@@ -29,7 +56,8 @@
         <behaviour :behaviour="behaviour.rightBehaviour" :eventContext="eventContext" v-if="level === 1 && behaviour.rightBehaviour"></behaviour>
       </v-layout>
     <behaviour :behaviour="behaviour.rightBehaviour" :origin="behaviour" :eventContext="parallel" v-if="behaviour.operand === 'OP_PALALLELISM' && behaviour.rightBehaviour"></behaviour>
-    <behaviour :behaviour="behaviour.rightBehaviour" :origin="behaviour" v-else-if="behaviour.operand === 'OP_CHOICE' && behaviour.rightBehaviour"></behaviour>
+    <behaviour :behaviour="behaviour.rightBehaviour" :origin="behaviour" v-else-if="behaviour.operand === 'OP_CHOICE' && behaviour.rightBehaviour"></behaviour> -->
+
    </v-card>
  </v-flex>
 </template>
@@ -58,6 +86,20 @@ export default {
     return {
       level: 0,
       parallel: null,
+      contexts: {
+        OP_PALALLELISM: {
+          type: this.behaviour.operand,
+          gates: this.behaviour.parsingGates,
+          behaviour: this.behaviour
+        },
+        OP_CHOICE: {
+          type: this.behaviour.operand,
+          behaviour: this.behaviour
+        },
+        none: {
+          behaviour: this.behaviour
+        }
+      },
       blockTitle: {
         OP_PALALLELISM: 'Palalelismo',
         OP_CHOICE: 'Escolha'
