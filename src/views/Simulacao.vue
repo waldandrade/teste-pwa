@@ -80,6 +80,7 @@ export default {
   },
   mounted () {
     this.initialBehaviour = this.raiz.behaviour
+    console.log(this.initialBehaviour)
     this.$nextTick(() => {
       let vm = this
       this.$root.$on('novoElemento', () => {
