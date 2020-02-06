@@ -1,13 +1,13 @@
 <template>
  <v-flex shrink pa-0>
-   <v-card shrink class="animation-block" :class="blockClass[isBlock() ? behaviour.operand : 'simple']">
-    <v-card-title pa-0 v-if="isBlock()">
+   <v-card shrink class="animation-block" :class="blockClass[isBlock ? behaviour.operand : 'simple']">
+    <v-card-title pa-0 v-if="isBlock">
       <div>
         <h5 class="subtitle ma-0">{{ blockTitle[behaviour.operand] }}</h5>
       </div>
     </v-card-title>
-    <behaviour :behaviour="behaviour.leftBehaviour" :eventContext="contexts[behaviour.operand]" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
-    <behaviour :behaviour="behaviour.rightBehaviour" :eventContext="contexts[behaviour.operand]" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour"></behaviour>
+    <behaviour :behaviour="behaviour.leftBehaviour" :origin="behaviour" :eventContext="actualContext" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
+    <behaviour :behaviour="behaviour.rightBehaviour" :origin="behaviour" :eventContext="actualContext" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour"></behaviour>
     <v-layout v-if="behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP'" shrink align-start justify-end row >
       <v-flex shrink>
         <v-chip class="red">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
@@ -32,7 +32,7 @@
           <v-icon>keyboard_arrow_right</v-icon>
         </v-btn>
       </v-flex>
-      <behaviour :behaviour="behaviour.rightBehaviour" :eventContext="eventContext" v-if="level === 1 && behaviour.rightBehaviour"></behaviour>
+      <behaviour :behaviour="behaviour.rightBehaviour" :eventContext="actualContext" v-if="level === 1 && behaviour.rightBehaviour"></behaviour>
     </v-layout>
     <!-- <v-layout v-else shrink align-start justify-end row >
         <v-flex shrink>
@@ -79,25 +79,25 @@ export default {
   },
   computed: {
     isGateParallel () {
-      return this.behaviour.operand !== 'OP_HIDING_EVENT' && !!this.eventContext && this.eventContext.type === 'OP_PALALLELISM' && this.eventContext.gates && this.eventContext.gates.length
+      return this.behaviour.operand === 'OP_ACTION_PREFIX' && !!this.eventContext && this.eventContext.type === 'OP_PALALLELISM' && this.eventContext.gates && this.eventContext.gates.length
+    },
+    isBlock () {
+      return !!this.behaviour.operand && ['OP_PALALLELISM', 'OP_CHOICE'].includes(this.behaviour.operand) && (!this.origin || this.origin.operand !== this.behaviour.operand)
     }
   },
   data () {
     return {
       level: 0,
-      parallel: null,
+      actualContext: null,
       contexts: {
         OP_PALALLELISM: {
           type: this.behaviour.operand,
           gates: this.behaviour.parsingGates,
-          behaviour: this.behaviour
+          behaviours: [this.behaviour]
         },
         OP_CHOICE: {
           type: this.behaviour.operand,
-          behaviour: this.behaviour
-        },
-        none: {
-          behaviour: this.behaviour
+          behaviours: [this.behaviour]
         }
       },
       blockTitle: {
@@ -124,13 +124,7 @@ export default {
     }
   },
   mounted () {
-    if (this.behaviour.operand === 'OP_PALALLELISM') {
-      this.parallel = {
-        type: this.behaviour.operand,
-        gates: this.behaviour.parsingGates,
-        behaviour: this.behaviour
-      }
-    }
+    this.checkContext()
   },
   methods: {
     levelUp () {
@@ -139,8 +133,18 @@ export default {
         this.$root.$emit('novoElemento')
       })
     },
-    isBlock () {
-      return !!this.behaviour.operand && ['OP_PALALLELISM', 'OP_CHOICE'].includes(this.behaviour.operand) && !this.origin
+    checkContext () {
+      if (!!this.eventContext && this.origin.operand === this.behaviour.operand) {
+        this.actualContext = this.eventContext
+        this.actualContext.behaviours.push(this.behaviour)
+      } else {
+        this.actualContext = this.contexts[this.behaviour.operand]
+        if (this.actualContext && this.eventContext) {
+          this.actualContext.dad = this.eventContext
+        } else {
+          this.actualContext = this.eventContext
+        }
+      }
     }
   }
 }
