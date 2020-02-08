@@ -6,8 +6,8 @@
         <h5 class="subtitle ma-0">{{ blockTitle[behaviour.operand] }}</h5>
       </div>
     </v-card-title>
-    <behaviour :behaviour="behaviour.leftBehaviour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
-    <behaviour :behaviour="behaviour.rightBehaviour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour"></behaviour>
+    <behaviour :behaviour="behaviour.leftBehaviour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
+    <behaviour :behaviour="behaviour.rightBehaviour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour"></behaviour>
     <v-layout v-if="behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP'" shrink align-start justify-end row >
       <v-flex shrink>
         <v-chip class="red">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
@@ -22,8 +22,11 @@
       <v-flex shrink>
         <v-chip>{{behaviour.identifier.value}}</v-chip>
       </v-flex>
-      <v-flex shrink v-if="isGateParallel">
-        <v-btn class="yellow" @click="() => {}" icon small>
+      <v-flex shrink v-if="!!isGateParallel && (gate.count || 0) < 2">
+        <v-btn v-if="!gate.count" class="yellow" @click="notifyGate" icon small>
+          <v-icon>swap_horiz</v-icon>
+        </v-btn>
+        <v-btn v-else class="yellow" @click="() => {}" icon small>
           <v-icon>schedule</v-icon>
         </v-btn>
       </v-flex>
@@ -32,7 +35,7 @@
           <v-icon>keyboard_arrow_right</v-icon>
         </v-btn>
       </v-flex>
-      <behaviour :behaviour="behaviour.rightBehaviour" v-if="level === 1 && behaviour.rightBehaviour"></behaviour>
+      <behaviour :behaviour="behaviour.rightBehaviour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="level === 1 && behaviour.rightBehaviour"></behaviour>
     </v-layout>
    </v-card>
  </v-flex>
@@ -45,6 +48,7 @@ export default {
   name: 'Behaviour',
   components: { Behaviour },
   props: {
+    syncGates: Array,
     behaviour: Object,
     origin: {
       default: null,
@@ -53,8 +57,16 @@ export default {
     left: Boolean
   },
   computed: {
+    processSyncGates () {
+      return this.behaviour.processDeclaration.visibleGateList.filter((vGate, i) => {
+        return this.syncGates && this.syncGates.find(pGate => pGate.value === this.behaviour.parsingGates[i].value)
+      })
+    },
+    gate () {
+      return (!!this.behaviour.identifier && !!this.syncGates) ? this.syncGates.find((g) => g.value === this.behaviour.identifier.value) : null
+    },
     isGateParallel () {
-      return this.behaviour.operand === 'OP_ACTION_PREFIX'
+      return this.behaviour.operand === 'OP_ACTION_PREFIX' && !!this.gate
     },
     isBlock () {
       return !!this.behaviour.operand && ['OP_PALALLELISM', 'OP_CHOICE'].includes(this.behaviour.operand) && (!this.origin || this.origin.operand !== this.behaviour.operand)
@@ -63,16 +75,6 @@ export default {
   data () {
     return {
       level: 0,
-      contexts: {
-        OP_PALALLELISM: {
-          type: this.behaviour.operand,
-          behaviours: [this.behaviour]
-        },
-        OP_CHOICE: {
-          type: this.behaviour.operand,
-          behaviours: [this.behaviour]
-        }
-      },
       blockTitle: {
         OP_PALALLELISM: 'Palalelismo',
         OP_CHOICE: 'Escolha'
@@ -93,11 +95,12 @@ export default {
           'pb-2': true,
           'ma-1': true
         }
+      },
+      gateMap: {
       }
     }
   },
   mounted () {
-    this.checkContext()
   },
   methods: {
     levelUp () {
@@ -105,6 +108,25 @@ export default {
       this.$nextTick(() => {
         this.$root.$emit('novoElemento')
       })
+    },
+    notifyGate () {
+      if (this.behaviour.operand === 'OP_ACTION_PREFIX') {
+        this.$emit('event', this.behaviour.identifier)
+      }
+    },
+    eventOccour (gate) {
+      if (this.behaviour.operand === 'OP_ACTION_PREFIX' || this.behaviour.operand === 'OP_HIDING_EVENT') {
+        this.$emit('event', gate)
+      } else if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
+        this.$emit('event', (this.syncGate || []).find(g => {
+          return g.value === this.behaviour.parsingGates.find((pGate, i) => {
+            return this.behaviour.processDeclaration.visibleGateList[i].value === gate.value
+          })
+        }))
+      } else if (this.behaviour.operand === 'OP_PALALLELISM') {
+        gate.count = (gate.count || 0) + 1
+        console.log('chegou', gate)
+      }
     }
   }
 }

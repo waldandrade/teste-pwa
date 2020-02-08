@@ -373,6 +373,7 @@ function LotosSemantic (syntaticTree) {
 
           /** testar */
           behaviour.leftBehaviour = found.behaviour
+          behaviour.processDeclaration = found
 
           if (behaviour.values && behaviour.values.length) {
             behaviour.values.forEach((value, index) => {

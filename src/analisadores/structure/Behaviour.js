@@ -1,6 +1,9 @@
 'use strict'
 
 class Behaviour {
+  // Declaração do processo
+  _processDeclaration
+
   // Array of gates
   _parsingGates
 
@@ -18,6 +21,14 @@ class Behaviour {
   _values
 
   _guard
+
+  set processDeclaration (pDeclaration) {
+    this._processDeclaration = pDeclaration
+  }
+
+  get processDeclaration () {
+    return this._processDeclaration
+  }
 
   set guard (guard) {
     this._guard = guard
