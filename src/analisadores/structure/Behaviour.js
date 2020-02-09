@@ -8,7 +8,8 @@ class Behaviour {
   _parsingGates
 
   // Operator
-  _operator
+  _operand
+  _variacao
 
   // TypeBehaviour
   _leftBehaviour
@@ -54,6 +55,14 @@ class Behaviour {
     return this._identifier
   }
 
+  set variacao (variacao) {
+    this._variacao = variacao
+  }
+
+  get variacao () {
+    return this._variacao
+  }
+
   set parsingGates (parsingGates) {
     this._parsingGates = parsingGates
   }
@@ -62,12 +71,12 @@ class Behaviour {
     return this._parsingGates
   }
 
-  set operator (operator) {
-    this._operator = operator
+  set operand (operand) {
+    this._operand = operand
   }
 
-  get operator () {
-    return this._operator
+  get operand () {
+    return this._operand
   }
 
   set leftBehaviour (expression) {

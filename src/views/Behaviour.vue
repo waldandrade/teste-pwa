@@ -26,7 +26,7 @@
         <v-btn v-if="!gate.count" class="yellow" @click="notifyGate" icon small>
           <v-icon>swap_horiz</v-icon>
         </v-btn>
-        <v-btn v-else class="yellow" @click="() => {}" icon small>
+        <v-btn v-else class="yellow" @click="notifyGate" icon small>
           <v-icon>schedule</v-icon>
         </v-btn>
       </v-flex>
@@ -56,11 +56,24 @@ export default {
     },
     left: Boolean
   },
+  watch: {
+    'syncGates': function (val) {
+      console.log(this.gate)
+    }
+  },
   computed: {
     processSyncGates () {
-      return this.behaviour.processDeclaration.visibleGateList.filter((vGate, i) => {
-        return this.syncGates && this.syncGates.find(pGate => pGate.value === this.behaviour.parsingGates[i].value)
-      })
+      let gates = []
+      if (this.syncGates) {
+        this.behaviour.processDeclaration.visibleGateList.forEach((pGate, i) => {
+          let sGate = this.syncGates.find(pGate => pGate.value === this.behaviour.parsingGates[i].value)
+          if (sGate) {
+            pGate.count = sGate.count
+            gates.push(pGate)
+          }
+        })
+      }
+      return gates
     },
     gate () {
       return (!!this.behaviour.identifier && !!this.syncGates) ? this.syncGates.find((g) => g.value === this.behaviour.identifier.value) : null
@@ -114,18 +127,27 @@ export default {
         this.$emit('event', this.behaviour.identifier)
       }
     },
+    /*
+     Substituir essa sintaxe por uma chamada da ação do próprio gate, ou tendo o gate como variação do evento
+    */
     eventOccour (gate) {
-      if (this.behaviour.operand === 'OP_ACTION_PREFIX' || this.behaviour.operand === 'OP_HIDING_EVENT') {
-        this.$emit('event', gate)
-      } else if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
-        this.$emit('event', (this.syncGate || []).find(g => {
-          return g.value === this.behaviour.parsingGates.find((pGate, i) => {
-            return this.behaviour.processDeclaration.visibleGateList[i].value === gate.value
-          })
+      if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
+        this.$emit('event', this.behaviour.parsingGates.find((pGate, i) => {
+          return this.behaviour.processDeclaration.visibleGateList[i].value === gate.value
         }))
-      } else if (this.behaviour.operand === 'OP_PALALLELISM') {
-        gate.count = (gate.count || 0) + 1
-        console.log('chegou', gate)
+      } else if (this.behaviour.operand === 'OP_PALALLELISM' && this.behaviour.variacao !== 'INTERLEAVING') {
+        // difernciar os tipos de paralelismo
+        if (this.behaviour.variacao === 'PART' && this.behaviour.parsingGates.find(g => g.value === gate.value)) {
+          console.log(this.behaviour.operand, this.behaviour.variacao)
+          gate.count = (gate.count || 0) + 1
+          this.behaviour.parsingGates = this.behaviour.parsingGates.map(pGate => {
+            return pGate.value === gate.value ? gate : pGate
+          })
+        } else {
+          this.$emit('event', gate)
+        }
+      } else {
+        this.$emit('event', gate)
       }
     }
   }

@@ -325,6 +325,7 @@ function LotosSyntatic (lexer) {
       let operationalExpression = new Behaviour()
       if (actualToken.isA(BEHAVIOUR_OPERATION, '|[') || actualToken.isA(BEHAVIOUR_OPERATION, '|||') || actualToken.isA(BEHAVIOUR_OPERATION, '||')) {
         operationalExpression.operand = OP_PALALLELISM
+        operationalExpression.variacao = actualToken.isA(BEHAVIOUR_OPERATION, '|[') ? 'PART' : actualToken.isA(BEHAVIOUR_OPERATION, '||') ? 'FULL' : 'INTERLEAVING'
         if (actualToken.isA(BEHAVIOUR_OPERATION, '|[')) {
           operationalExpression.parsingGates = identifierList()
           if (!actualToken.isA(BEHAVIOUR_OPERATION, ']|')) {
