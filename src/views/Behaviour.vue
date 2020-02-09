@@ -20,14 +20,17 @@
     </v-layout>
     <v-layout v-if="behaviour.operand === 'OP_ACTION_PREFIX' || behaviour.operand === 'OP_HIDING_EVENT'" shrink align-start justify-end row >
       <v-flex shrink>
-        <v-chip>{{behaviour.identifier.value}}</v-chip>
+        <v-chip>{{behaviour.identifier.value}}{{behaviour.identifier.count}}</v-chip>
       </v-flex>
       <v-flex shrink v-if="!!isGateParallel && (gate.count || 0) < 2">
         <v-btn v-if="!gate.count" class="yellow" @click="notifyGate" icon small>
+          <v-icon>schedule</v-icon>
+        </v-btn>
+        <v-btn v-else-if="!gateClick" class="yellow" @click="notifyGate" icon small>
           <v-icon>swap_horiz</v-icon>
         </v-btn>
-        <v-btn v-else class="yellow" @click="notifyGate" icon small>
-          <v-icon>schedule</v-icon>
+        <v-btn v-else class="green" @click="() => message(`It's waiting for sincronizing with other ${gate.value} event`)" icon small>
+          <v-icon>play_arrow</v-icon>
         </v-btn>
       </v-flex>
       <v-flex shrink v-else>
@@ -35,7 +38,7 @@
           <v-icon>keyboard_arrow_right</v-icon>
         </v-btn>
       </v-flex>
-      <behaviour :behaviour="behaviour.rightBehaviour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="level === 1 && behaviour.rightBehaviour"></behaviour>
+      <behaviour :behaviour="behaviour.rightBehaviour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="(level === 1 || (gate && gate.count > 1)) && behaviour.rightBehaviour"></behaviour>
     </v-layout>
    </v-card>
  </v-flex>
@@ -58,7 +61,8 @@ export default {
   },
   watch: {
     'syncGates': function (val) {
-      console.log(this.gate)
+      if (this.gate) {
+      }
     }
   },
   computed: {
@@ -109,8 +113,7 @@ export default {
           'ma-1': true
         }
       },
-      gateMap: {
-      }
+      gateClick: false
     }
   },
   mounted () {
@@ -123,32 +126,39 @@ export default {
       })
     },
     notifyGate () {
-      if (this.behaviour.operand === 'OP_ACTION_PREFIX') {
-        this.$emit('event', this.behaviour.identifier)
+      if (this.behaviour.operand === 'OP_ACTION_PREFIX' && !this.gateClick) {
+        this.gateClick = true
+        this.$emit('event', this.behaviour.identifier.value)
       }
     },
     /*
      Substituir essa sintaxe por uma chamada da ação do próprio gate, ou tendo o gate como variação do evento
     */
-    eventOccour (gate) {
+    eventOccour (gateName) {
       if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
-        this.$emit('event', this.behaviour.parsingGates.find((pGate, i) => {
-          return this.behaviour.processDeclaration.visibleGateList[i].value === gate.value
-        }))
+        let g = this.behaviour.parsingGates.find((pGate, i) => {
+          return this.behaviour.processDeclaration.visibleGateList[i].value === gateName
+        })
+        this.$emit('event', g.value)
       } else if (this.behaviour.operand === 'OP_PALALLELISM' && this.behaviour.variacao !== 'INTERLEAVING') {
+        console.log('chegou')
         // difernciar os tipos de paralelismo
-        if (this.behaviour.variacao === 'PART' && this.behaviour.parsingGates.find(g => g.value === gate.value)) {
-          console.log(this.behaviour.operand, this.behaviour.variacao)
-          gate.count = (gate.count || 0) + 1
+        if (this.behaviour.variacao === 'PART' && this.behaviour.parsingGates.find(g => g.value === gateName)) {
+          // console.log(gate.count)
+          // gate.count = (gate.count || 0) + 1
+          // console.log(gate.count)
           this.behaviour.parsingGates = this.behaviour.parsingGates.map(pGate => {
-            return pGate.value === gate.value ? gate : pGate
+            return pGate.value === gateName ? { ...pGate, count: (pGate.count || 0) + 1 } : pGate
           })
         } else {
-          this.$emit('event', gate)
+          this.$emit('event', gateName)
         }
       } else {
-        this.$emit('event', gate)
+        this.$emit('event', gateName)
       }
+    },
+    message (txt) {
+      alert(txt)
     }
   }
 }
