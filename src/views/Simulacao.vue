@@ -35,7 +35,7 @@
           justify-center
         >
           <div>
-            <behaviour v-if="initialBehaviour" :behaviour="initialBehaviour"></behaviour>
+            <behaviour v-if="initialBehaviour" :pBehaviour="initialBehaviour"></behaviour>
           </div>
         </v-layout>
       </v-flex>

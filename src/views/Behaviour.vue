@@ -6,40 +6,45 @@
         <h5 class="subtitle ma-0">{{ blockTitle[behaviour.operand] }}</h5>
       </div>
     </v-card-title>
-    <behaviour :behaviour="behaviour.leftBehaviour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
-    <behaviour :behaviour="behaviour.rightBehaviour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour"></behaviour>
-    <v-layout v-if="behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP'" shrink align-start justify-end row >
-      <v-flex shrink>
-        <v-chip class="red">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
-      </v-flex>
-      <v-flex shrink>
-        <v-btn class="red" @click="() => {}" icon small>
-          <v-icon>block</v-icon>
-        </v-btn>
-      </v-flex>
-    </v-layout>
-    <v-layout v-if="behaviour.operand === 'OP_ACTION_PREFIX' || behaviour.operand === 'OP_HIDING_EVENT'" shrink align-start justify-end row >
-      <v-flex shrink>
-        <v-chip>{{behaviour.identifier.value}}{{behaviour.identifier.count}}</v-chip>
-      </v-flex>
-      <v-flex shrink v-if="!!isGateParallel && (gate.count || 0) < 2">
-        <v-btn v-if="!gate.count" class="yellow" @click="notifyGate" icon small>
-          <v-icon>schedule</v-icon>
-        </v-btn>
-        <v-btn v-else-if="!gateClick" class="yellow" @click="notifyGate" icon small>
-          <v-icon>swap_horiz</v-icon>
-        </v-btn>
-        <v-btn v-else class="green" @click="() => message(`It's waiting for sincronizing with other ${gate.value} event`)" icon small>
-          <v-icon>play_arrow</v-icon>
-        </v-btn>
-      </v-flex>
-      <v-flex shrink v-else>
-        <v-btn @click="() => levelUp()" icon small>
-          <v-icon>keyboard_arrow_right</v-icon>
-        </v-btn>
-      </v-flex>
-      <behaviour :behaviour="behaviour.rightBehaviour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="(level === 1 || (gate && gate.count > 1)) && behaviour.rightBehaviour"></behaviour>
-    </v-layout>
+    <template v-if="behaviour.operand === 'OP_CHOICE'">
+      <behaviour v-for="(b, i) in choices" :index="i" :key="i" :pBehaviour="b" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
+    </template>
+    <template v-else>
+      <behaviour :pBehaviour="behaviour.leftBehaviour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
+      <behaviour :pBehaviour="behaviour.rightBehaviour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour"></behaviour>
+      <v-layout v-if="behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP'" shrink align-start justify-end row >
+        <v-flex shrink>
+          <v-chip class="red">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
+        </v-flex>
+        <v-flex shrink>
+          <v-btn class="red" @click="() => {}" icon small>
+            <v-icon>block</v-icon>
+          </v-btn>
+        </v-flex>
+      </v-layout>
+      <v-layout v-if="behaviour.operand === 'OP_ACTION_PREFIX' || behaviour.operand === 'OP_HIDING_EVENT'" shrink align-start justify-end row >
+        <v-flex shrink>
+          <v-chip>{{behaviour.identifier.value}}{{behaviour.identifier.count}}</v-chip>
+        </v-flex>
+        <v-flex shrink v-if="!!isGateParallel && (gate.count || 0) < 2">
+          <v-btn v-if="!gate.count" class="yellow" @click="notifyGate" icon small>
+            <v-icon>schedule</v-icon>
+          </v-btn>
+          <v-btn v-else-if="!gateClick" class="yellow" @click="notifyGate" icon small>
+            <v-icon>swap_horiz</v-icon>
+          </v-btn>
+          <v-btn v-else class="green" @click="() => message(`It's waiting for sincronizing with other ${gate.value} event`)" icon small>
+            <v-icon>play_arrow</v-icon>
+          </v-btn>
+        </v-flex>
+        <v-flex shrink v-else>
+          <v-btn @click="() => levelUp()" icon small>
+            <v-icon>keyboard_arrow_right</v-icon>
+          </v-btn>
+        </v-flex>
+        <behaviour :pBehaviour="behaviour.rightBehaviour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="(level === 1 || (gate && gate.count > 1)) && behaviour.rightBehaviour"></behaviour>
+      </v-layout>
+    </template>
    </v-card>
  </v-flex>
 </template>
@@ -51,13 +56,13 @@ export default {
   name: 'Behaviour',
   components: { Behaviour },
   props: {
+    index: null,
     syncGates: Array,
-    behaviour: Object,
+    pBehaviour: Object,
     origin: {
       default: null,
       type: Object
-    },
-    left: Boolean
+    }
   },
   watch: {
     'syncGates': function (val) {
@@ -66,6 +71,9 @@ export default {
     }
   },
   computed: {
+    behaviour () {
+      return this.selectedBehaviour || this.pBehaviour
+    },
     processSyncGates () {
       let gates = []
       if (this.syncGates) {
@@ -92,6 +100,8 @@ export default {
   data () {
     return {
       level: 0,
+      choices: [],
+      selectedBehaviour: null,
       blockTitle: {
         OP_PALALLELISM: 'Palalelismo',
         OP_CHOICE: 'Escolha'
@@ -117,6 +127,15 @@ export default {
     }
   },
   mounted () {
+    if (this.behaviour.operand === 'OP_CHOICE') {
+      this.choices.push(this.behaviour.leftBehaviour)
+      let rb = this.behaviour.rightBehaviour
+      while (rb.operand === 'OP_CHOICE') {
+        this.choices.push(rb.leftBehaviour)
+        rb = rb.rightBehaviour
+      }
+      this.choices.push(rb)
+    }
   },
   methods: {
     levelUp () {
@@ -128,18 +147,18 @@ export default {
     notifyGate () {
       if (this.behaviour.operand === 'OP_ACTION_PREFIX' && !this.gateClick) {
         this.gateClick = true
-        this.$emit('event', this.behaviour.identifier.value)
+        this.$emit('event', this.behaviour.identifier.value, this.index)
       }
     },
     /*
      Substituir essa sintaxe por uma chamada da ação do próprio gate, ou tendo o gate como variação do evento
     */
-    eventOccour (gateName) {
+    eventOccour (gateName, index) {
       if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
         let g = this.behaviour.parsingGates.find((pGate, i) => {
           return this.behaviour.processDeclaration.visibleGateList[i].value === gateName
         })
-        this.$emit('event', g.value)
+        this.$emit('event', g.value, this.index)
       } else if (this.behaviour.operand === 'OP_PALALLELISM' && this.behaviour.variacao !== 'INTERLEAVING') {
         console.log('chegou')
         // difernciar os tipos de paralelismo
@@ -151,10 +170,13 @@ export default {
             return pGate.value === gateName ? { ...pGate, count: (pGate.count || 0) + 1 } : pGate
           })
         } else {
-          this.$emit('event', gateName)
+          this.$emit('event', gateName, this.index)
         }
+      } else if (this.behaviour.operand === 'OP_CHOICE') {
+        // modificar a sintaxe do choice para um array?
+        this.selectedBehaviour = this.choices[index]
       } else {
-        this.$emit('event', gateName)
+        this.$emit('event', gateName, this.index)
       }
     },
     message (txt) {

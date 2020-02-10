@@ -9,7 +9,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    gates: [],
     selectedFile: null,
     specifications: [],
     openedSpecifications: [],
@@ -151,15 +150,9 @@ export default new Vuex.Store({
     },
     setRaiz (state, raiz) {
       state.raiz = raiz
-    },
-    addGate (state, gate) {
-      state.gates.push(gate)
     }
   },
   actions: {
-    addGate ({ commit }, gate) {
-      commit('addGate', gate)
-    },
     storeRaiz ({ commit }, raiz) {
       commit('setRaiz', raiz)
     },
@@ -377,9 +370,6 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    gates (state) {
-      return state.gates
-    },
     headers (state) {
       return state.headers
     },
