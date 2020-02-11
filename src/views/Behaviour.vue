@@ -7,11 +7,11 @@
       </div>
     </v-card-title>
     <template v-if="behaviour.operand === 'OP_CHOICE'">
-      <behaviour v-for="(b, i) in choices" :index="i" :key="i" :pBehaviour="b" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
+      <behaviour v-for="(b, i) in choices" @hidingEvent="hidingEventOccour" :index="i" :key="i" :pBehaviour="b" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
     </template>
     <template v-else>
-      <behaviour :pBehaviour="behaviour.leftBehaviour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
-      <behaviour :pBehaviour="behaviour.rightBehaviour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour"></behaviour>
+      <behaviour :pBehaviour="behaviour.leftBehaviour" @hidingEvent="hidingEventOccour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
+      <behaviour :pBehaviour="behaviour.rightBehaviour" @hidingEvent="hidingEventOccour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour"></behaviour>
       <v-layout v-if="behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP'" shrink align-start justify-end row >
         <v-flex shrink>
           <v-chip class="red">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
@@ -38,11 +38,14 @@
           </v-btn>
         </v-flex>
         <v-flex shrink v-else>
-          <v-btn @click="() => levelUp()" icon small>
+          <v-btn v-if="behaviour.operand === 'OP_HIDING_EVENT'" @click="() => hidingEvent()" icon small>
+            <v-icon>keyboard_arrow_right</v-icon>
+          </v-btn>
+          <v-btn v-else-if="behaviour.operand === 'OP_ACTION_PREFIX'" @click="() => levelUp()" icon small>
             <v-icon>keyboard_arrow_right</v-icon>
           </v-btn>
         </v-flex>
-        <behaviour :pBehaviour="behaviour.rightBehaviour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="(level === 1 || (gate && gate.count > 1)) && behaviour.rightBehaviour"></behaviour>
+        <behaviour :pBehaviour="behaviour.rightBehaviour" @hidingEvent="hidingEventOccour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="(level === 1 || (gate && gate.count > 1)) && behaviour.rightBehaviour"></behaviour>
       </v-layout>
     </template>
    </v-card>
@@ -138,6 +141,10 @@ export default {
     }
   },
   methods: {
+    hidingEvent () {
+      this.$emit('hidingEvent', this.index)
+      this.levelUp()
+    },
     levelUp () {
       this.level = 1
       this.$nextTick(() => {
@@ -153,6 +160,14 @@ export default {
     /*
      Substituir essa sintaxe por uma chamada da ação do próprio gate, ou tendo o gate como variação do evento
     */
+    hidingEventOccour (index) {
+      if (this.behaviour.operand === 'OP_CHOICE') {
+        // modificar a sintaxe do choice para um array?
+        this.selectedBehaviour = this.choices[index]
+      } else {
+        this.$emit('hidingEvent', index)
+      }
+    },
     eventOccour (gateName, index) {
       if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
         let g = this.behaviour.parsingGates.find((pGate, i) => {
