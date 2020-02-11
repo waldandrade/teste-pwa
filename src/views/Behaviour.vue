@@ -7,11 +7,11 @@
       </div>
     </v-card-title>
     <template v-if="behaviour.operand === 'OP_CHOICE'">
-      <behaviour v-for="(b, i) in choices" @hidingEvent="hidingEventOccour" :index="i" :key="i" :pBehaviour="b" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
+      <behaviour v-for="(b, i) in choices" @hidingEvent="hidingEventOccour" :label="gateLabel" :index="i" :key="i" :pBehaviour="b" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
     </template>
     <template v-else>
-      <behaviour :pBehaviour="behaviour.leftBehaviour" @hidingEvent="hidingEventOccour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
-      <behaviour :pBehaviour="behaviour.rightBehaviour" @hidingEvent="hidingEventOccour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour"></behaviour>
+      <behaviour :pBehaviour="behaviour.leftBehaviour" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
+      <behaviour :pBehaviour="behaviour.rightBehaviour" @return="processReturn" v-if="(behaviour.operand != 'OP_ENABLE' || this.enable) && behaviour.operand != 'OP_DISABLE' && behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
       <v-layout v-if="behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP'" shrink align-start justify-end row >
         <v-flex shrink>
           <v-chip class="red">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
@@ -24,7 +24,16 @@
       </v-layout>
       <v-layout v-if="behaviour.operand === 'OP_ACTION_PREFIX' || behaviour.operand === 'OP_HIDING_EVENT'" shrink align-start justify-end row >
         <v-flex shrink>
-          <v-chip>{{behaviour.identifier.value}}{{behaviour.identifier.count}}</v-chip>
+          <v-chip>
+            <v-layout pa-1 column>
+              <v-flex style="font-size: 10px">
+                {{label}}
+              </v-flex>
+              <v-flex>
+                {{behaviour.identifier.value}}
+              </v-flex>
+            </v-layout>
+          </v-chip>
         </v-flex>
         <v-flex shrink v-if="!!isGateParallel && (gate.count || 0) < 2">
           <v-btn v-if="!gate.count" class="yellow" @click="notifyGate" icon small>
@@ -38,14 +47,14 @@
           </v-btn>
         </v-flex>
         <v-flex shrink v-else>
-          <v-btn v-if="behaviour.operand === 'OP_HIDING_EVENT'" @click="() => hidingEvent()" icon small>
+          <v-btn v-if="behaviour.operand === 'OP_HIDING_EVENT'" @click="() => runEvent()" icon small>
             <v-icon>keyboard_arrow_right</v-icon>
           </v-btn>
-          <v-btn v-else-if="behaviour.operand === 'OP_ACTION_PREFIX'" @click="() => levelUp()" icon small>
+          <v-btn v-else-if="behaviour.operand === 'OP_ACTION_PREFIX'" @click="() => runEvent()" icon small>
             <v-icon>keyboard_arrow_right</v-icon>
           </v-btn>
         </v-flex>
-        <behaviour :pBehaviour="behaviour.rightBehaviour" @hidingEvent="hidingEventOccour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="(level === 1 || (gate && gate.count > 1)) && behaviour.rightBehaviour"></behaviour>
+        <behaviour :pBehaviour="behaviour.rightBehaviour" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="(level === 1 || (gate && gate.count > 1)) && behaviour.rightBehaviour"></behaviour>
       </v-layout>
     </template>
    </v-card>
@@ -59,6 +68,7 @@ export default {
   name: 'Behaviour',
   components: { Behaviour },
   props: {
+    label: String,
     index: null,
     syncGates: Array,
     pBehaviour: Object,
@@ -74,6 +84,9 @@ export default {
     }
   },
   computed: {
+    gateLabel () {
+      return this.behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? this.behaviour.identifier.value : this.label
+    },
     behaviour () {
       return this.selectedBehaviour || this.pBehaviour
     },
@@ -102,6 +115,7 @@ export default {
   },
   data () {
     return {
+      enable: false,
       level: 0,
       choices: [],
       selectedBehaviour: null,
@@ -141,7 +155,14 @@ export default {
     }
   },
   methods: {
-    hidingEvent () {
+    processReturn () {
+      if (this.behaviour.operand === 'OP_ENABLE') {
+        this.enable = true
+      } else {
+        this.$emit('return')
+      }
+    },
+    runEvent () {
       this.$emit('hidingEvent', this.index)
       this.levelUp()
     },
