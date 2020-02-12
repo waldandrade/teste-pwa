@@ -312,6 +312,7 @@ function LotosSyntatic (lexer) {
         expression.rightBehaviour = behaviour(new Behaviour(), true)
       }
     } else if (actualToken.isA(RESERVED_WORD, 'exit') || actualToken.isA(RESERVED_WORD, 'stop')) {
+      expression.identifier = actualToken
       expression.operand = actualToken.isA(RESERVED_WORD, 'exit') ? OP_EXIT : OP_STOP
       nextToken()
       return expression

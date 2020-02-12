@@ -4,6 +4,9 @@ const BINARY_OPERATION = 'BINARY_OPERATION'
 const OP_PROCESS_INSTANTIATION = 'OP_PROCESS_INSTANTIATION'
 const OP_ACTION_PREFIX = 'OP_ACTION_PREFIX'
 const OP_HIDING_EVENT = 'OP_HIDING_EVENT'
+// const DATA = 'EXIT_WITH_DATA_PARSING'
+// const EXIT = 'EXIT_WITHOUT_DATA_PARSING'
+const NOEXIT = 'NOEXIT'
 
 function SemanticExpection (message, token) {
   this.reason = message
@@ -334,7 +337,11 @@ function LotosSemantic (syntaticTree) {
 
   function checkBehaviours (behaviour, processList, visibleGates, hidingGates, functionality, sorts, importedVariables) {
     let variables = importedVariables ? importedVariables.map(iv => iv) : []
-    if (behaviour.identifier) {
+    if (behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP') {
+      if (behaviour.operand === 'OP_EXIT' && functionality === NOEXIT) {
+        errors.push(new SemanticExpection(`'exit' event is not allowed in 'noexit' processes.`, behaviour.identifier))
+      }
+    } else if (behaviour.identifier) {
       var found = null
       var helper = 'Term'
       if (behaviour.operand === OP_PROCESS_INSTANTIATION) {

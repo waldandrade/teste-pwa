@@ -10,15 +10,15 @@
       <behaviour v-for="(b, i) in choices" @hidingEvent="hidingEventOccour" :label="gateLabel" :index="i" :key="i" :pBehaviour="b" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
     </template>
     <template v-else>
-      <behaviour :pBehaviour="behaviour.leftBehaviour" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
-      <behaviour :pBehaviour="behaviour.rightBehaviour" @return="processReturn" v-if="(behaviour.operand != 'OP_ENABLE' || this.enable) && behaviour.operand != 'OP_DISABLE' && behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
+      <behaviour :pBehaviour="behaviour.leftBehaviour" @disabled="occurDisable" :hasDisable="behaviour.operand === 'OP_DISABLE' ? disableActive : hasDisable" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
+      <behaviour :pBehaviour="behaviour.rightBehaviour" @disabled="occurDisable" :hasDisable="hasDisable" @return="processReturn" v-if="(behaviour.operand != 'OP_ENABLE' || this.enable) && (behaviour.operand != 'OP_DISABLE' || this.disable) && behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
       <v-layout v-if="behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP'" shrink align-start justify-end row >
         <v-flex shrink>
-          <v-chip class="red">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
+          <v-chip :class="{'white--text': true, 'red': behaviour.operand === 'OP_STOP', 'green': behaviour.operand === 'OP_EXIT' }">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
         </v-flex>
         <v-flex shrink>
-          <v-btn class="red" @click="() => {}" icon small>
-            <v-icon>block</v-icon>
+          <v-btn :class="{'white--text': true, 'red': behaviour.operand === 'OP_STOP', 'green': behaviour.operand === 'OP_EXIT' }" @click="() => {}" icon small>
+            <v-icon>{{behaviour.operand === 'OP_STOP' ? 'block' : 'check' }}</v-icon>
           </v-btn>
         </v-flex>
       </v-layout>
@@ -36,15 +36,23 @@
           </v-chip>
         </v-flex>
         <v-flex shrink v-if="!!isGateParallel && (gate.count || 0) < 2">
-          <v-btn v-if="!gate.count" class="yellow" @click="notifyGate" icon small>
-            <v-icon>schedule</v-icon>
-          </v-btn>
-          <v-btn v-else-if="!gateClick" class="yellow" @click="notifyGate" icon small>
-            <v-icon>swap_horiz</v-icon>
-          </v-btn>
-          <v-btn v-else class="green" @click="() => message(`It's waiting for sincronizing with other ${gate.value} event`)" icon small>
-            <v-icon>play_arrow</v-icon>
-          </v-btn>
+          <v-layout column>
+            <v-btn v-if="disable" class="red darken-3 white--text" @click="() => message(`This event was disabled by the environment.`)" icon small>
+              <v-icon>block</v-icon>
+            </v-btn>
+            <v-btn v-else-if="!gate.count" class="yellow" @click="notifyGate" icon small>
+              <v-icon>schedule</v-icon>
+            </v-btn>
+            <v-btn v-else-if="!gateClick" class="yellow" @click="notifyGate" icon small>
+              <v-icon>swap_horiz</v-icon>
+            </v-btn>
+            <v-btn v-else class="green" @click="() => message(`It's waiting for sincronizing with other ${gate.value} event`)" icon small>
+              <v-icon>play_arrow</v-icon>
+            </v-btn>
+            <v-btn v-if="hasDisable" class="red darken-3 white--text" @click="clickDisable" icon small>
+              <v-icon>last_page</v-icon>
+            </v-btn>
+          </v-layout>
         </v-flex>
         <v-flex shrink v-else>
           <v-btn v-if="behaviour.operand === 'OP_HIDING_EVENT'" @click="() => runEvent()" icon small>
@@ -54,7 +62,7 @@
             <v-icon>keyboard_arrow_right</v-icon>
           </v-btn>
         </v-flex>
-        <behaviour :pBehaviour="behaviour.rightBehaviour" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="(level === 1 || (gate && gate.count > 1)) && behaviour.rightBehaviour"></behaviour>
+        <behaviour :pBehaviour="behaviour.rightBehaviour" @disabled="occurDisable" :hasDisable="hasDisable" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="(level === 1 || (gate && gate.count > 1)) && behaviour.rightBehaviour"></behaviour>
       </v-layout>
     </template>
    </v-card>
@@ -70,6 +78,7 @@ export default {
   props: {
     label: String,
     index: null,
+    hasDisable: Boolean,
     syncGates: Array,
     pBehaviour: Object,
     origin: {
@@ -116,6 +125,8 @@ export default {
   data () {
     return {
       enable: false,
+      disable: false,
+      disableActive: false,
       level: 0,
       choices: [],
       selectedBehaviour: null,
@@ -152,9 +163,26 @@ export default {
         rb = rb.rightBehaviour
       }
       this.choices.push(rb)
+    } else if (this.behaviour.operand === 'OP_EXIT') {
+      this.$emit('return')
+    } else if (this.behaviour.operand === 'OP_DISABLE') {
+      this.disableActive = true
+      this.disable = false
     }
   },
   methods: {
+    clickDisable () {
+      this.disable = true
+      this.occurDisable()
+    },
+    occurDisable () {
+      if (this.behaviour.operand === 'OP_DISABLE') {
+        this.disableActive = false
+        this.disable = true
+      } else {
+        this.$emit('disabled')
+      }
+    },
     processReturn () {
       if (this.behaviour.operand === 'OP_ENABLE') {
         this.enable = true
@@ -196,12 +224,7 @@ export default {
         })
         this.$emit('event', g.value, this.index)
       } else if (this.behaviour.operand === 'OP_PALALLELISM' && this.behaviour.variacao !== 'INTERLEAVING') {
-        console.log('chegou')
-        // difernciar os tipos de paralelismo
         if (this.behaviour.variacao === 'PART' && this.behaviour.parsingGates.find(g => g.value === gateName)) {
-          // console.log(gate.count)
-          // gate.count = (gate.count || 0) + 1
-          // console.log(gate.count)
           this.behaviour.parsingGates = this.behaviour.parsingGates.map(pGate => {
             return pGate.value === gateName ? { ...pGate, count: (pGate.count || 0) + 1 } : pGate
           })
@@ -209,7 +232,6 @@ export default {
           this.$emit('event', gateName, this.index)
         }
       } else if (this.behaviour.operand === 'OP_CHOICE') {
-        // modificar a sintaxe do choice para um array?
         this.selectedBehaviour = this.choices[index]
       } else {
         this.$emit('event', gateName, this.index)
