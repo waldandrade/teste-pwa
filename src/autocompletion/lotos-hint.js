@@ -21,7 +21,7 @@ import CodeMirror from 'codemirror'
     for (var i = 0, e = arr.length; i < e; ++i) f(arr[i])
   }
 
-  var lntKeywords = ('accept actualizedby any behaviour behavior choice endlib endproc ' +
+  var lotosKeywords = ('accept actualizedby any behaviour behavior choice endlib endproc ' +
   'endspec endtype eqns exit for forall formaleqns formalopns formalsorts hide i in is let library ' +
   'noexit of ofsort opnnames opns par process renamedby sortnames sorts specification stop ' +
   'type using where atomic comparedby constructor enumeratedby external implementedby iteratedby printedby' +
@@ -66,7 +66,7 @@ import CodeMirror from 'codemirror'
   }
 
   function lotosHint (editor, options) {
-    return scriptHint(editor, lntKeywords,
+    return scriptHint(editor, lotosKeywords,
       function (e, cur) {
         return e.getTokenAt(cur)
       }, options)

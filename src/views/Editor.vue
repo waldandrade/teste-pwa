@@ -170,7 +170,7 @@ export default {
         smartIndent: true,
         tabSize: 2,
         mode: 'lotos',
-        theme: 'blackboard',
+        theme: 'solarized',
         lineNumbers: true,
         matchBrackets: true,
         line: true,

@@ -33,7 +33,7 @@ import CodeMirror from 'codemirror'
 
     var atoms = { 'null': true }
 
-    var isOperatorChar = /[<>+-\/*!?;]|\*\*|==|<>|>=|<=|=>|>>|\[>|\|\||\|\[|\]\||\[\]|\|\|\|/
+    var isOperatorChar = /[\|\[\]<>+-\/*!?;]|\*\*|==|<>|>=|<=|=>|>>|\[>|\|\||\|\[|\]\||\[\]|\|\|\|/
 
     function tokenBase (stream, state) {
       var ch = stream.next()
