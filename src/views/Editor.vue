@@ -13,6 +13,7 @@ import { codemirror } from 'vue-codemirror'
 // require styles
 import '@/assets/css/codemirror.css'
 import 'codemirror/theme/blackboard.css'
+import 'codemirror/theme/solarized.css'
 import 'codemirror/addon/lint/lint.css'
 
 // adicionando o modo LNT
@@ -186,7 +187,6 @@ export default {
         },
         gutters: ['CodeMirror-lint-markers'],
         lint: true
-        // more codemirror options, 更多 codemirror 的高级配置...
       }
     }
   },

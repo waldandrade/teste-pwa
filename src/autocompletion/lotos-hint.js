@@ -21,15 +21,6 @@ import CodeMirror from 'codemirror'
     for (var i = 0, e = arr.length; i < e; ++i) f(arr[i])
   }
 
-  var lotosKeywords = ('accept actualizedby any behaviour behavior choice endlib endproc ' +
-  'endspec endtype eqns exit for forall formaleqns formalopns formalsorts hide i in is let library ' +
-  'noexit of ofsort opnnames opns par process renamedby sortnames sorts specification stop ' +
-  'type using where atomic comparedby constructor enumeratedby external implementedby iteratedby printedby' +
-  'BasicNaturalNumber Bit BitNatRepr BitString Bool Boolean DecDigit DecNatRepr DecString ' +
-    'HexDigit HexNatRepr HexString NatRepresentations Nat NaturalNumber OctDigit Octet OctetString OctNatRepr ' +
-    'OctString Set String false true and Bit1 Bit2 Bit3 Bit4 Bit5 Bit6 Bit7 Bit8 Card eq ge gt iff implies ' +
-    'Includes Insert Ints IsIn IsSubsetOf le Length lt Minus NatNum ne not NotIn or Remove Reverse Succ Union xor').split(' ')
-
   function scriptHint (editor, keywords, getToken, options) {
     // Find the token at the cursor
     var cur = editor.getCursor(); var token = getToken(editor, cur)
@@ -64,6 +55,15 @@ import CodeMirror from 'codemirror'
       from: Pos(cur.line, token.start),
       to: Pos(cur.line, token.end) }
   }
+
+  var lotosKeywords = ('accept actualizedby any behaviour behavior choice endlib endproc ' +
+  'endspec endtype eqns exit for forall formaleqns formalopns formalsorts hide i in is let library ' +
+  'noexit of ofsort opnnames opns par process renamedby sortnames sorts specification stop ' +
+  'type using where atomic comparedby constructor enumeratedby external implementedby iteratedby printedby' +
+  'BasicNaturalNumber Bit BitNatRepr BitString Bool Boolean DecDigit DecNatRepr DecString ' +
+    'HexDigit HexNatRepr HexString NatRepresentations Nat NaturalNumber OctDigit Octet OctetString OctNatRepr ' +
+    'OctString Set String false true and Bit1 Bit2 Bit3 Bit4 Bit5 Bit6 Bit7 Bit8 Card eq ge gt iff implies ' +
+    'Includes Insert Ints IsIn IsSubsetOf le Length lt Minus NatNum ne not NotIn or Remove Reverse Succ Union xor').split(' ')
 
   function lotosHint (editor, options) {
     return scriptHint(editor, lotosKeywords,

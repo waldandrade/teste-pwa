@@ -3,12 +3,23 @@ import Vuex from 'vuex'
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/storage'
-import 'firebase/database'
+import 'firebase/firestore'
+
+firebase.initializeApp({
+  apiKey: 'AIzaSyA22n4MkrGXaZOlsT83TiBCdG84_sRfbTM',
+  authDomain: 'optiarts-58885.firebaseapp.com',
+  databaseURL: 'https://optiarts-58885.firebaseio.com',
+  projectId: 'optiarts-58885',
+  storageBucket: 'optiarts-58885.appspot.com',
+  messagingSenderId: '980912405037',
+  appId: '1:980912405037:web:975de856144c14194496a4'
+})
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    db: firebase.firestore(),
     selectedFile: null,
     specifications: [],
     openedSpecifications: [],
@@ -190,14 +201,11 @@ export default new Vuex.Store({
       commit('setExplore', explore)
     },
     carregarDados ({ commit, state }) {
-      var userRef = firebase.database().ref(`users/${state.user.id}`)
-
-      userRef.once('value', (snapshot) => {
-        var specifications = []
-        snapshot.forEach((child) => {
-          specifications.push(child.val())
-        })
-        commit('setSpecifications', specifications)
+      state.db.collection('users').doc(`${state.user.id}`).collection('specs').get().then((querySnapshot) => {
+        console.log(querySnapshot)
+        commit('setSpecifications', querySnapshot.docs.map((doc) => {
+          return { ...doc.data(), id: doc.id }
+        }))
       })
     },
     addLib ({ commit }, lib) {
