@@ -221,7 +221,7 @@ function LotosSemantic (syntaticTree) {
       let operation = termInOpns(firstTerm.token, opns)
 
       if (!variable && !operation) {
-        errors.push(new SemanticExpection(`Unknown term 1 "${firstTerm.token.value}"`, firstTerm.token))
+        errors.push(new SemanticExpection(`Unknown term "${firstTerm.token.value}"`, firstTerm.token))
       }
 
       if (operation && firstTerm.arguments && firstTerm.arguments.length) {

@@ -76,7 +76,7 @@ var LOTOSHINT = (function () {
         /**
          * Adicionar no analisador sinático a possibilidade de analisar um tipo diretamente
          */
-        libSyn = new LotosSyntatic(libLex._tokens)
+        libSyn = new LotosSyntatic(libLex.lexer)
         if (libSyn._errors.length) {
           LOTOSHINT.errors = libSyn._errors || []
         } else {
@@ -103,12 +103,11 @@ var LOTOSHINT = (function () {
     LOTOSHINT.errors = []
 
     if (text && text.length) {
-      var lex = new LotosLexer(text)
-
-      if (lex._errors.length) {
-        LOTOSHINT.errors = lex._errors || []
+      let lex = new LotosLexer(text, LOTOSHINT)
+      if (lex.errors.length) {
+        LOTOSHINT.errors = lex.errors || []
       } else {
-        syn = new LotosSyntatic(lex._tokens)
+        syn = new LotosSyntatic(lex.lexer)
         if (syn.raiz.libraryTokens) {
           syn.raiz.libraryTokens.reverse().forEach(element => {
             try {
