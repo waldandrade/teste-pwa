@@ -16,13 +16,13 @@ const RESERVED_LEXICAL_TOKEN = /(\(|\)|\{|\}|,|\.|->|:=|:|;|\[|\]|=>)/
 const BEHAVIOUR_OPERATION = /(>>|\|\|\||\|\||\]\||\|\[|\[\]|\[>|\?|!)/
 const SPECIAL_CHARACTER = /(\*|#|%|&|\\|\+|-|\.|\/|<|>|@|\^|~|\{|\}|=)+/
 const IDENTIFIER = /[a-zA-Z_][a-zA-Z0-9_]*/
-const NUMBER = /0|[1-9][0-9]*\b/
+const NUMBER = /\b0|[1-9][0-9]*\b/
 const BREAK_LINE = /\/\/[^\r\n]*\r?\n/
 const SPACE = /[ \t\r\n]+/
 const BINARY_OPERATION = /\b_(.+)_\b/
 
 class LotosLexer {
-  constructor (source, hint) {
+  constructor (source) {
     this._errors = []
     this._lexer = new Tokenizr()
     this._lexer.reset()
@@ -61,14 +61,18 @@ class LotosLexer {
     this._lexer.rule(SPACE, (ctx, match) => {
       ctx.ignore()
     })
-    this._lexer.rule(/.+/, (ctx, match) => {
+    this._lexer.rule(/\S\w*/, (ctx, match) => {
       let info = ctx.info()
       console.log(1)
       this._errors.push(new LexExpection(`Unknown term ${match[0]}`, match[0], info.column, info.line))
       ctx.ignore()
     })
+  }
+
+  compile (hint) {
     this._lexer.finish((ctx) => {
       hint.errors = (hint.errors || []).concat(this._errors)
+      console.log(2)
     })
     this._lexer.input(this._source)
   }
