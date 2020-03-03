@@ -95,29 +95,32 @@ var LOTOSHINT = (function () {
     LOTOSHINT.errors = []
 
     if (text && text.length) {
-      console.log(3)
       let lex = new LotosLexer(text)
-      syn = new LotosSyntatic(lex.lexer)
-      if (syn._errors.length) {
-        syn._errors.forEach(e => LOTOSHINT.errors.push(e))
+      if (lex.errors.length) {
+        lex.errors.forEach(e => LOTOSHINT.errors.push(e))
       } else {
-        if (syn.raiz && syn.raiz.libraryTokens) {
-          syn.raiz.libraryTokens.reverse().forEach(element => {
-            try {
-              importLib(element, syn.raiz)
-            } catch (e) {
-              LOTOSHINT.errors.push(e)
-            }
-          })
+        syn = new LotosSyntatic(lex.lexer)
+        if (syn._errors.length) {
+          syn._errors.forEach(e => LOTOSHINT.errors.push(e))
+        } else {
+          if (syn.raiz && syn.raiz.libraryTokens) {
+            syn.raiz.libraryTokens.reverse().forEach(element => {
+              try {
+                importLib(element, syn.raiz)
+              } catch (e) {
+                LOTOSHINT.errors.push(e)
+              }
+            })
+          }
+          var semantic = new LotosSemantic(syn.raiz)
+          semantic.start()
+          LOTOSHINT.errors = (LOTOSHINT.errors || []).concat(semantic._errors)
+          if (!LOTOSHINT.errors.length) {
+            LOTOSHINT.store.dispatch('storeRaiz', syn.raiz)
+          }
         }
-        var semantic = new LotosSemantic(syn.raiz)
-        semantic.start()
-        LOTOSHINT.errors = (LOTOSHINT.errors || []).concat(semantic._errors)
-        if (!LOTOSHINT.errors.length) {
-          LOTOSHINT.store.dispatch('storeRaiz', syn.raiz)
-        }
+        return true
       }
-      return true
     }
   }
 
