@@ -95,23 +95,21 @@ var LOTOSHINT = (function () {
     LOTOSHINT.errors = []
 
     if (text && text.length) {
-      let lex = new LotosLexer(text)
       console.log(3)
-      lex.compile(LOTOSHINT)
+      let lex = new LotosLexer(text)
       syn = new LotosSyntatic(lex.lexer)
-      if (syn.raiz.libraryTokens) {
-        syn.raiz.libraryTokens.reverse().forEach(element => {
-          try {
-            importLib(element, syn.raiz)
-          } catch (e) {
-            LOTOSHINT.errors.push(e)
-          }
-        })
-      }
-
       if (syn._errors.length) {
-        LOTOSHINT.errors = (LOTOSHINT.errors || []).concat(syn._errors)
+        syn._errors.forEach(e => LOTOSHINT.errors.push(e))
       } else {
+        if (syn.raiz && syn.raiz.libraryTokens) {
+          syn.raiz.libraryTokens.reverse().forEach(element => {
+            try {
+              importLib(element, syn.raiz)
+            } catch (e) {
+              LOTOSHINT.errors.push(e)
+            }
+          })
+        }
         var semantic = new LotosSemantic(syn.raiz)
         semantic.start()
         LOTOSHINT.errors = (LOTOSHINT.errors || []).concat(semantic._errors)
@@ -119,9 +117,8 @@ var LOTOSHINT = (function () {
           LOTOSHINT.store.dispatch('storeRaiz', syn.raiz)
         }
       }
+      return true
     }
-
-    return LOTOSHINT.errors.length === 0
   }
 
   itself.data = function () {

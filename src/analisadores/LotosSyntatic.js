@@ -30,6 +30,13 @@ const OP_DISABLE = 'OP_DISABLE'
 const OP_CHOICE = 'OP_CHOICE'
 // stop é uma expression de interrupção, ou seja, a expressão não termina corretamente
 
+function LexException (message, text, column, line) {
+  this.reason = message
+  this.name = 'LexException'
+  this.column = column
+  this.line = line
+}
+
 function SyntaticExpection (message, token) {
   this.reason = message
   this.name = 'SyntaticExpection'
@@ -144,7 +151,7 @@ function LotosSyntatic (lexer) {
     }
 
     if (!actualToken.isA(RESERVED_WORD, 'endproc')) {
-      errors.push(new SyntaticExpection(`Need a "endproc" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+      errors.push(new SyntaticExpection(`Need a "endproc" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
       return process
     }
 
@@ -406,7 +413,7 @@ function LotosSyntatic (lexer) {
       }
 
       if (!actualToken.isA(RESERVED_WORD, 'endspec')) {
-        errors.push(new SyntaticExpection(`Need a "endspec" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+        errors.push(new SyntaticExpection(`Need a "endspec" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
         return specification
       }
       nextToken()
@@ -1199,6 +1206,8 @@ function LotosSyntatic (lexer) {
   } catch (e) {
     if (e instanceof InterruptException) {
       errors.push(new SyntaticExpection(e.message, e.token))
+    } else if (e instanceof LexException) {
+      errors.push(e)
     }
   }
 
