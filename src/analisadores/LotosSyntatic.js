@@ -60,6 +60,8 @@ function LotosSyntatic (lexer) {
     actualToken = lexer.token()
     if (!actualToken) {
       throw new InterruptException(`The specification is incompleted`, storeToken)
+    } else if (actualToken.isA('LEXICAL_ERROR')) {
+      errors.push(new LexException(`Unknown term ${actualToken.text}`, actualToken.text, actualToken.column, actualToken.line))
     }
   }
 
@@ -1206,8 +1208,6 @@ function LotosSyntatic (lexer) {
   } catch (e) {
     if (e instanceof InterruptException) {
       errors.push(new SyntaticExpection(e.message, e.token))
-    } else if (e instanceof LexException) {
-      errors.push(e)
     }
   }
 
