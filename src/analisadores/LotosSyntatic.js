@@ -30,13 +30,6 @@ const OP_DISABLE = 'OP_DISABLE'
 const OP_CHOICE = 'OP_CHOICE'
 // stop é uma expression de interrupção, ou seja, a expressão não termina corretamente
 
-function LexException (message, text, column, line) {
-  this.reason = message
-  this.name = 'LexException'
-  this.column = column
-  this.line = line
-}
-
 function SyntaticExpection (message, token) {
   this.reason = message
   this.name = 'SyntaticExpection'
@@ -55,13 +48,12 @@ function LotosSyntatic (lexer) {
   let errors = []
   let actualToken = null
   let storeToken = null
+
   function nextToken () {
     storeToken = { ...actualToken }
     actualToken = lexer.token()
     if (!actualToken) {
       throw new InterruptException(`The specification is incompleted`, storeToken)
-    } else if (actualToken.isA('LEXICAL_ERROR')) {
-      errors.push(new LexException(`Unknown term ${actualToken.text}`, actualToken.text, actualToken.column, actualToken.line))
     }
   }
 
