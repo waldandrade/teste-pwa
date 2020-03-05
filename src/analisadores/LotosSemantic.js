@@ -587,7 +587,8 @@ function LotosSemantic (syntaticTree) {
         }
         if (type.eqns && type.eqns.equationGroups) {
           type.eqns.equationGroups.forEach(equationGroup => {
-            checkEquationTermsExists(equationGroup, type.eqns.variables, type.overridedBy ? type.overridedBy.opns : type.opns)
+            checkEquationTermsExists(equationGroup, type.eqns.variables,
+              type.overridedBy ? type.overridedBy.opns : type.opns)
           })
         }
       })

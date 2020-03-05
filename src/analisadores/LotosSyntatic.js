@@ -4,6 +4,8 @@ import Specification from './structure/Specification'
 import Process from './structure/Process'
 import Behaviour from './structure/Behaviour'
 
+const COMPARE_TEST = 'COMPARE_TEST'
+
 const DATA = 'EXIT_WITH_DATA_PARSING'
 const EXIT = 'EXIT_WITHOUT_DATA_PARSING'
 const NOEXIT = 'NOEXIT'
@@ -353,6 +355,39 @@ function LotosSyntatic (lexer) {
     }
   }
 
+  function processDeclarationList (scope) {
+    nextToken()
+    scope.processList = []
+    while (true) {
+      if (!actualToken.isA(RESERVED_WORD, 'process')) {
+        break
+      }
+      let processDeclaration = createProcess()
+      if (!processDeclaration) {
+        break
+      }
+      scope.processList.push(processDeclaration)
+    }
+  }
+
+  function hideGateList (scope) {
+    scope.hidingGates = identifierList()
+
+    if (!actualToken.isA(RESERVED_WORD, 'in')) {
+      throw new SyntaticExpection(`Need a "in" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken)
+    }
+
+    nextToken()
+  }
+
+  function tokenTest (type, value, errorStyle) {
+    if (!errorStyle || errorStyle === COMPARE_TEST) {
+      if (!actualToken.isA(type, value)) {
+        throw new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken)
+      }
+    }
+  }
+
   function createSpecification (token) {
     let specification = new Specification()
     specification.token = token
@@ -361,60 +396,29 @@ function LotosSyntatic (lexer) {
       decl(specification)
 
       nextToken()
-      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
-        errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
-        return specification
-      }
+      tokenTest(RESERVED_LEXICAL_TOKEN, ':', COMPARE_TEST)
 
       functionType(specification)
 
       definitionOfTypes(specification)
 
-      if (!actualToken.isA(RESERVED_WORD, 'behaviour')) {
-        errors.push(new SyntaticExpection(`Need a "behaviour" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
-        return specification
-      }
-
+      tokenTest(RESERVED_WORD, 'behaviour', COMPARE_TEST)
       nextToken()
 
       if (actualToken.isA(RESERVED_WORD, 'hide')) {
-        specification.hidingGates = identifierList()
-
-        if (!actualToken.isA(RESERVED_WORD, 'in')) {
-          errors.push(new SyntaticExpection(`Need a "in" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
-          return specification
-        }
-
-        nextToken()
+        hideGateList(specification)
       }
-
       specification.behaviour = behaviour(new Behaviour())
 
       if (actualToken.isA(RESERVED_WORD, 'where')) {
-        nextToken()
-
-        specification.processList = []
-        while (true) {
-          if (!actualToken.isA(RESERVED_WORD, 'process')) {
-            break
-          }
-          let processDeclaration = createProcess()
-          if (!processDeclaration) {
-            break
-          }
-          specification.processList.push(processDeclaration)
-        }
+        processDeclarationList(specification)
       }
 
-      if (!actualToken.isA(RESERVED_WORD, 'endspec')) {
-        errors.push(new SyntaticExpection(`Need a "endspec" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return specification
-      }
+      tokenTest(RESERVED_WORD, 'endspec', COMPARE_TEST)
       nextToken()
       return specification
     } catch (e) {
-      errors.push(new SyntaticExpection(e.message, e.token))
-      return specification
+      throw e
     }
   }
 
@@ -464,151 +468,131 @@ function LotosSyntatic (lexer) {
   }
 
   function evaluateExpression (level) {
-    nextToken()
-
-    let expression = {
-      firstTerm: null,
-      operator: null,
-      secondTerm: null,
-      level: level
-    }
-
-    level++
-
-    if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
-      expression = evaluateExpression(level)
-
-      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
-        errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
-      }
-
+    try {
       nextToken()
-    } else {
-      if (!actualToken.isA(ID) && !actualToken.isA(NUMBER)) {
-        return false
+
+      let expression = {
+        firstTerm: null,
+        operator: null,
+        secondTerm: null,
+        level: level
       }
 
-      expression.firstTerm = {
-        token: actualToken
-      }
-
-      nextToken()
+      level++
 
       if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
-        expression.firstTerm.arguments = evaluateExpressionList()
-
-        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
-          errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-          return false
-        }
-
-        nextToken()
-      }
-    }
-
-    // TODO: lembrar de validar as operações no sort apropriado, na análise semântica
-    if (actualToken.isA(ID) || actualToken.isA(NUMBER) || (actualToken.isA(SPECIAL_CHARACTER) && actualToken.value !== '=')) {
-      expression.operator = actualToken
-      nextToken()
-
-      if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
-        expression.secondTerm = evaluateExpression(level)
-
-        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
-          errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-          return false
-        }
-
+        expression = evaluateExpression(level)
+        tokenTest(RESERVED_LEXICAL_TOKEN, ')', COMPARE_TEST)
         nextToken()
       } else {
         if (!actualToken.isA(ID) && !actualToken.isA(NUMBER)) {
-          errors.push(new SyntaticExpection(`Expected a identifier or a number for the second term of the expression, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
           return false
         }
 
-        expression.secondTerm = {
+        expression.firstTerm = {
           token: actualToken
         }
 
         nextToken()
 
         if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
-          expression.secondTerm.arguments = evaluateExpressionList()
-
-          if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
-            errors.push(new SyntaticExpection(`Expected ')' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-            return false
-          }
-
+          expression.firstTerm.arguments = evaluateExpressionList()
+          tokenTest(RESERVED_LEXICAL_TOKEN, ')', COMPARE_TEST)
           nextToken()
         }
       }
-    }
 
-    return expression
+      // TODO: lembrar de validar as operações no sort apropriado, na análise semântica
+      if (actualToken.isA(ID) || actualToken.isA(NUMBER) || (actualToken.isA(SPECIAL_CHARACTER) && actualToken.value !== '=')) {
+        expression.operator = actualToken
+        nextToken()
+
+        if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+          expression.secondTerm = evaluateExpression(level)
+          tokenTest(RESERVED_LEXICAL_TOKEN, ')', COMPARE_TEST)
+          nextToken()
+        } else {
+          if (!actualToken.isA(ID) && !actualToken.isA(NUMBER)) {
+            errors.push(new SyntaticExpection(`Expected a identifier or a number for the second term of the expression, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+            return false
+          }
+
+          expression.secondTerm = {
+            token: actualToken
+          }
+
+          nextToken()
+
+          if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+            expression.secondTerm.arguments = evaluateExpressionList()
+            tokenTest(RESERVED_LEXICAL_TOKEN, ')', COMPARE_TEST)
+            nextToken()
+          }
+        }
+      }
+
+      return expression
+    } catch (e) {
+      throw (e)
+    }
   }
 
   function equationsExpressionList () {
     let equationExpressions = []
 
-    while (true) {
-      var equationExpression = {
-        conditionalList: [],
-        domain: {},
-        image: {}
-      }
-
-      // Definindo as expressões que formam a equação, no nível maior '0'
-      equationExpression.domain = evaluateExpression(0)
-
-      if (!equationExpression.domain) {
-        break
-      }
-
-      if (!actualToken.isA(SPECIAL_CHARACTER, '=')) {
-        equationExpression.conditionalList.unshift(equationExpression.domain)
-        equationExpression.domain = {}
-
-        while (true) {
-          if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ',')) {
-            break
-          }
-
-          let condition = evaluateExpression(0)
-
-          if (!condition) {
-            return false
-          }
-
-          equationExpression.conditionalList.unshift(condition)
-        }
-
-        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, '=>')) {
-          errors.push(new SyntaticExpection(`Expected '=>' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-          return false
+    try {
+      while (true) {
+        var equationExpression = {
+          conditionalList: [],
+          domain: {},
+          image: {}
         }
 
         // Definindo as expressões que formam a equação, no nível maior '0'
         equationExpression.domain = evaluateExpression(0)
 
         if (!equationExpression.domain) {
-          errors.push(new SyntaticExpection(`Can't find a expression.`, actualToken))
-          return false
+          break
         }
+
+        if (!actualToken.isA(SPECIAL_CHARACTER, '=')) {
+          equationExpression.conditionalList.unshift(equationExpression.domain)
+          equationExpression.domain = {}
+
+          while (true) {
+            if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ',')) {
+              break
+            }
+
+            let condition = evaluateExpression(0)
+
+            if (!condition) {
+              return false
+            }
+
+            equationExpression.conditionalList.unshift(condition)
+          }
+
+          tokenTest(RESERVED_LEXICAL_TOKEN, '=>', COMPARE_TEST)
+          // Definindo as expressões que formam a equação, no nível maior '0'
+          equationExpression.domain = evaluateExpression(0)
+
+          if (!equationExpression.domain) {
+            throw new SyntaticExpection(`Can't find a expression.`, actualToken)
+          }
+        }
+
+        equationExpression.image = evaluateExpression(0)
+
+        tokenTest(RESERVED_LEXICAL_TOKEN, ';', COMPARE_TEST)
+
+        equationExpressions.push(equationExpression)
       }
 
-      equationExpression.image = evaluateExpression(0)
-
-      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ';')) {
-        errors.push(new SyntaticExpection(`Expected ';' token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return false
-      }
-
-      equationExpressions.push(equationExpression)
+      return equationExpressions
+    } catch (e) {
+      throw e
     }
-
-    return equationExpressions
   }
 
   function renameOperationsList (renamedOperations, typeDefinition) {
@@ -1147,16 +1131,20 @@ function LotosSyntatic (lexer) {
   }
 
   function scopeCheck (token) {
-    if (token.isA(RESERVED_WORD, 'specification')) {
-      return createSpecification(token)
-    }
+    try {
+      if (token.isA(RESERVED_WORD, 'specification')) {
+        return createSpecification(token)
+      }
 
-    if (token.isA(RESERVED_WORD, 'process')) {
-      return createProcess(token)
-    }
+      if (token.isA(RESERVED_WORD, 'process')) {
+        return createProcess(token)
+      }
 
-    if (token.isA(RESERVED_WORD, 'type')) {
-      return createType(token)
+      if (token.isA(RESERVED_WORD, 'type')) {
+        return createType(token)
+      }
+    } catch (e) {
+      throw e
     }
 
     return null
@@ -1200,6 +1188,9 @@ function LotosSyntatic (lexer) {
   } catch (e) {
     if (e instanceof InterruptException) {
       errors.push(new SyntaticExpection(e.message, e.token))
+    } else {
+      console.log('tratando o erro')
+      errors.push(e)
     }
   }
 
