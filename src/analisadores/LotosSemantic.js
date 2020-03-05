@@ -82,7 +82,7 @@ function LotosSemantic (syntaticTree) {
    * Verifica os tipos de dados utilizados nos operadores e equações
    * - Verificar os Sorts das variáveis declaradas, e se está funcionando bem quando tem mais de um tipo de variável
    */
-  function sortsNotExists (typeDef) {
+  function sortsAndOperationIsCorrect (typeDef) {
     let type = typeDef.overridedBy || typeDef
     if (type.opns && type.opns.length) {
       type.opns.forEach(opns => {
@@ -563,7 +563,9 @@ function LotosSemantic (syntaticTree) {
 
   function checkSpecification (syntaticTree) {
     let visibleProcessList = (syntaticTree.processList || []).slice(0)
-    checkBehaviours(syntaticTree.behaviour, visibleProcessList, syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [], syntaticTree.functionality, syntaticTree.sorts)
+    checkBehaviours(syntaticTree.behaviour, visibleProcessList,
+      syntaticTree.visibleGateList || [], syntaticTree.hidingGates || [],
+      syntaticTree.functionality, syntaticTree.sorts)
     if (syntaticTree.processList && syntaticTree.processList.length > 0) {
       syntaticTree.processList.forEach(process => {
         checkProcess(process, visibleProcessList)
@@ -581,7 +583,7 @@ function LotosSemantic (syntaticTree) {
     if (syntaticTree.types) {
       syntaticTree.types.forEach((type) => {
         generateSortAndOpnsList(type)
-        sortsNotExists(type)
+        sortsAndOperationIsCorrect(type)
         if (type.eqns && type.eqns.variables) {
           checkDuplicatedVariables(type.eqns)
         }
