@@ -130,11 +130,10 @@ export default {
           // }
           // this.eventState = (this.eventState === 'WAIT' || this.eventState === 'GO') ? 'GO' : (channel.type !== 'GO' ? 'READY' : null)
           if (!this.eventState) {
-            console.log('isNull')
             if (this.behaviour.identifier === channel.event) {
               this.eventState = 'WAIT'
             } else {
-              this.eventState = 'READY'
+              this.eventState = channel.type === 'GO' ? 'GO' : 'READY'
             }
           } else if (this.eventState === 'READY' && !!channel.type) {
             this.eventState = 'GO'
@@ -144,7 +143,6 @@ export default {
               this.$emit('newEvent', this.behaviour.identifier, 'GO')
             }
             this.eventState = 'GO'
-            console.log('está preso aqui')
           }
         }
       }
