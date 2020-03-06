@@ -7,11 +7,11 @@
       </div>
     </v-card-title>
     <template v-if="behaviour.operand === 'OP_CHOICE'">
-      <behaviour v-for="(b, i) in choices" @hidingEvent="hidingEventOccour" :label="gateLabel" :index="i" :key="i" :pBehaviour="b" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
+      <behaviour v-for="(b, i) in choices" :label="gateLabel" :choice="choice != null ? choice : i" @choose="behaviourChoose(i)" :key="i" :pBehaviour="b" :origin="behaviour"></behaviour>
     </template>
     <template v-else>
-      <behaviour :syncEnv="channel || syncEnv" @newEvent="evaluateNewEvent" :pBehaviour="behaviour.leftBehaviour" @disabled="occurDisable" :hasDisable="behaviour.operand === 'OP_DISABLE' ? disableActive : hasDisable" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
-      <behaviour :syncEnv="channel || syncEnv" @newEvent="evaluateNewEvent" :pBehaviour="behaviour.rightBehaviour" @disabled="occurDisable" :hasDisable="hasDisable" @return="processReturn" v-if="(behaviour.operand != 'OP_ENABLE' || this.enable) && (behaviour.operand != 'OP_DISABLE' || this.disable) && behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
+      <behaviour :syncEnv="channel || syncEnv" :choice="choice" @choose="$emit('choose')" @newEvent="evaluateNewEvent" :pBehaviour="behaviour.leftBehaviour" @disabled="occurDisable" :hasDisable="behaviour.operand === 'OP_DISABLE' ? disableActive : hasDisable" @return="processReturn" :label="gateLabel" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
+      <behaviour :syncEnv="channel || syncEnv" :choice="choice" @choose="$emit('choose')" @newEvent="evaluateNewEvent" :pBehaviour="behaviour.rightBehaviour" @disabled="occurDisable" :hasDisable="hasDisable" @return="processReturn" v-if="(behaviour.operand != 'OP_ENABLE' || this.enable) && (behaviour.operand != 'OP_DISABLE' || this.disable) && behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour" :label="gateLabel" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
       <v-layout v-if="behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP'" shrink align-start justify-end row >
         <v-flex shrink>
           <v-chip :class="{'white--text': true, 'red': behaviour.operand === 'OP_STOP', 'green': behaviour.operand === 'OP_EXIT' }">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
@@ -62,7 +62,7 @@
             <v-icon>keyboard_arrow_right</v-icon>
           </v-btn>
         </v-flex>
-        <behaviour :syncEnv="channel || syncEnv" @newEvent="evaluateNewEvent" :pBehaviour="behaviour.rightBehaviour" @disabled="occurDisable" :hasDisable="hasDisable" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" @event="eventOccour" :origin="behaviour" :syncGates="syncGates" v-if="eventState === 'GO' && behaviour.rightBehaviour"></behaviour>
+        <behaviour :syncEnv="channel || syncEnv" :choice="choice" @choose="$emit('choose')" @newEvent="evaluateNewEvent" :pBehaviour="behaviour.rightBehaviour" @disabled="occurDisable" :hasDisable="hasDisable" @return="processReturn" :label="gateLabel" @event="eventOccour" :origin="behaviour" :syncGates="syncGates" v-if="eventState === 'GO' && behaviour.rightBehaviour"></behaviour>
       </v-layout>
     </template>
    </v-card>
@@ -109,9 +109,9 @@ export default {
     }
   },
   props: {
+    choice: null,
     syncEnv: null,
     label: String,
-    index: null,
     hasDisable: Boolean,
     syncGates: Array,
     pBehaviour: Object,
@@ -123,9 +123,29 @@ export default {
   watch: {
     'syncEnv': function (channel) {
       if (this.behaviour.operand === 'OP_ACTION_PREFIX') {
-        if (channel.event !== this.behaviour.identifier && this.behaviour.identifier.value === channel.event.value) {
-          this.eventState = this.eventState === 'WAIT' ? 'GO' : 'READY'
-          console.log('EQUAL', this.behaviour.identifier.value, 'linha: ', this.behaviour.identifier.line)
+        if (this.behaviour.identifier.value === channel.event.value) {
+          console.log(this.eventState)
+          // if (this.eventState === 'WAIT') {
+          //  this.$emit('newEvent', this.behaviour.identifier, 'GO')
+          // }
+          // this.eventState = (this.eventState === 'WAIT' || this.eventState === 'GO') ? 'GO' : (channel.type !== 'GO' ? 'READY' : null)
+          if (!this.eventState) {
+            console.log('isNull')
+            if (this.behaviour.identifier === channel.event) {
+              this.eventState = 'WAIT'
+            } else {
+              this.eventState = 'READY'
+            }
+          } else if (this.eventState === 'READY' && !!channel.type) {
+            this.eventState = 'GO'
+            console.log('isReady')
+          } else if (this.eventState === 'WAIT') {
+            if (!channel.type) {
+              this.$emit('newEvent', this.behaviour.identifier, 'GO')
+            }
+            this.eventState = 'GO'
+            console.log('está preso aqui')
+          }
         }
       }
     }
@@ -165,22 +185,7 @@ export default {
       this.channel = {
         event: null
       }
-    }
-    /*
-    else if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
-      this.channel = new Channel('PARALELL', (gate) => {
-        if (this.channel.syncEnv) {
-          let g = this.channel.gates.find((pGate, i) => {
-            return this.channel.process.visibleGateList[i].value === gate.value
-          })
-          this.channel.syncEnv.newEvent(g.value)
-        }
-      }, this.syncEnv || this.channel, this.behaviour.parsingGates, this.behaviour.processDeclaration)
-    }
-    */
-  },
-  mounted () {
-    if (this.behaviour.operand === 'OP_CHOICE') {
+    } else if (this.behaviour.operand === 'OP_CHOICE') {
       this.choices.push(this.behaviour.leftBehaviour)
       let rb = this.behaviour.rightBehaviour
       while (rb.operand === 'OP_CHOICE') {
@@ -196,11 +201,9 @@ export default {
     }
   },
   methods: {
-    evaluateNewEvent (event) {
-      console.log('event', event)
-      console.log(this.behaviour.operand)
+    evaluateNewEvent (event, type) {
       if (this.channel) {
-        this.channel = { ...this.channel, event: event }
+        this.channel = { ...this.channel, event: event, type: type }
       } else if (this.syncEnv) {
         if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
           let g = this.behaviour.parsingGates.find((pGate, i) => {
@@ -208,7 +211,7 @@ export default {
           })
           if (g) event = g
         }
-        this.$emit('newEvent', event)
+        this.$emit('newEvent', event, type)
       }
     },
     clickDisable () {
@@ -231,9 +234,13 @@ export default {
       }
     },
     runEvent () {
-      this.$store.dispatch('eventHappen', this.behaviour.gate)
       // this.$emit('hidingEvent', this.index)
-      this.levelUp()
+      if (this.choice != null) {
+        this.$emit('choose', this.choice)
+      } else {
+        this.$store.dispatch('eventHappen', this.behaviour.gate)
+        this.levelUp()
+      }
     },
     levelUp () {
       this.eventState = 'GO'
@@ -243,21 +250,15 @@ export default {
     },
     notifyGate () {
       if (this.behaviour.operand === 'OP_ACTION_PREFIX') {
-        this.eventState = this.eventState === 'READY' ? 'GO' : 'WAIT'
-        this.$emit('newEvent', this.behaviour.identifier)
+        this.$emit('newEvent', this.behaviour.identifier, this.eventState)
         this.$store.dispatch('eventHappen', this.behaviour.gate)
       }
     },
     /*
      Substituir essa sintaxe por uma chamada da ação do próprio gate, ou tendo o gate como variação do evento
     */
-    hidingEventOccour (index) {
-      if (this.behaviour.operand === 'OP_CHOICE') {
-        // modificar a sintaxe do choice para um array?
-        this.selectedBehaviour = this.choices[index]
-      } else {
-        this.$emit('hidingEvent', index)
-      }
+    behaviourChoose (index) {
+      this.selectedBehaviour = this.choices[index]
     },
     eventOccour (gateName, index) {
       if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
