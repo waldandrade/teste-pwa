@@ -23,6 +23,16 @@ class Behaviour {
 
   _guard
 
+  _gate
+
+  set gate (gt) {
+    this._gate = gt
+  }
+
+  get gate () {
+    return this._gate
+  }
+
   set processDeclaration (pDeclaration) {
     this._processDeclaration = pDeclaration
   }

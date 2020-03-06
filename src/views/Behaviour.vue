@@ -10,8 +10,8 @@
       <behaviour v-for="(b, i) in choices" @hidingEvent="hidingEventOccour" :label="gateLabel" :index="i" :key="i" :pBehaviour="b" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
     </template>
     <template v-else>
-      <behaviour :pBehaviour="behaviour.leftBehaviour" @disabled="occurDisable" :hasDisable="behaviour.operand === 'OP_DISABLE' ? disableActive : hasDisable" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
-      <behaviour :pBehaviour="behaviour.rightBehaviour" @disabled="occurDisable" :hasDisable="hasDisable" @return="processReturn" v-if="(behaviour.operand != 'OP_ENABLE' || this.enable) && (behaviour.operand != 'OP_DISABLE' || this.disable) && behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
+      <behaviour :syncEnv="channel || syncEnv" @newEvent="evaluateNewEvent" :pBehaviour="behaviour.leftBehaviour" @disabled="occurDisable" :hasDisable="behaviour.operand === 'OP_DISABLE' ? disableActive : hasDisable" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="behaviour.operand === 'OP_PROCESS_INSTANTIATION' ? processSyncGates : (behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour" v-if="behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.leftBehaviour"></behaviour>
+      <behaviour :syncEnv="channel || syncEnv" @newEvent="evaluateNewEvent" :pBehaviour="behaviour.rightBehaviour" @disabled="occurDisable" :hasDisable="hasDisable" @return="processReturn" v-if="(behaviour.operand != 'OP_ENABLE' || this.enable) && (behaviour.operand != 'OP_DISABLE' || this.disable) && behaviour.operand !== 'OP_ACTION_PREFIX' && behaviour.operand !== 'OP_HIDING_EVENT' && behaviour.rightBehaviour" :label="gateLabel" @hidingEvent="hidingEventOccour" :syncGates="(behaviour.parsingGates || []).concat(syncGates || [])" @event="eventOccour" :origin="behaviour"></behaviour>
       <v-layout v-if="behaviour.operand === 'OP_EXIT' || behaviour.operand === 'OP_STOP'" shrink align-start justify-end row >
         <v-flex shrink>
           <v-chip :class="{'white--text': true, 'red': behaviour.operand === 'OP_STOP', 'green': behaviour.operand === 'OP_EXIT' }">{{behaviour.operand === 'OP_EXIT' ? 'EXIT' : 'STOP'}}</v-chip>
@@ -35,15 +35,15 @@
             </v-layout>
           </v-chip>
         </v-flex>
-        <v-flex shrink v-if="!!isGateParallel && (gate.count || 0) < 2">
+        <v-flex shrink v-if="!!isGateParallel && eventState !== 'GO'">
           <v-layout column>
             <v-btn v-if="disable" class="red darken-3 white--text" @click="() => message(`This event was disabled by the environment.`)" icon small>
               <v-icon>block</v-icon>
             </v-btn>
-            <v-btn v-else-if="!gate.count" class="yellow" @click="notifyGate" icon small>
+            <v-btn v-else-if="!eventState" class="yellow" @click="notifyGate" icon small>
               <v-icon>schedule</v-icon>
             </v-btn>
-            <v-btn v-else-if="!gateClick" class="yellow" @click="notifyGate" icon small>
+            <v-btn v-else-if="eventState === 'READY'" class="yellow" @click="notifyGate" icon small>
               <v-icon>swap_horiz</v-icon>
             </v-btn>
             <v-btn v-else class="green" @click="() => message(`It's waiting for sincronizing with other ${gate.value} event`)" icon small>
@@ -62,7 +62,7 @@
             <v-icon>keyboard_arrow_right</v-icon>
           </v-btn>
         </v-flex>
-        <behaviour :pBehaviour="behaviour.rightBehaviour" @disabled="occurDisable" :hasDisable="hasDisable" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" @event="eventOccour" :origin="behaviour"  :syncGates="syncGates" v-if="(level === 1 || (gate && gate.count > 1)) && behaviour.rightBehaviour"></behaviour>
+        <behaviour :syncEnv="channel || syncEnv" @newEvent="evaluateNewEvent" :pBehaviour="behaviour.rightBehaviour" @disabled="occurDisable" :hasDisable="hasDisable" @return="processReturn" :label="gateLabel" @hidingEvent="hidingEventOccour" @event="eventOccour" :origin="behaviour" :syncGates="syncGates" v-if="eventState === 'GO' && behaviour.rightBehaviour"></behaviour>
       </v-layout>
     </template>
    </v-card>
@@ -75,7 +75,41 @@ import Behaviour from '@/views/Behaviour'
 export default {
   name: 'Behaviour',
   components: { Behaviour },
+  data () {
+    return {
+      eventState: null,
+      channel: null,
+      enable: false,
+      disable: false,
+      disableActive: false,
+      level: 0,
+      choices: [],
+      selectedBehaviour: null,
+      blockTitle: {
+        OP_PALALLELISM: 'Palalelismo',
+        OP_CHOICE: 'Escolha'
+      },
+      blockClass: {
+        simple: {
+          'elevation-0': true
+        },
+        OP_PALALLELISM: {
+          'elevation-2': true,
+          'pl-3': true,
+          'pb-2': true,
+          'ma-1': true
+        },
+        OP_CHOICE: {
+          'elevation-2': true,
+          'pl-3': true,
+          'pb-2': true,
+          'ma-1': true
+        }
+      }
+    }
+  },
   props: {
+    syncEnv: null,
     label: String,
     index: null,
     hasDisable: Boolean,
@@ -87,8 +121,12 @@ export default {
     }
   },
   watch: {
-    'syncGates': function (val) {
-      if (this.gate) {
+    'syncEnv': function (channel) {
+      if (this.behaviour.operand === 'OP_ACTION_PREFIX') {
+        if (channel.event !== this.behaviour.identifier && this.behaviour.identifier.value === channel.event.value) {
+          this.eventState = this.eventState === 'WAIT' ? 'GO' : 'READY'
+          console.log('EQUAL', this.behaviour.identifier.value, 'linha: ', this.behaviour.identifier.line)
+        }
       }
     }
   },
@@ -122,37 +160,24 @@ export default {
       return !!this.behaviour.operand && ['OP_PALALLELISM', 'OP_CHOICE'].includes(this.behaviour.operand) && (!this.origin || this.origin.operand !== this.behaviour.operand)
     }
   },
-  data () {
-    return {
-      enable: false,
-      disable: false,
-      disableActive: false,
-      level: 0,
-      choices: [],
-      selectedBehaviour: null,
-      blockTitle: {
-        OP_PALALLELISM: 'Palalelismo',
-        OP_CHOICE: 'Escolha'
-      },
-      blockClass: {
-        simple: {
-          'elevation-0': true
-        },
-        OP_PALALLELISM: {
-          'elevation-2': true,
-          'pl-3': true,
-          'pb-2': true,
-          'ma-1': true
-        },
-        OP_CHOICE: {
-          'elevation-2': true,
-          'pl-3': true,
-          'pb-2': true,
-          'ma-1': true
-        }
-      },
-      gateClick: false
+  beforeMount () {
+    if (this.behaviour.operand === 'OP_PALALLELISM' && this.behaviour.variacao !== 'INTERLEAVING') {
+      this.channel = {
+        event: null
+      }
     }
+    /*
+    else if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
+      this.channel = new Channel('PARALELL', (gate) => {
+        if (this.channel.syncEnv) {
+          let g = this.channel.gates.find((pGate, i) => {
+            return this.channel.process.visibleGateList[i].value === gate.value
+          })
+          this.channel.syncEnv.newEvent(g.value)
+        }
+      }, this.syncEnv || this.channel, this.behaviour.parsingGates, this.behaviour.processDeclaration)
+    }
+    */
   },
   mounted () {
     if (this.behaviour.operand === 'OP_CHOICE') {
@@ -171,6 +196,21 @@ export default {
     }
   },
   methods: {
+    evaluateNewEvent (event) {
+      console.log('event', event)
+      console.log(this.behaviour.operand)
+      if (this.channel) {
+        this.channel = { ...this.channel, event: event }
+      } else if (this.syncEnv) {
+        if (this.behaviour.operand === 'OP_PROCESS_INSTANTIATION') {
+          let g = this.behaviour.parsingGates.find((pGate, i) => {
+            return this.behaviour.processDeclaration.visibleGateList[i].value === event
+          })
+          if (g) event = g
+        }
+        this.$emit('newEvent', event)
+      }
+    },
     clickDisable () {
       this.disable = true
       this.occurDisable()
@@ -191,19 +231,21 @@ export default {
       }
     },
     runEvent () {
-      this.$emit('hidingEvent', this.index)
+      this.$store.dispatch('eventHappen', this.behaviour.gate)
+      // this.$emit('hidingEvent', this.index)
       this.levelUp()
     },
     levelUp () {
-      this.level = 1
+      this.eventState = 'GO'
       this.$nextTick(() => {
         this.$root.$emit('novoElemento')
       })
     },
     notifyGate () {
-      if (this.behaviour.operand === 'OP_ACTION_PREFIX' && !this.gateClick) {
-        this.gateClick = true
-        this.$emit('event', this.behaviour.identifier.value, this.index)
+      if (this.behaviour.operand === 'OP_ACTION_PREFIX') {
+        this.eventState = this.eventState === 'READY' ? 'GO' : 'WAIT'
+        this.$emit('newEvent', this.behaviour.identifier)
+        this.$store.dispatch('eventHappen', this.behaviour.gate)
       }
     },
     /*

@@ -446,6 +446,8 @@ function LotosSemantic (syntaticTree) {
           })
         }
 
+        behaviour.gate = found
+
         if (behaviour.parameters && behaviour.parameters.length > 0) {
           behaviour.parameters.forEach(parameter => {
             if (parameter.imagem) {

@@ -19,6 +19,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    events: [],
     db: firebase.firestore(),
     selectedFile: null,
     specifications: [],
@@ -161,9 +162,16 @@ export default new Vuex.Store({
     },
     setRaiz (state, raiz) {
       state.raiz = raiz
+    },
+    addEvent (state, event) {
+      state.events.push(event)
     }
   },
   actions: {
+    eventHappen ({ commit }, event) {
+      // utilizar para registrar um log global
+      commit('addEvent', event)
+    },
     storeRaiz ({ commit }, raiz) {
       commit('setRaiz', raiz)
     },
@@ -378,6 +386,9 @@ export default new Vuex.Store({
     }
   },
   getters: {
+    events (state) {
+      return state.events
+    },
     headers (state) {
       return state.headers
     },
