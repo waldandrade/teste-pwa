@@ -63,7 +63,7 @@ class LotosLexer {
     this._lexer.rule(/\S\w*/, (ctx, match) => {
       let info = ctx.info()
       console.log(1)
-      this._errors.push(new LexExpection(`Unknown term ${match[0]}`, match[0], info.column, info.line))
+      this._errors.push(new LexExpection(`Word ${match[0]} is not acceptable in Lotos`, match[0], info.column, info.line))
       ctx.ignore()
     })
     this._lexer.input(this._source)

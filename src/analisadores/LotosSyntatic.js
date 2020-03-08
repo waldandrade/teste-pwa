@@ -104,54 +104,59 @@ function LotosSyntatic (lexer) {
     let process = new Process()
 
     process.token = token
-    decl(process)
-    nextToken()
 
-    if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
-      process.parameters = parameterList()
-      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
-        errors.push(new SyntaticExpection(`Need a ")" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+    try {
+      decl(process)
+      nextToken()
+
+      if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+        process.parameters = parameterList()
+        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
+          errors.push(new SyntaticExpection(`Need a ")" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+          return process
+        }
+        nextToken()
+      }
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
+        errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
+        return process
+      }
+      functionType(process)
+      nextToken()
+
+      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':=')) {
+        errors.push(new SyntaticExpection(`Need a ":=" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
         return process
       }
       nextToken()
-    }
 
-    if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
-      errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
-      return process
-    }
-    functionType(process)
-    nextToken()
+      process.behaviour = behaviour(new Behaviour())
 
-    if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':=')) {
-      errors.push(new SyntaticExpection(`Need a ":=" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
-      return process
-    }
-    nextToken()
-
-    process.behaviour = behaviour(new Behaviour())
-
-    if (actualToken.isA(RESERVED_WORD, 'where')) {
-      nextToken()
-      process.processList = []
-      while (true) {
-        if (!actualToken.isA(RESERVED_WORD, 'process')) {
-          break
+      if (actualToken.isA(RESERVED_WORD, 'where')) {
+        nextToken()
+        process.processList = []
+        while (true) {
+          if (!actualToken.isA(RESERVED_WORD, 'process')) {
+            break
+          }
+          let processDeclaration = createProcess()
+          if (!processDeclaration) {
+            break
+          }
+          process.processList.push(processDeclaration)
         }
-        let processDeclaration = createProcess()
-        if (!processDeclaration) {
-          break
-        }
-        process.processList.push(processDeclaration)
       }
-    }
 
-    if (!actualToken.isA(RESERVED_WORD, 'endproc')) {
-      errors.push(new SyntaticExpection(`Need a "endproc" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-      return process
-    }
+      if (!actualToken.isA(RESERVED_WORD, 'endproc')) {
+        errors.push(new SyntaticExpection(`Need a "endproc" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        return process
+      }
 
-    nextToken()
+      nextToken()
+    } catch (e) {
+      throw e
+    }
 
     return process
   }
@@ -383,7 +388,7 @@ function LotosSyntatic (lexer) {
   function tokenTest (type, value, errorStyle) {
     if (!errorStyle || errorStyle === COMPARE_TEST) {
       if (!actualToken.isA(type, value)) {
-        throw new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken)
+        throw new SyntaticExpection(`Need a "${value}" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken)
       }
     }
   }
