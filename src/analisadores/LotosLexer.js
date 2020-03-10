@@ -27,6 +27,7 @@ class LotosLexer {
     this._lexer = new Tokenizr()
     this._source = source
     this.__terminated = false
+
     this._lexer.rule(COMMENT, (ctx, match) => {
       ctx.ignore()
     })
