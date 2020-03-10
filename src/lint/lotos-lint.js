@@ -18,11 +18,12 @@ import CodeMirror from 'codemirror'
   function validator (text, options) {
     if (!window.LOTOSLINT) {
       if (window.console) {
-        window.console.error('Error: window.LOTOSLINT not defined, CodeMirror linting cannot run.')
+        window.console.error(`Error: window.LOTOSLINT not defined,
+          CodeMirror linting cannot run.`)
       }
       return []
     }
-    // JSHint error.character actually is a column index, this fixes underlining on lines using tabs for indentation
+
     if (!options.indent) {
       options.indent = 1
     } // JSHint default value is 4
