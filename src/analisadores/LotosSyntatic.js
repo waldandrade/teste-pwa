@@ -148,11 +148,7 @@ function LotosSyntatic (lexer) {
         }
       }
 
-      if (!actualToken.isA(RESERVED_WORD, 'endproc')) {
-        errors.push(new SyntaticExpection(`Need a "endproc" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return process
-      }
-
+      tokenTest(RESERVED_WORD, 'endproc', COMPARE_TEST)
       nextToken()
     } catch (e) {
       throw e
@@ -197,198 +193,174 @@ function LotosSyntatic (lexer) {
   }
 
   function behaviour (expression, isChild) {
-    if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '[')) {
-      nextToken()
-
-      let guard = {}
-
-      guard.domain = evaluateExpression(0)
-      if (!actualToken.isA(SPECIAL_CHARACTER, '=')) {
-        errors.push(new SyntaticExpection(`Need a "=" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return null
-      }
-      nextToken()
-      guard.domain = evaluateExpression(0)
-      expression.guard = guard
-
-      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ']')) {
-        errors.push(new SyntaticExpection(`Need a "]" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return null
-      }
-
-      nextToken()
-
-      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, '->')) {
-        errors.push(new SyntaticExpection(`Need a "->" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return null
-      }
-
-      nextToken()
-
-      expression = behaviour(expression)
-    } else if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
-      nextToken()
-      expression = behaviour(new Behaviour())
-
-      if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
-        errors.push(new SyntaticExpection(`Need a ")" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-        return null
-      }
-
-      nextToken()
-    } else if (actualToken.isA(ID) || actualToken.isA(RESERVED_WORD, 'i')) {
-      expression.identifier = actualToken
-      nextToken()
+    try {
       if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '[')) {
-        expression.operand = OP_PROCESS_INSTANTIATION
-        expression.parsingGates = identifierList()
-
-        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ']')) {
-          errors.push(new SyntaticExpection(`Need a "]" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-          return null
-        }
         nextToken()
 
-        if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
-          // Não precisa chamar nextToken foi já é executada em evaluateExpression
+        let guard = {}
 
-          expression.values = valueList()
+        guard.domain = evaluateExpression(0)
+        tokenTest(SPECIAL_CHARACTER, '=', COMPARE_TEST)
+        nextToken()
+        guard.domain = evaluateExpression(0)
+        expression.guard = guard
 
-          if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
-            errors.push(new SyntaticExpection(`Need a ")" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-            return null
-          }
+        tokenTest(RESERVED_LEXICAL_TOKEN, ']', COMPARE_TEST)
+        nextToken()
 
+        tokenTest(RESERVED_LEXICAL_TOKEN, '->', COMPARE_TEST)
+        nextToken()
+
+        expression = behaviour(expression)
+      } else if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+        nextToken()
+        expression = behaviour(new Behaviour())
+
+        tokenTest(RESERVED_LEXICAL_TOKEN, ')', COMPARE_TEST)
+        nextToken()
+      } else if (actualToken.isA(ID) || actualToken.isA(RESERVED_WORD, 'i')) {
+        expression.identifier = actualToken
+        nextToken()
+        if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '[')) {
+          expression.operand = OP_PROCESS_INSTANTIATION
+          expression.parsingGates = identifierList()
+
+          tokenTest(RESERVED_LEXICAL_TOKEN, ']', COMPARE_TEST)
           nextToken()
-        }
-      } else {
-        if (expression.identifier.isA(RESERVED_WORD, 'i')) {
-          expression.operand = OP_HIDING_EVENT
+
+          if (actualToken.isA(RESERVED_LEXICAL_TOKEN, '(')) {
+            // Não precisa chamar nextToken foi já é executada em evaluateExpression
+
+            expression.values = valueList()
+
+            tokenTest(RESERVED_LEXICAL_TOKEN, ')', COMPARE_TEST)
+            nextToken()
+          }
         } else {
-          expression.operand = OP_ACTION_PREFIX
-        }
-        if (actualToken.isA(BEHAVIOUR_OPERATION, '!') || actualToken.isA(BEHAVIOUR_OPERATION, '?')) {
-          let parameterList = []
-          while (true) {
-            if (actualToken.isA(BEHAVIOUR_OPERATION, '!')) {
-              // Definindo as expressões que formam a equação, no nível maior '0'
-              let value = evaluateExpression(0)
-
-              if (!value) {
-                break
-              }
-
-              parameterList.push(value)
-            } else if (actualToken.isA(BEHAVIOUR_OPERATION, '?')) {
-              nextToken()
-              let parameter = {
-                imagem: null,
-                dominio: null
-              }
-              if (!actualToken.isA(ID)) {
-                break
-              }
-              parameter.imagem = actualToken
-              nextToken()
-              if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ':')) {
-                errors.push(new SyntaticExpection(`Need a ":" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken))
-                return null
-              }
-              nextToken()
-              if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
-                errors.push(new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-                break
-              }
-              parameter.dominio = actualToken
-              parameterList.push(parameter)
-
-              nextToken()
-            }
-            if (!actualToken.isA(BEHAVIOUR_OPERATION, '!') && !actualToken.isA(BEHAVIOUR_OPERATION, '?')) {
-              break
-            }
+          if (expression.identifier.isA(RESERVED_WORD, 'i')) {
+            expression.operand = OP_HIDING_EVENT
+          } else {
+            expression.operand = OP_ACTION_PREFIX
           }
-          expression.parameters = parameterList
-        }
+          if (actualToken.isA(BEHAVIOUR_OPERATION, '!') || actualToken.isA(BEHAVIOUR_OPERATION, '?')) {
+            let parameterList = []
+            while (true) {
+              if (actualToken.isA(BEHAVIOUR_OPERATION, '!')) {
+                // Definindo as expressões que formam a equação, no nível maior '0'
+                let value = evaluateExpression(0)
 
-        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ';')) {
-          errors.push(new SyntaticExpection(`Need a ";" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-          return null
-        }
+                if (!value) {
+                  break
+                }
 
+                parameterList.push(value)
+              } else if (actualToken.isA(BEHAVIOUR_OPERATION, '?')) {
+                nextToken()
+                let parameter = {
+                  imagem: null,
+                  dominio: null
+                }
+                if (!actualToken.isA(ID)) {
+                  break
+                }
+                parameter.imagem = actualToken
+                nextToken()
+                tokenTest(RESERVED_LEXICAL_TOKEN, ':', COMPARE_TEST)
+                nextToken()
+
+                if (!actualToken.isA(ID) && !actualToken.isA(RESERVED_SORT)) {
+                  throw new SyntaticExpection(`Need a "id" token to this identifiers list, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken)
+                }
+                parameter.dominio = actualToken
+                parameterList.push(parameter)
+
+                nextToken()
+              }
+              if (!actualToken.isA(BEHAVIOUR_OPERATION, '!') && !actualToken.isA(BEHAVIOUR_OPERATION, '?')) {
+                break
+              }
+            }
+            expression.parameters = parameterList
+          }
+
+          tokenTest(RESERVED_LEXICAL_TOKEN, ';', COMPARE_TEST)
+          nextToken()
+          expression.rightBehaviour = behaviour(new Behaviour(), true)
+        }
+      } else if (actualToken.isA(RESERVED_WORD, 'exit') || actualToken.isA(RESERVED_WORD, 'stop')) {
+        expression.identifier = actualToken
+        expression.operand = actualToken.isA(RESERVED_WORD, 'exit') ? OP_EXIT : OP_STOP
         nextToken()
-        expression.rightBehaviour = behaviour(new Behaviour(), true)
+        return expression
       }
-    } else if (actualToken.isA(RESERVED_WORD, 'exit') || actualToken.isA(RESERVED_WORD, 'stop')) {
-      expression.identifier = actualToken
-      expression.operand = actualToken.isA(RESERVED_WORD, 'exit') ? OP_EXIT : OP_STOP
-      nextToken()
-      return expression
-    }
 
-    if (isChild) {
-      return expression
-    }
+      if (isChild) {
+        return expression
+      }
 
-    if (actualToken.isA(BEHAVIOUR_OPERATION)) {
-      let operationalExpression = new Behaviour()
-      if (actualToken.isA(BEHAVIOUR_OPERATION, '|[') || actualToken.isA(BEHAVIOUR_OPERATION, '|||') || actualToken.isA(BEHAVIOUR_OPERATION, '||')) {
-        operationalExpression.operand = OP_PALALLELISM
-        operationalExpression.variacao = actualToken.isA(BEHAVIOUR_OPERATION, '|[') ? 'PART' : actualToken.isA(BEHAVIOUR_OPERATION, '||') ? 'FULL' : 'INTERLEAVING'
-        if (actualToken.isA(BEHAVIOUR_OPERATION, '|[')) {
-          operationalExpression.parsingGates = identifierList()
-          if (!actualToken.isA(BEHAVIOUR_OPERATION, ']|')) {
-            errors.push(new SyntaticExpection(`Need a "]|" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken))
-            return null
+      if (actualToken.isA(BEHAVIOUR_OPERATION)) {
+        let operationalExpression = new Behaviour()
+        if (actualToken.isA(BEHAVIOUR_OPERATION, '|[') || actualToken.isA(BEHAVIOUR_OPERATION, '|||') || actualToken.isA(BEHAVIOUR_OPERATION, '||')) {
+          operationalExpression.operand = OP_PALALLELISM
+          operationalExpression.variacao = actualToken.isA(BEHAVIOUR_OPERATION, '|[') ? 'PART' : actualToken.isA(BEHAVIOUR_OPERATION, '||') ? 'FULL' : 'INTERLEAVING'
+          if (actualToken.isA(BEHAVIOUR_OPERATION, '|[')) {
+            operationalExpression.parsingGates = identifierList()
+            tokenTest(BEHAVIOUR_OPERATION, ']|', COMPARE_TEST)
           }
+        } else if (actualToken.isA(BEHAVIOUR_OPERATION, '>>')) {
+          operationalExpression.operand = OP_ENABLE
+        } else if (actualToken.isA(BEHAVIOUR_OPERATION, '[>')) {
+          operationalExpression.operand = OP_DISABLE
+        } else if (actualToken.isA(BEHAVIOUR_OPERATION, '[]')) {
+          operationalExpression.operand = OP_CHOICE
+        } else {
+          operationalExpression.operand = OP_OPERATION
         }
-      } else if (actualToken.isA(BEHAVIOUR_OPERATION, '>>')) {
-        operationalExpression.operand = OP_ENABLE
-      } else if (actualToken.isA(BEHAVIOUR_OPERATION, '[>')) {
-        operationalExpression.operand = OP_DISABLE
-      } else if (actualToken.isA(BEHAVIOUR_OPERATION, '[]')) {
-        operationalExpression.operand = OP_CHOICE
+        operationalExpression.leftBehaviour = expression
+        nextToken()
+        operationalExpression.rightBehaviour = behaviour(new Behaviour())
+        return operationalExpression
       } else {
-        operationalExpression.operand = OP_OPERATION
+        if (actualToken && !actualToken.isA(RESERVED_WORD, 'where') && !actualToken.isA(RESERVED_WORD, 'endproc') && !actualToken.isA(RESERVED_LEXICAL_TOKEN, ')') && !isChild) {
+          throw new SyntaticExpection(`Need a operation token, and given token was ${actualToken.value} of type ${actualToken.type}`, actualToken)
+        }
+        return expression
       }
-      operationalExpression.leftBehaviour = expression
-      nextToken()
-      operationalExpression.rightBehaviour = behaviour(new Behaviour())
-      return operationalExpression
-    } else {
-      return expression
+    } catch (e) {
+      throw e
     }
   }
 
   function processDeclarationList (scope) {
     nextToken()
     scope.processList = []
-    while (true) {
-      if (!actualToken.isA(RESERVED_WORD, 'process')) {
-        break
+    try {
+      while (true) {
+        if (!actualToken.isA(RESERVED_WORD, 'process')) {
+          break
+        }
+        let processDeclaration = createProcess()
+        if (!processDeclaration) {
+          break
+        }
+        scope.processList.push(processDeclaration)
       }
-      let processDeclaration = createProcess()
-      if (!processDeclaration) {
-        break
-      }
-      scope.processList.push(processDeclaration)
+    } catch (e) {
+      throw e
     }
   }
 
   function hideGateList (scope) {
     scope.hidingGates = identifierList()
 
-    if (!actualToken.isA(RESERVED_WORD, 'in')) {
-      throw new SyntaticExpection(`Need a "in" token, and the given token ${actualToken.value} of type ${actualToken.value}`, actualToken)
-    }
-
+    tokenTest(RESERVED_WORD, 'in', COMPARE_TEST)
     nextToken()
   }
 
   function tokenTest (type, value, errorStyle) {
     if (!errorStyle || errorStyle === COMPARE_TEST) {
       if (!actualToken.isA(type, value)) {
-        throw new SyntaticExpection(`Need a "${value}" token, and the given token ${actualToken.value} of type ${actualToken.type}`, actualToken)
+        throw new SyntaticExpection(`Need a "${value}" token, and the given token was ${actualToken.value} of type ${actualToken.type}`, actualToken)
       }
     }
   }
@@ -458,7 +430,9 @@ function LotosSyntatic (lexer) {
       let expression = evaluateExpression()
 
       if (!expression) {
-        errors.push(new SyntaticExpection(`We can not evaluate the expression starting with the token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        if (!actualToken.isA(RESERVED_LEXICAL_TOKEN, ')')) {
+          errors.push(new SyntaticExpection(`We can not evaluate the expression starting with the token ${actualToken.value} of type ${actualToken.type}`, actualToken))
+        }
         break
       }
 
@@ -1194,6 +1168,7 @@ function LotosSyntatic (lexer) {
     if (e instanceof InterruptException) {
       errors.push(new SyntaticExpection(e.message, e.token))
     } else {
+      console.log(e)
       console.log('tratando o erro')
       errors.push(e)
     }

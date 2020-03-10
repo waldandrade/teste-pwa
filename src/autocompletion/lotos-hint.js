@@ -63,7 +63,8 @@ import CodeMirror from 'codemirror'
   'BasicNaturalNumber Bit BitNatRepr BitString Bool Boolean DecDigit DecNatRepr DecString ' +
     'HexDigit HexNatRepr HexString NatRepresentations Nat NaturalNumber OctDigit Octet OctetString OctNatRepr ' +
     'OctString Set String false true and Bit1 Bit2 Bit3 Bit4 Bit5 Bit6 Bit7 Bit8 Card eq ge gt iff implies ' +
-    'Includes Insert Ints IsIn IsSubsetOf le Length lt Minus NatNum ne not NotIn or Remove Reverse Succ Union xor').split(' ')
+    'Includes Insert Ints IsIn IsSubsetOf le Length lt Minus NatNum ne not NotIn or Remove Reverse Succ Union xor')
+    .split(' ')
 
   function lotosHint (editor, options) {
     return scriptHint(editor, lotosKeywords,
