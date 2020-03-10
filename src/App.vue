@@ -2,7 +2,6 @@
   <v-app id="inspire">
     <v-navigation-drawer
       :value="mini"
-      dark
       mini-variant-width="45"
       disable-resize-watcher
       stateless
@@ -14,10 +13,9 @@
 
         <v-toolbar
           color="transparent"
-          dark
           clipped-left
         >
-          <v-toolbar-title class="white--text">Formal Code</v-toolbar-title>
+          <v-toolbar-title class="primary--text">Formal Code</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon large>
             <v-avatar size="32px" tile>
@@ -197,7 +195,7 @@ export default {
 }
 
 .v-navigation-drawer.jlotos-navigation {
-  background-color: #0C1021
+  background-color: #fafafa
 }
 
 .v-navigation-drawer.jlotos-navigation .v-list__group__header .v-list__group__header__prepend-icon{

@@ -9,7 +9,6 @@
           v-else
           hide-slider
           v-model="activeFile"
-          dark
           color="grey"
           show-arrows
           left
