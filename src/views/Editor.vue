@@ -91,7 +91,7 @@ var LOTOSHINT = (function () {
   var itself = function (text, observer) {
     // eslint-disable-next-line no-unused-vars
     let syn = null
-
+    LOTOSHINT.store.dispatch('storeRaiz', null)
     LOTOSHINT.errors = []
 
     if (text && text.length) {
